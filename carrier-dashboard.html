@@ -650,6 +650,20 @@ select option{background:var(--mid);}
   </div>
 </div>
 
+<script>
+// Notification panel — must be in regular script so onclick works immediately
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('notifBtn');
+  const panel = document.getElementById('notifPanel');
+  if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
+});
+</script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -983,17 +997,7 @@ async function loadSavedCerts(data) {
   });
 }
 
-// Notification panel toggle
-window.toggleNotifPanel = () => {
-  const panel = document.getElementById('notifPanel');
-  if (!panel) return;
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-};
-document.addEventListener('click', (e) => {
-  const btn = document.getElementById('notifBtn');
-  const panel = document.getElementById('notifPanel');
-  if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
-});
+// Notification panel toggle moved to regular script
 
 // Avatar upload (preview only for now — Firebase Storage needed for persistence)
 window.handleAvatarUpload = (input) => {
