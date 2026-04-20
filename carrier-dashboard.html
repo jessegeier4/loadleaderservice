@@ -262,13 +262,14 @@ select option{background:var(--mid);}
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div class="notif-btn" onclick="toggleNotifPanel(event)" id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;">
+    <div id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;"
+      onclick="(function(e){e.stopPropagation();var p=document.getElementById('notifPanel');p.style.display=p.style.display==='none'?'block':'none';})(event)">
       🔔
-      <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.8);">
+      <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
         <div style="text-align:center;padding:1.5rem 0;">
           <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
-          <div style="font-size:.82rem;color:var(--muted);line-height:1.6;">No notifications yet.<br>Apply to loads to get started.</div>
+          <div style="font-size:.82rem;color:#888;line-height:1.6;">No notifications yet.<br>Apply to loads to get started.</div>
         </div>
         <div style="font-size:.72rem;color:#333;text-align:center;margin-top:.5rem;">Load alerts coming soon</div>
       </div>
@@ -651,16 +652,10 @@ select option{background:var(--mid);}
 </div>
 
 <script>
-// Notification panel — regular script so onclick works immediately
-function toggleNotifPanel(e) {
-  if (e) e.stopPropagation();
-  const panel = document.getElementById('notifPanel');
-  if (!panel) return;
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-}
+// Close notif panel when clicking outside
 document.addEventListener('click', function(e) {
-  const btn = document.getElementById('notifBtn');
-  const panel = document.getElementById('notifPanel');
+  var btn = document.getElementById('notifBtn');
+  var panel = document.getElementById('notifPanel');
   if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
 });
 </script>
