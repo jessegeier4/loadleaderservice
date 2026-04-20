@@ -427,5 +427,48 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
+  authDomain: "load-leader.firebaseapp.com",
+  projectId: "load-leader",
+  storageBucket: "load-leader.firebasestorage.app",
+  messagingSenderId: "411492756195",
+  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user) => {
+  const navRight = document.querySelector('.nav-right');
+  if (!navRight) return;
+  if (user) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const data = userDoc.exists() ? userDoc.data() : {};
+      const firstName = data.firstName || user.displayName?.split(' ')[0] || 'User';
+      const lastName = data.lastName || '';
+      const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
+      const isCarrier = data.accountType === 'carrier';
+      const dashUrl = isCarrier ? 'carrier-dashboard.html' : 'dashboard.html';
+      navRight.innerHTML = `
+        <a href="${dashUrl}" style="display:flex;align-items:center;gap:.5rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;text-decoration:none;color:var(--white);font-size:.82rem;font-weight:500;">
+          <div style="width:26px;height:26px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--black);">${initials}</div>
+          ${firstName}
+        </a>
+        <a href="${dashUrl}" class="btn-yellow" style="padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;text-decoration:none;background:var(--yellow);color:var(--black);">Dashboard</a>`;
+    } catch(e) {
+      console.error(e);
+    }
+  }
+});
+</script>
 </body>
 </html>

@@ -439,13 +439,103 @@ select option{background:var(--mid);}
         <!-- Certifications -->
         <div class="form-section">
           <div class="fs-title">Certifications</div>
-          <div class="cert-list">
-            <div class="cert-item"><span class="cert-icon">📋</span><span class="cert-name">Pilot Car Certification</span><span class="cert-exp">Exp: Dec 2026</span><span class="cert-status cert-valid">Valid</span></div>
-            <div class="cert-item"><span class="cert-icon">🚗</span><span class="cert-name">Driver's License (CDL)</span><span class="cert-exp">Exp: Aug 2027</span><span class="cert-status cert-valid">Valid</span></div>
-            <div class="cert-item"><span class="cert-icon">🛡️</span><span class="cert-name">Liability Insurance</span><span class="cert-exp">Exp: Jan 2026</span><span class="cert-status cert-expired">Expired</span></div>
-            <div class="cert-item"><span class="cert-icon">🔰</span><span class="cert-name">OSHA Safety Training</span><span class="cert-exp"></span><span class="cert-status cert-missing">Not Added</span></div>
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Upload a photo of each certificate. Carriers see verified badges on your profile when documents are on file.</p>
+          <div class="cert-list" id="certList">
+
+            <!-- Pilot Car Cert -->
+            <div class="cert-item" id="cert-pilot">
+              <span class="cert-icon">📋</span>
+              <span class="cert-name">Pilot Car Certification</span>
+              <span class="cert-exp" id="exp-pilot">No expiry added</span>
+              <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
+              <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+              <div class="cert-upload-area" id="upload-pilot">
+                <div class="cert-drop" id="drop-pilot">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-pilot">
+                  <img id="preview-img-pilot" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('pilot')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-pilot" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('pilot','Pilot Car Certification')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Driver License -->
+            <div class="cert-item" id="cert-license">
+              <span class="cert-icon">🚗</span>
+              <span class="cert-name">Driver's License (CDL)</span>
+              <span class="cert-exp" id="exp-license">No expiry added</span>
+              <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
+              <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
+              <div class="cert-upload-area" id="upload-license">
+                <div class="cert-drop" id="drop-license">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-license">
+                  <img id="preview-img-license" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('license')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-license" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('license','Driver License / CDL')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Insurance -->
+            <div class="cert-item" id="cert-insurance">
+              <span class="cert-icon">🛡️</span>
+              <span class="cert-name">Liability Insurance</span>
+              <span class="cert-exp" id="exp-insurance">No expiry added</span>
+              <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
+              <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
+              <div class="cert-upload-area" id="upload-insurance">
+                <div class="cert-drop" id="drop-insurance">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-insurance">
+                  <img id="preview-img-insurance" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('insurance')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-insurance" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('insurance','Liability Insurance')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- OSHA -->
+            <div class="cert-item" id="cert-osha">
+              <span class="cert-icon">🔰</span>
+              <span class="cert-name">OSHA Safety Training</span>
+              <span class="cert-exp" id="exp-osha">No expiry added</span>
+              <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
+              <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
+              <div class="cert-upload-area" id="upload-osha">
+                <div class="cert-drop" id="drop-osha">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-osha">
+                  <img id="preview-img-osha" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('osha')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-osha" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('osha','OSHA Safety Training')">Save</button>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <button class="add-cert-btn">+ Upload New Certificate</button>
+          <button class="add-cert-btn" onclick="addCustomCert()">+ Add Another Certificate</button>
         </div>
       </div>
 
@@ -602,6 +692,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('pfCoverage').value = data.coverage || '';
     document.getElementById('pfEquipment').value = data.equipment || '';
     document.getElementById('pfBio').value = data.bio || '';
+    loadSavedCerts(data);
 
     // Load real applications from Firestore
     const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -710,6 +801,158 @@ window.saveEquipment = async () => {
 };
 
 // Panel switching
+// ── CERTIFICATIONS ──
+window.toggleCert = (id) => {
+  const item = document.getElementById('cert-' + id);
+  const isExpanded = item.classList.contains('expanded');
+  // Close all others
+  document.querySelectorAll('.cert-item').forEach(i => i.classList.remove('expanded'));
+  document.querySelectorAll('.cert-expand-btn').forEach(b => b.textContent = '+ Add');
+  if (!isExpanded) {
+    item.classList.add('expanded');
+    item.querySelector('.cert-expand-btn').textContent = '✕ Close';
+  }
+};
+
+window.handleCertFile = (id, input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('File too large — max 5MB'); return; }
+  const preview = document.getElementById('preview-' + id);
+  const img = document.getElementById('preview-img-' + id);
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  } else {
+    img.src = '';
+    preview.style.display = 'block';
+    img.style.display = 'none';
+    preview.innerHTML += '<div style="padding:.75rem;background:var(--mid);border-radius:6px;font-size:.8rem;color:#aaa;text-align:center;">📄 ' + file.name + '</div>';
+  }
+};
+
+window.removeCert = (id) => {
+  document.getElementById('preview-' + id).style.display = 'none';
+  document.getElementById('preview-img-' + id).src = '';
+  document.getElementById('cert-' + id).querySelector('input[type=file]').value = '';
+};
+
+window.saveCert = async (id, name) => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const expiry = document.getElementById('expiry-' + id).value;
+  const fileInput = document.getElementById('cert-' + id).querySelector('input[type=file]');
+  const hasFile = fileInput.files.length > 0;
+
+  if (!hasFile && !expiry) {
+    alert('Please upload a certificate image or enter an expiry date.');
+    return;
+  }
+
+  const btn = document.getElementById('cert-' + id).querySelector('.cert-save-btn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+
+  try {
+    // Save cert metadata to Firestore
+    const certData = {
+      name,
+      expiry: expiry || '',
+      hasFile,
+      uploadedAt: new Date().toISOString(),
+      status: 'uploaded'
+    };
+
+    const { doc: firestoreDoc, updateDoc: firestoreUpdate } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await firestoreUpdate(firestoreDoc(db, 'users', user.uid), {
+      ['cert_' + id]: certData
+    });
+
+    // Update UI
+    const statusEl = document.getElementById('status-' + id);
+    const expEl = document.getElementById('exp-' + id);
+    statusEl.textContent = 'Uploaded ✓';
+    statusEl.className = 'cert-status cert-valid';
+    document.getElementById('cert-' + id).classList.add('has-file');
+    if (expiry) {
+      const d = new Date(expiry);
+      expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+    }
+    const expandBtn = document.getElementById('cert-' + id).querySelector('.cert-expand-btn');
+    expandBtn.textContent = '✓ Saved';
+    expandBtn.style.color = 'var(--green)';
+    expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+    document.getElementById('cert-' + id).classList.remove('expanded');
+    document.getElementById('upload-' + id).style.display = 'none';
+
+    btn.innerHTML = 'Save';
+    btn.disabled = false;
+  } catch(e) {
+    btn.innerHTML = 'Save';
+    btn.disabled = false;
+    alert('Could not save. Try again.');
+  }
+};
+
+window.addCustomCert = () => {
+  const name = prompt('Certificate name:');
+  if (!name) return;
+  const id = 'custom_' + Date.now();
+  const item = document.createElement('div');
+  item.className = 'cert-item';
+  item.id = 'cert-' + id;
+  item.innerHTML = `
+    <span class="cert-icon">📄</span>
+    <span class="cert-name">${name}</span>
+    <span class="cert-exp" id="exp-${id}">No expiry added</span>
+    <span class="cert-status cert-missing" id="status-${id}">Not uploaded</span>
+    <button class="cert-expand-btn" onclick="toggleCert('${id}')">+ Add</button>
+    <div class="cert-upload-area" id="upload-${id}">
+      <div class="cert-drop" id="drop-${id}">
+        <input type="file" accept="image/*,.pdf" onchange="handleCertFile('${id}',this)">
+        <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop</div>
+      </div>
+      <div class="cert-preview" id="preview-${id}" style="display:none">
+        <img id="preview-img-${id}" src="" alt="Certificate">
+        <button class="cert-preview-remove" onclick="removeCert('${id}')">✕</button>
+      </div>
+      <div class="cert-expiry-row">
+        <input type="date" id="expiry-${id}" style="color-scheme:dark">
+        <button class="cert-save-btn" onclick="saveCert('${id}','${name}')">Save</button>
+      </div>
+    </div>`;
+  document.getElementById('certList').appendChild(item);
+  toggleCert(id);
+};
+
+// Load saved certs on profile load
+async function loadSavedCerts(data) {
+  const certIds = ['pilot','license','insurance','osha'];
+  certIds.forEach(id => {
+    const cert = data['cert_' + id];
+    if (cert) {
+      const statusEl = document.getElementById('status-' + id);
+      const expEl = document.getElementById('exp-' + id);
+      const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+      if (statusEl) {
+        statusEl.textContent = 'Uploaded ✓';
+        statusEl.className = 'cert-status cert-valid';
+      }
+      if (expEl && cert.expiry) {
+        const d = new Date(cert.expiry);
+        expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+      }
+      if (expandBtn) {
+        expandBtn.textContent = '✓ On file';
+        expandBtn.style.color = 'var(--green)';
+        expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+      }
+      document.getElementById('cert-' + id)?.classList.add('has-file');
+    }
+  });
+}
+
 window.showPanel = (name, el) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
