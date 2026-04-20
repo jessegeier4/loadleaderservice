@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoadLeader – Carrier Dashboard</title>
+<title>LoadLeader – Pilot Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
   --white:#f0ede6; --gray:#141414; --mid:#1e1e1e; --card:#181818;
   --border:#222; --muted:#666; --green:#4ade80; --green-bg:rgba(74,222,128,0.08);
-  --red:#f87171; --red-bg:rgba(248,113,113,0.08); --blue:#60a5fa; --orange:#fb923c;
+  --red:#f87171; --blue:#60a5fa; --blue-bg:rgba(96,165,250,0.08);
+  --orange:#fb923c;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
-/* LOADING */
+/* LOADING SCREEN */
 #loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
 .loading-logo{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px;color:var(--yellow);}
 .loading-logo span{color:var(--white);}
@@ -27,52 +28,50 @@ body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif
 nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
 .logo span{color:var(--white);}
-.carrier-badge{background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:var(--blue);font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-left:.5rem;}
 .nav-center{display:flex;gap:.25rem;background:var(--mid);padding:.3rem;border-radius:8px;}
-.nav-tab{padding:.38rem .9rem;border-radius:5px;font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;position:relative;}
+.nav-tab{padding:.38rem .9rem;border-radius:5px;font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .nav-tab.active{background:var(--yellow);color:var(--black);font-weight:700;}
 .nav-tab:hover:not(.active){color:var(--white);}
-.nav-tab .tab-notif{position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;}
 .nav-right{display:flex;align-items:center;gap:.75rem;}
-.user-chip{display:flex;align-items:center;gap:.6rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;cursor:pointer;text-decoration:none;color:var(--white);}
-.user-av{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;}
+.user-chip{display:flex;align-items:center;gap:.6rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;cursor:pointer;transition:background .2s;}
+.user-chip:hover{background:#2a2a2a;}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--black);}
 .user-name{font-size:.82rem;font-weight:500;}
+.notif-btn{width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;transition:background .2s;}
+.notif-btn:hover{background:#2a2a2a;}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--black);}
 .logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
 
-/* DASH WRAP */
+/* MAIN */
 .dash-wrap{max-width:1300px;margin:0 auto;padding:2rem;}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,#111100 0%,#0a0a0a 60%,#001100 100%);border:1px solid rgba(245,196,0,0.15);border-radius:12px;padding:1.75rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
+.welcome-banner::after{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 70%);pointer-events:none;}
+.welcome-text{}
+.welcome-sup{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:rgba(245,196,0,.6);margin-bottom:.3rem;}
+.welcome-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:1;}
+.welcome-name span{color:var(--yellow);}
+.welcome-sub{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
+.welcome-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+.btn{border:none;padding:.55rem 1.1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-y{background:var(--yellow);color:var(--black);}
+.btn-y:hover{background:var(--yellow-dim);}
+.btn-o{background:transparent;border:1px solid #2a2a2a;color:var(--white);}
+.btn-o:hover{border-color:var(--yellow);color:var(--yellow);}
 
 /* PANELS */
 .panel{display:none;}
 .panel.active{display:block;animation:fadeUp .3s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
-/* WELCOME */
-.welcome-banner{background:linear-gradient(135deg,#000814 0%,#0a0a0a 60%,#001433 100%);border:1px solid rgba(96,165,250,0.15);border-radius:12px;padding:1.75rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
-.welcome-banner::after{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(96,165,250,0.06),transparent 70%);pointer-events:none;}
-.welcome-sup{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:rgba(96,165,250,.6);margin-bottom:.3rem;}
-.welcome-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:1;}
-.welcome-name span{color:var(--yellow);}
-.welcome-sub{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
-.welcome-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
-
-/* BTNS */
-.btn{border:none;padding:.55rem 1.1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
-.btn-y{background:var(--yellow);color:var(--black);}
-.btn-y:hover{background:var(--yellow-dim);}
-.btn-o{background:transparent;border:1px solid #2a2a2a;color:var(--white);}
-.btn-o:hover{border-color:var(--yellow);color:var(--yellow);}
-.btn-green{background:var(--green-bg);border:1px solid rgba(74,222,128,.25);color:var(--green);}
-.btn-green:hover{background:rgba(74,222,128,.15);}
-.btn-red{background:var(--red-bg);border:1px solid rgba(248,113,113,.25);color:var(--red);}
-.btn-red:hover{background:rgba(248,113,113,.15);}
-
-/* STATS */
+/* STATS ROW */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
 @media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.stats-row{grid-template-columns:1fr;}}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;position:relative;overflow:hidden;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0;}
 .stat-card.yellow::before{background:var(--yellow);}
 .stat-card.green::before{background:var(--green);}
 .stat-card.blue::before{background:var(--blue);}
@@ -89,142 +88,159 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
 .sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;}
 .sec-title span{color:var(--yellow);}
+.sec-link{color:var(--yellow);font-size:.8rem;text-decoration:none;font-weight:500;}
+.sec-link:hover{text-decoration:underline;}
 
-/* MY LOADS */
-.load-list{display:flex;flex-direction:column;gap:.75rem;}
-.load-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;transition:border-color .2s;position:relative;overflow:hidden;}
-.load-row::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
-.load-row.active-load::before{background:var(--green);}
-.load-row.pending-load::before{background:var(--yellow);}
-.load-row.filled-load::before{background:var(--blue);}
-.load-row.draft-load::before{background:var(--muted);}
-.load-row:hover{border-color:#2e2e2e;}
-.load-row-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem;}
-.load-row-left{}
-.load-id{font-size:.68rem;color:#444;letter-spacing:2px;text-transform:uppercase;margin-bottom:.3rem;}
-.load-route{display:flex;align-items:center;gap:.6rem;}
-.lr-city{font-weight:600;font-size:1rem;}
-.lr-st{color:var(--muted);font-size:.82rem;margin-left:.15rem;}
-.lr-arr{color:var(--yellow);}
-.load-row-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+/* JOB CARDS */
+.job-list{display:flex;flex-direction:column;gap:.75rem;}
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;transition:border-color .2s;position:relative;overflow:hidden;}
+.job-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.job-card.active-job::before{background:var(--green);}
+.job-card.pending-job::before{background:var(--yellow);}
+.job-card.completed-job::before{background:var(--muted);}
+.job-card:hover{border-color:#2e2e2e;}
+.job-left{}
+.job-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;}
+.job-city{font-weight:600;font-size:.95rem;}
+.job-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
+.job-arr{color:var(--yellow);}
+.job-meta{display:flex;gap:1rem;flex-wrap:wrap;}
+.job-meta-item{font-size:.75rem;color:var(--muted);}
+.job-meta-item strong{color:#bbb;font-weight:500;}
+.job-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+.job-pay{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.job-pay-label{font-size:.65rem;color:var(--muted);text-align:right;}
 .badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;}
 .badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
 .badge-pending{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
-.badge-filled{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
-.badge-draft{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
-.load-meta{display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:.9rem;}
-.lm-item{font-size:.75rem;color:var(--muted);}
-.lm-item strong{color:#bbb;font-weight:500;display:block;margin-top:.1rem;}
-.load-row-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.9rem;border-top:1px solid #1f1f1f;flex-wrap:wrap;gap:.5rem;}
-.applicant-count{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
-.applicant-count strong{color:var(--white);}
-.applicant-avatars{display:flex;}
-.app-av{width:24px;height:24px;border-radius:50%;background:var(--yellow);border:2px solid var(--card);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--black);margin-left:-6px;}
-.app-av:first-child{margin-left:0;}
-.app-av.more{background:var(--mid);color:var(--muted);font-size:.55rem;}
-.load-actions{display:flex;gap:.4rem;}
-.load-btn{background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.38rem .8rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;}
-.load-btn:hover{border-color:var(--yellow);color:var(--yellow);}
-.load-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);}
-.load-btn.primary:hover{background:var(--yellow-dim);}
+.badge-completed{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
+.badge-applied{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
+.job-actions{display:flex;gap:.4rem;margin-top:.25rem;}
+.job-btn{background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.35rem .75rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;}
+.job-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+.job-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);}
+.job-btn.primary:hover{background:var(--yellow-dim);}
 
-/* APPLICANT PANEL */
-.applicant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
-.applicant-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.4rem;transition:border-color .2s;position:relative;overflow:hidden;}
-.applicant-card:hover{border-color:#2e2e2e;}
-.applicant-card.accepted{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,0.03);}
-.applicant-card.declined{opacity:.5;}
-.ac-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
-.ac-load-ref{font-size:.65rem;color:#444;letter-spacing:1.5px;text-transform:uppercase;}
-.pilot-info{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem;}
-.pilot-av{width:46px;height:46px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--black);flex-shrink:0;}
-.pilot-name{font-weight:600;font-size:.95rem;margin-bottom:.15rem;}
-.pilot-rating{color:var(--yellow);font-size:.8rem;}
-.pilot-meta{font-size:.75rem;color:var(--muted);margin-top:.1rem;}
-.pilot-badges{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem;}
-.pb{background:#1a1a1a;border:1px solid #2a2a2a;color:#777;font-size:.62rem;padding:.15rem .5rem;border-radius:100px;}
-.pilot-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:1rem;padding:.85rem;background:var(--mid);border-radius:7px;}
-.ps-item{text-align:center;}
-.ps-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--yellow);letter-spacing:1px;}
-.ps-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.pilot-message{background:#111;border:1px solid #1a1a1a;border-radius:6px;padding:.75rem;font-size:.8rem;color:#888;line-height:1.55;margin-bottom:1rem;font-style:italic;}
-.pilot-message::before{content:'"';color:var(--yellow);font-size:1.1rem;line-height:1;}
-.avail-row{display:flex;gap:.5rem;margin-bottom:1rem;font-size:.75rem;color:var(--muted);}
-.avail-item{background:var(--mid);border-radius:5px;padding:.4rem .7rem;flex:1;text-align:center;}
-.avail-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:.15rem;}
-.avail-val{color:var(--white);font-weight:500;}
-.ac-actions{display:flex;gap:.5rem;}
-.ac-btn{flex:1;padding:.6rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-align:center;}
-.ac-btn.accept{background:var(--green);color:var(--black);}
-.ac-btn.accept:hover{background:#22c55e;}
-.ac-btn.decline{background:var(--red-bg);border:1px solid rgba(248,113,113,.25);color:var(--red);}
-.ac-btn.decline:hover{background:rgba(248,113,113,.15);}
-.ac-btn.accepted-state{background:var(--green-bg);border:1px solid rgba(74,222,128,.25);color:var(--green);cursor:default;}
-.ac-btn.declined-state{background:#1a1a1a;border:1px solid #2a2a2a;color:var(--muted);cursor:default;}
-.ac-phone-reveal{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:.75rem;margin-bottom:.75rem;display:none;}
-.ac-phone-reveal.show{display:block;}
-.ac-phone-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);margin-bottom:.25rem;}
-.ac-phone-num{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green);letter-spacing:1px;}
+/* EARNINGS */
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+@media(max-width:700px){.earnings-grid{grid-template-columns:1fr;}}
+.earnings-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;}
+.ec-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.5rem;}
+.ec-amount{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--green);letter-spacing:1px;line-height:1;margin-bottom:.25rem;}
+.ec-sub{font-size:.75rem;color:var(--muted);}
+.payout-card{background:linear-gradient(135deg,#001400,#0a0a0a);border:1px solid rgba(74,222,128,.15);border-radius:10px;padding:1.5rem;}
+.payout-amount{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--green);letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
+.bank-row{display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.03);border-radius:6px;padding:.55rem .8rem;margin:.9rem 0;font-size:.8rem;color:#888;}
+.withdraw-btn{width:100%;background:var(--green);color:var(--black);border:none;padding:.65rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s;}
+.withdraw-btn:hover{background:#22c55e;}
 
-/* POST LOAD FORM */
-.post-form{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.75rem;max-width:700px;}
-.form-section-title{font-weight:600;font-size:.9rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+/* TX TABLE */
+.tx-table{width:100%;border-collapse:collapse;}
+.tx-table th{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-weight:600;}
+.tx-table td{padding:.8rem 1rem;font-size:.82rem;border-bottom:1px solid #1a1a1a;vertical-align:middle;}
+.tx-table tr:last-child td{border-bottom:none;}
+.tx-table tr:hover td{background:rgba(255,255,255,.015);}
+.tx-cr{color:var(--green);font-weight:600;}
+.tx-hold{color:var(--blue);font-weight:600;}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:.4rem;vertical-align:middle;}
+
+/* SAVED LOADS */
+.saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
+.saved-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;transition:border-color .2s,transform .2s;position:relative;}
+.saved-card:hover{border-color:#2e2e2e;transform:translateY(-2px);}
+.saved-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);opacity:0;transition:opacity .2s;border-radius:0 0 0 10px;}
+.saved-card:hover::before{opacity:1;}
+.sc-top{display:flex;justify-content:space-between;margin-bottom:.8rem;}
+.sc-id{font-size:.65rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
+.unsave-btn{background:none;border:none;color:#333;cursor:pointer;font-size:.85rem;transition:color .2s;}
+.unsave-btn:hover{color:var(--red);}
+.sc-route{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;}
+.sc-city{font-weight:600;font-size:.95rem;}
+.sc-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
+.sc-arr{color:var(--yellow);}
+.sc-details{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .75rem;margin-bottom:.9rem;}
+.sc-det-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:#444;}
+.sc-det-val{font-size:.8rem;color:#bbb;font-weight:500;}
+.sc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.85rem;border-top:1px solid #1f1f1f;}
+.sc-pay{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--yellow);letter-spacing:1px;}
+.sc-pay-label{font-size:.62rem;color:var(--muted);}
+
+/* PROFILE */
+.profile-grid{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start;}
+@media(max-width:900px){.profile-grid{grid-template-columns:1fr;}}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.75rem;text-align:center;}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--black);margin:0 auto 1rem;letter-spacing:1px;}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;margin-bottom:.2rem;}
+.profile-type{display:inline-block;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.2);color:var(--yellow);font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin:1rem 0;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ps-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);}
+.ps-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.rating-row{display:flex;align-items:center;justify-content:center;gap:.3rem;margin-bottom:1rem;}
+.star{color:var(--yellow);font-size:1rem;}
+.star.empty{color:#2a2a2a;}
+.rating-num{font-size:.875rem;font-weight:600;margin-left:.25rem;}
+.edit-profile-btn{width:100%;background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.65rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.edit-profile-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* FORM FIELDS */
+.form-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1rem;}
+.fs-title{font-weight:600;font-size:.9rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem;}
+.fs-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+@media(max-width:500px){.form-row{grid-template-columns:1fr;}}
 .form-group{margin-bottom:.85rem;}
 .form-group:last-child{margin-bottom:0;}
 label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
-input,select,textarea{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+input,select,textarea{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
 input:focus,select:focus,textarea:focus{border-color:var(--yellow);}
 input::placeholder,textarea::placeholder{color:#3a3a3a;}
 select option{background:var(--mid);}
-.post-btn{background:var(--yellow);color:var(--black);border:none;padding:.75rem 2rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem;}
-.post-btn:hover{background:var(--yellow-dim);}
-.post-btn:disabled{opacity:.5;cursor:not-allowed;}
+.save-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem;}
+.save-btn:hover{background:var(--yellow-dim);}
 
-/* PROFILE */
-.profile-grid{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;}
-@media(max-width:900px){.profile-grid{grid-template-columns:1fr;}}
-.profile-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.75rem;text-align:center;}
-.profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;margin:0 auto 1rem;letter-spacing:1px;}
-.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;margin-bottom:.2rem;}
-.profile-type{display:inline-block;background:var(--blue-bg);border:1px solid rgba(96,165,250,.2);color:var(--blue);font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;}
-.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.prs-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);}
-.prs-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+/* CERTS */
+.cert-list{display:flex;flex-direction:column;gap:.6rem;}
+.cert-item{display:flex;flex-direction:column;padding:.9rem 1rem;background:var(--mid);border-radius:8px;border:1px solid #2a2a2a;transition:border-color .2s;}
+.cert-item:hover{border-color:#333;}
+.cert-item-top{display:flex;align-items:center;gap:.75rem;width:100%;}
+.cert-icon{font-size:1.1rem;flex-shrink:0;}
+.cert-name{font-size:.85rem;font-weight:500;flex:1;min-width:0;}
+.cert-status{font-size:.65rem;font-weight:700;padding:.15rem .55rem;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.cert-valid{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
+.cert-expired{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.cert-missing{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
+.cert-exp{font-size:.68rem;color:var(--muted);margin-top:.25rem;margin-left:1.85rem;}
+.add-cert-btn{width:100%;background:transparent;border:1px dashed #2a2a2a;color:var(--muted);padding:.65rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;margin-top:.6rem;}
+.add-cert-btn:hover{border-color:var(--yellow);color:var(--yellow);}
 
-/* EMPTY */
+/* EMPTY STATE */
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;}
 .empty-text{font-size:.875rem;margin-bottom:1rem;}
-
-/* FILTER TABS */
-.filter-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1.25rem;}
-.ft{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);font-size:.75rem;padding:.35rem .85rem;border-radius:100px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.ft:hover,.ft.on{background:var(--yellow-bg);border-color:rgba(245,196,0,.3);color:var(--yellow);}
 
 /* MOBILE */
 @media(max-width:600px){
   nav{padding:.75rem 1rem;}
   .nav-center{display:none;}
-  .dash-wrap{padding:1.25rem 1rem 5rem;}
-  .stats-row{grid-template-columns:1fr 1fr;}
-  .applicant-grid{grid-template-columns:1fr;}
-  .load-row-top{flex-direction:column;}
+  .dash-wrap{padding:1.25rem 1rem;}
+  .welcome-banner{padding:1.25rem;}
+  .job-card{flex-direction:column;align-items:flex-start;}
+  .job-right{align-items:flex-start;}
+  .saved-grid{grid-template-columns:1fr;}
 }
+
+/* SPINNER */
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(245,196,0,.2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* MOBILE NAV BOTTOM */
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 .8rem;z-index:100;}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:6px;transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;}
 .mn-item.active{color:var(--yellow);}
 .mn-icon{font-size:1.1rem;}
 .mn-label{font-size:.6rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
-@media(max-width:600px){.mobile-nav{display:block;}}
-
-/* UTILS */
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.success-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:var(--black);padding:.75rem 1.5rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;display:none;z-index:999;animation:fadeUp .3s ease;}
-.success-toast.show{display:block;}
+@media(max-width:600px){.mobile-nav{display:block;}.dash-wrap{padding-bottom:5rem;}}
 </style>
 </head>
 <body>
@@ -235,277 +251,409 @@ select option{background:var(--mid);}
   <div class="loading-bar"><div class="loading-fill"></div></div>
 </div>
 
-<!-- TOAST -->
-<div class="success-toast" id="toast"></div>
-
 <!-- NAV -->
 <nav>
-  <div style="display:flex;align-items:center;">
-    <a href="index.html" class="logo">Load<span>Leader</span></a>
-    <span class="carrier-badge">Carrier</span>
-  </div>
+  <a href="index.html" class="logo">Load<span>Leader</span></a>
   <div class="nav-center">
     <button class="nav-tab active" onclick="showPanel('overview',this)">Overview</button>
-    <button class="nav-tab" onclick="showPanel('myloads',this)">My Loads</button>
-    <button class="nav-tab" onclick="showPanel('applicants',this)" id="appTab">Applicants <span class="tab-notif"></span></button>
-    <button class="nav-tab" onclick="showPanel('postload',this)">Post a Load</button>
+    <button class="nav-tab" onclick="showPanel('jobs',this)">My Jobs</button>
+    <button class="nav-tab" onclick="showPanel('earnings',this)">Earnings</button>
+    <button class="nav-tab" onclick="showPanel('saved',this)">Saved Loads</button>
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div class="notif-btn" style="width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;">🔔<div style="position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--black);"></div></div>
-    <a href="#" class="user-chip" id="userChip">
+    <div class="notif-btn" onclick="toggleNotifPanel()" id="notifBtn" title="Notifications" style="position:relative;">
+      🔔
+      <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.8);">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
+        <div style="text-align:center;padding:1.5rem 0;">
+          <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.6;">No notifications yet.<br>Apply to loads to get started.</div>
+        </div>
+        <div style="font-size:.72rem;color:#333;text-align:center;margin-top:.5rem;">Load alerts coming soon</div>
+      </div>
+    </div>
+    <div class="user-chip">
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
-    </a>
+    </div>
     <button class="logout-btn" onclick="handleLogout()">Log Out</button>
   </div>
 </nav>
 
+<!-- DASHBOARD -->
 <div class="dash-wrap">
 
-  <!-- OVERVIEW -->
+  <!-- OVERVIEW PANEL -->
   <div class="panel active" id="panel-overview">
+
     <div class="welcome-banner">
-      <div>
-        <div class="welcome-sup">🚛 Carrier Dashboard</div>
-        <div class="welcome-name">Welcome Back, <span id="welcomeName">Carrier</span></div>
-        <div class="welcome-sub" id="welcomeSub">You have 3 active loads and 5 new pilot applications</div>
+      <div class="welcome-text">
+        <div class="welcome-sup">🚩 Pilot Dashboard</div>
+        <div class="welcome-name">Welcome Back, <span id="welcomeName">Pilot</span></div>
+        <div class="welcome-sub" id="welcomeSub">Welcome to LoadLeader — browse the board to find your first load</div>
       </div>
       <div class="welcome-actions">
-        <button class="btn btn-y" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
-        <button class="btn btn-o" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button>
+        <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
+        <button class="btn btn-o" onclick="showPanel('profile',document.querySelectorAll('.nav-tab')[4])">Edit Profile</button>
       </div>
     </div>
 
     <div class="stats-row">
-      <div class="stat-card yellow"><div class="sc-label">Active Loads</div><div class="sc-val">3</div><div class="sc-sub">Currently posted</div></div>
-      <div class="stat-card blue"><div class="sc-label">New Applications</div><div class="sc-val" id="newAppsCount">5</div><div class="sc-sub">Awaiting review</div></div>
-      <div class="stat-card green"><div class="sc-label">Pilots Hired</div><div class="sc-val">24</div><div class="sc-sub">All time</div></div>
-      <div class="stat-card orange"><div class="sc-label">Loads Completed</div><div class="sc-val">18</div><div class="sc-sub">This year</div></div>
+      <div class="stat-card yellow">
+        <div class="sc-label">Active Jobs</div>
+        <div class="sc-val" id="statActiveJobs">0</div>
+        <div class="sc-sub" id="statActiveJobsSub">No active jobs yet</div>
+      </div>
+      <div class="stat-card green">
+        <div class="sc-label">Earnings (2026)</div>
+        <div class="sc-val" id="statEarnings">$0</div>
+        <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="sc-label">Jobs Completed</div>
+        <div class="sc-val" id="statJobs">0</div>
+        <div class="sc-sub" id="statJobsSub">Since joining LoadLeader</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="sc-label">Rating</div>
+        <div class="sc-val" id="statRating">—</div>
+        <div class="sc-sub" id="statRatingSub">Complete jobs to earn rating</div>
+      </div>
     </div>
 
+    <!-- ACTIVE JOBS PREVIEW -->
     <div class="sec-head">
-      <div class="sec-title">Recent <span>Applications</span></div>
-      <button class="btn btn-o" style="font-size:.78rem;padding:.4rem .9rem;" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View All →</button>
+      <div class="sec-title">Active <span>Jobs</span></div>
+      <a href="#" class="sec-link" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);return false;">View all →</a>
     </div>
-    <div id="overviewApplicants" style="margin-bottom:2rem;"></div>
+    <div class="job-list" id="overviewJobs" style="margin-bottom:2rem;">
+      <div class="empty-state">
+        <div class="empty-icon">🚛</div>
+        <div class="empty-text">No active jobs yet</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;">Browse Load Board →</a>
+      </div>
+    </div>
 
+    <!-- UPCOMING PAYOUT -->
     <div class="sec-head">
-      <div class="sec-title">My Active <span>Loads</span></div>
-      <button class="btn btn-o" style="font-size:.78rem;padding:.4rem .9rem;" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])">View All →</button>
+      <div class="sec-title">Upcoming <span>Payout</span></div>
+      <a href="#" class="sec-link" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[2]);return false;">View earnings →</a>
     </div>
-    <div class="load-list" id="overviewLoads">
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left">
-            <div class="load-id">LL-00481</div>
-            <div class="load-route"><div><span class="lr-city">Houston</span><span class="lr-st">TX</span></div><span class="lr-arr">→</span><div><span class="lr-city">Oklahoma City</span><span class="lr-st">OK</span></div></div>
-          </div>
-          <div class="load-row-right"><span class="badge badge-active">Active</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>16'0"</strong></div>
-          <div class="lm-item">Miles<strong>450 mi</strong></div>
-          <div class="lm-item">Pilots Needed<strong>2</strong></div>
-          <div class="lm-item">Move Date<strong>Apr 21</strong></div>
-          <div class="lm-item">Pay Per Pilot<strong style="color:var(--yellow)">$620</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count">
-            <div class="applicant-avatars"><div class="app-av">MR</div><div class="app-av">SL</div><div class="app-av">JD</div><div class="app-av more">+2</div></div>
-            <span><strong>5</strong> applicants</span>
-          </div>
-          <div class="load-actions">
-            <button class="load-btn" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
-            <button class="load-btn">Edit Load</button>
-          </div>
-        </div>
+    <div id="overviewPayout" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;">
+      <div class="empty-state" style="padding:1.5rem 1rem;">
+        <div class="empty-icon">💰</div>
+        <div class="empty-text">No pending payouts yet — complete a job to get paid</div>
       </div>
     </div>
   </div>
 
-  <!-- MY LOADS -->
-  <div class="panel" id="panel-myloads">
-    <div class="sec-head" style="margin-bottom:1.25rem;">
-      <div class="sec-title">My <span>Loads</span></div>
-      <button class="btn btn-y" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post New Load</button>
-    </div>
-    <div class="filter-tabs">
-      <span class="ft on" onclick="filterLoadStatus('all',this)">All</span>
-      <span class="ft" onclick="filterLoadStatus('active',this)">Active</span>
-      <span class="ft" onclick="filterLoadStatus('filled',this)">Filled</span>
-      <span class="ft" onclick="filterLoadStatus('draft',this)">Draft</span>
-    </div>
-    <div class="load-list">
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00481</div><div class="load-route"><div><span class="lr-city">Houston</span><span class="lr-st">TX</span></div><span class="lr-arr">→</span><div><span class="lr-city">Oklahoma City</span><span class="lr-st">OK</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-active">Active</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>16'0"</strong></div><div class="lm-item">Height<strong>14'0"</strong></div>
-          <div class="lm-item">Miles<strong>450 mi</strong></div><div class="lm-item">Pilots<strong>2 needed / 0 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 21</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$620 each</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count"><div class="applicant-avatars"><div class="app-av">MR</div><div class="app-av">SL</div><div class="app-av more">+3</div></div><span><strong>5</strong> applicants waiting</span></div>
-          <div class="load-actions">
-            <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button>
-            <button class="load-btn">Edit</button>
-            <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);">Close</button>
-          </div>
-        </div>
-      </div>
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00479</div><div class="load-route"><div><span class="lr-city">Denver</span><span class="lr-st">CO</span></div><span class="lr-arr">→</span><div><span class="lr-city">Salt Lake City</span><span class="lr-st">UT</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-active">Urgent</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>14'0"</strong></div><div class="lm-item">Height<strong>15'0"</strong></div>
-          <div class="lm-item">Miles<strong>525 mi</strong></div><div class="lm-item">Pilots<strong>1 needed / 0 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 19</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$740</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count"><div class="applicant-avatars"><div class="app-av">RT</div></div><span><strong>1</strong> applicant waiting</span></div>
-          <div class="load-actions"><button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button><button class="load-btn">Edit</button></div>
-        </div>
-      </div>
-      <div class="load-row filled-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00468</div><div class="load-route"><div><span class="lr-city">North Canton</span><span class="lr-st">OH</span></div><span class="lr-arr">→</span><div><span class="lr-city">Convoy</span><span class="lr-st">OH</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-filled">Filled</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>14'0"</strong></div><div class="lm-item">Height<strong>14'6"</strong></div>
-          <div class="lm-item">Miles<strong>190 mi</strong></div><div class="lm-item">Pilots<strong>2 / 2 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 21</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$550 each</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count" style="color:var(--green);">✓ All pilots confirmed</div>
-          <div class="load-actions"><button class="load-btn">View Details</button><button class="load-btn">Contact Pilots</button></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- APPLICANTS -->
-  <div class="panel" id="panel-applicants">
-    <div class="sec-head" style="margin-bottom:1rem;">
-      <div class="sec-title">Pilot <span>Applications</span></div>
-      <div style="font-size:.8rem;color:var(--muted);"><span id="appCount" style="color:var(--white);font-weight:600;">5</span> pending review</div>
-    </div>
-
-    <div style="background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-      <div style="font-size:.75rem;color:var(--muted);">Filtering for load:</div>
-      <select id="loadFilter" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.35rem .75rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;cursor:pointer;">
-        <option value="all">All Loads</option>
-        <option value="LL-00481">LL-00481 · Houston → OKC</option>
-        <option value="LL-00479">LL-00479 · Denver → SLC</option>
-      </select>
-      <div class="filter-tabs" style="margin-bottom:0;">
-        <span class="ft on" onclick="filterApps('all',this)">All</span>
-        <span class="ft" onclick="filterApps('pending',this)">Pending</span>
-        <span class="ft" onclick="filterApps('accepted',this)">Accepted</span>
-        <span class="ft" onclick="filterApps('declined',this)">Declined</span>
-      </div>
-    </div>
-
-    <div class="applicant-grid" id="applicantGrid">
-      <!-- Rendered by JS -->
-    </div>
-  </div>
-
-  <!-- POST A LOAD -->
-  <div class="panel" id="panel-postload">
+  <!-- JOBS PANEL -->
+  <div class="panel" id="panel-jobs">
     <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">Post a <span>Load</span></div>
+      <div class="sec-title">My <span>Jobs</span></div>
+      <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">+ Find New Loads</a>
     </div>
-    <div class="post-form">
-      <div class="form-section-title">📍 Route Details</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Origin City</label><input type="text" id="pOriginCity" placeholder="e.g. North Canton"></div>
-        <div class="form-group"><label>Origin State</label><select id="pOriginState"><option value="">Select state...</option><option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Florida</option><option>Georgia</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Michigan</option><option>Minnesota</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Virginia</option><option>Washington</option><option>Wisconsin</option><option>Wyoming</option></select></div>
-        <div class="form-group"><label>Destination City</label><input type="text" id="pDestCity" placeholder="e.g. Convoy"></div>
-        <div class="form-group"><label>Destination State</label><select id="pDestState"><option value="">Select state...</option><option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Florida</option><option>Georgia</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Michigan</option><option>Minnesota</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Virginia</option><option>Washington</option><option>Wisconsin</option><option>Wyoming</option></select></div>
-      </div>
 
-      <div class="form-section-title" style="margin-top:1.25rem;">📐 Load Dimensions</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Width</label><input type="text" id="pWidth" placeholder='e.g. 14&apos;0"'></div>
-        <div class="form-group"><label>Height</label><input type="text" id="pHeight" placeholder='e.g. 14&apos;6"'></div>
-        <div class="form-group"><label>Length</label><input type="text" id="pLength" placeholder='e.g. 120&apos;0"'></div>
-        <div class="form-group"><label>Weight (tons)</label><input type="text" id="pWeight" placeholder="e.g. 23.5"></div>
-        <div class="form-group"><label>Load Type</label><select id="pType"><option>Oversize</option><option>Overweight</option><option>Wide Load</option><option>Tall Load</option><option>Combination</option></select></div>
-      </div>
-      <div class="form-group"><label>Equipment / Load Description</label><input type="text" id="pEquipment" placeholder="e.g. CAT 988H Loader"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+      <button class="job-btn primary" onclick="filterJobs('all',this)">All</button>
+      <button class="job-btn" onclick="filterJobs('active',this)">In Progress</button>
+      <button class="job-btn" onclick="filterJobs('applied',this)">Applied</button>
+      <button class="job-btn" onclick="filterJobs('completed',this)">Completed</button>
+    </div>
 
-      <div class="form-section-title" style="margin-top:1.25rem;">🚩 Escort Requirements</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Pilots Needed</label><select id="pPilots"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div class="form-group"><label>Pay Per Pilot ($)</label><input type="number" id="pPay" placeholder="e.g. 550"></div>
-        <div class="form-group"><label>Move Date</label><input type="date" id="pDate" style="color-scheme:dark"></div>
-        <div class="form-group"><label>Start Time</label><input type="time" id="pTime" style="color-scheme:dark"></div>
+    <div class="job-list" id="jobsList">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No applications yet — apply to a load to get started</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">Find Loads →</a>
       </div>
-      <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
-
-      <div id="postMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
-      <button class="post-btn" id="postLoadBtn" onclick="submitLoad()">🚛 Post Load to Board</button>
     </div>
   </div>
 
-  <!-- PROFILE -->
+  <!-- EARNINGS PANEL -->
+  <div class="panel" id="panel-earnings">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">Earnings & <span>Payouts</span></div>
+    </div>
+
+    <div class="earnings-grid">
+      <div class="earnings-card">
+        <div class="ec-title">Total Earned (2026)</div>
+        <div class="ec-amount" id="totalEarned">$0</div>
+        <div class="ec-sub" id="totalEarnedSub">Complete jobs to start earning</div>
+        <div style="margin-top:1rem;display:flex;gap:.5rem;">
+          <button class="job-btn">📄 2025 1099-K</button>
+          <button class="job-btn">📊 Export Report</button>
+        </div>
+      </div>
+      <div class="payout-card">
+        <div class="ec-title" style="color:rgba(74,222,128,.5)">Available to Withdraw</div>
+        <div class="payout-amount" id="availableBalance">$0.00</div>
+        <div class="ec-sub" style="color:#555">Your LoadLeader wallet balance</div>
+        <div class="bank-row">🏦 <span id="bankInfo">No bank account connected yet</span></div>
+        <button class="withdraw-btn" onclick="showWithdrawInfo()">💸 Withdraw to Bank Account</button>
+        <div id="withdrawInfo" style="display:none;margin-top:.75rem;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);border-radius:6px;padding:.85rem;font-size:.8rem;color:#aaa;line-height:1.6;">
+          💳 Bank account connection is coming soon with our Stripe integration.<br>
+          For now coordinate payment directly with your carrier.<br>
+          <span style="color:var(--blue)">Email support@loadleaderservice.com to request early access.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TX TABLE -->
+    <div class="sec-head"><div class="sec-title">Transaction <span>History</span></div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div id="txTable">
+        <div class="empty-state" style="padding:2rem;">
+          <div class="empty-icon">💳</div>
+          <div class="empty-text">No transactions yet — your payment history will appear here after completing jobs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVED LOADS PANEL -->
+  <div class="panel" id="panel-saved">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">Saved <span>Loads</span></div>
+      <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">Browse Board</a>
+    </div>
+    <div class="saved-grid" id="savedGrid">
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-icon">♡</div>
+        <div class="empty-text">No saved loads yet — tap the heart icon on any load to save it here</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">Browse Loads →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PANEL -->
   <div class="panel" id="panel-profile">
-    <div class="sec-head" style="margin-bottom:1.5rem;"><div class="sec-title">Company <span>Profile</span></div></div>
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">My <span>Profile</span></div>
+    </div>
     <div class="profile-grid">
+
+      <!-- LEFT: Profile card -->
       <div>
         <div class="profile-card" style="margin-bottom:1rem;">
           <div class="profile-avatar" id="profileAvatar">--</div>
-          <div class="profile-name" id="profileName">Your Company</div>
-          <div class="profile-type">🚛 Carrier / Hauler</div>
+          <div class="profile-name" id="profileName">Your Name</div>
+          <div class="profile-type">🚩 Pilot Car Driver</div>
+          <div class="rating-row" id="ratingRow">
+            <span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span>
+            <span class="rating-num" id="ratingNum">No rating yet</span>
+          </div>
           <div class="profile-stats">
-            <div><div class="prs-val">18</div><div class="prs-label">Loads Posted</div></div>
-            <div><div class="prs-val">24</div><div class="prs-label">Pilots Hired</div></div>
-            <div><div class="prs-val">4.8</div><div class="prs-label">Rating</div></div>
-            <div><div class="prs-val">100%</div><div class="prs-label">Payment Rate</div></div>
+            <div><div class="ps-val" id="profileJobs">0</div><div class="ps-label">Jobs</div></div>
+            <div><div class="ps-val" id="profileStates">—</div><div class="ps-label">States</div></div>
+            <div><div class="ps-val" id="profileOnTime">—</div><div class="ps-label">On Time</div></div>
+          </div>
+          <div id="avatarUploadArea">
+            <button class="edit-profile-btn" onclick="document.getElementById('avatarInput').click()">📷 Change Photo</button>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+            <div id="avatarMsg" style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.3rem;display:none;"></div>
           </div>
         </div>
-      </div>
-      <div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1rem;">
-          <div style="font-weight:600;font-size:.9rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">Company Info</div>
-          <div class="form-grid">
-            <div class="form-group"><label>Company Name</label><input type="text" id="pfCompany" placeholder="Your company name"></div>
-            <div class="form-group"><label>Contact Name</label><input type="text" id="pfContact" placeholder="Your name"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="pfEmail" placeholder="email@company.com"></div>
-            <div class="form-group"><label>Phone</label><input type="tel" id="pfPhone" placeholder="(555) 000-0000"></div>
-            <div class="form-group"><label>Primary State</label><select id="pfState"><option>Select state...</option><option>Ohio</option><option>Texas</option><option>California</option></select></div>
-            <div class="form-group"><label>DOT Number</label><input type="text" id="pfDOT" placeholder="e.g. 1234567"></div>
+
+        <!-- Certifications -->
+        <div class="form-section">
+          <div class="fs-title">Certifications</div>
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Upload a photo of each certificate. Carriers see verified badges on your profile when documents are on file.</p>
+          <div class="cert-list" id="certList">
+
+            <!-- Pilot Car Cert -->
+            <div class="cert-item" id="cert-pilot">
+              <div class="cert-item-top">
+                <span class="cert-icon">📋</span>
+                <span class="cert-name">Pilot Car Certification</span>
+                <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-pilot" style="display:none">No expiry added</span>
+              <div class="cert-upload-area" id="upload-pilot">
+                <div class="cert-drop" id="drop-pilot">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-pilot">
+                  <img id="preview-img-pilot" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('pilot')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-pilot" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('pilot','Pilot Car Certification')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Driver License -->
+            <div class="cert-item" id="cert-license">
+              <div class="cert-item-top">
+                <span class="cert-icon">🚗</span>
+                <span class="cert-name">Driver's License (CDL)</span>
+                <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-license" style="display:none">No expiry added</span>
+              <div class="cert-upload-area" id="upload-license">
+                <div class="cert-drop" id="drop-license">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-license">
+                  <img id="preview-img-license" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('license')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-license" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('license','Driver License / CDL')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Insurance -->
+            <div class="cert-item" id="cert-insurance">
+              <div class="cert-item-top">
+                <span class="cert-icon">🛡️</span>
+                <span class="cert-name">Liability Insurance</span>
+                <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-insurance" style="display:none">No expiry added</span>
+              <div class="cert-upload-area" id="upload-insurance">
+                <div class="cert-drop" id="drop-insurance">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-insurance">
+                  <img id="preview-img-insurance" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('insurance')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-insurance" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('insurance','Liability Insurance')">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- OSHA -->
+            <div class="cert-item" id="cert-osha">
+              <div class="cert-item-top">
+                <span class="cert-icon">🔰</span>
+                <span class="cert-name">OSHA Safety Training</span>
+                <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-osha" style="display:none">No expiry added</span>
+              <div class="cert-upload-area" id="upload-osha">
+                <div class="cert-drop" id="drop-osha">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
+                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                </div>
+                <div class="cert-preview" id="preview-osha">
+                  <img id="preview-img-osha" src="" alt="Certificate">
+                  <button class="cert-preview-remove" onclick="removeCert('osha')">✕</button>
+                </div>
+                <div class="cert-expiry-row">
+                  <input type="date" id="expiry-osha" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('osha','OSHA Safety Training')">Save</button>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <div class="form-group"><label>About Your Company</label><textarea id="pfBio" rows="3" placeholder="Tell pilots about your company, the types of loads you haul, routes you run..."></textarea></div>
-          <button class="post-btn" onclick="saveCarrierProfile()">Save Profile</button>
+          <button class="add-cert-btn" onclick="addCustomCert()">+ Add Another Certificate</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Edit form -->
+      <div>
+        <div class="form-section">
+          <div class="fs-title">Personal Info</div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" id="pfFirstName" placeholder="First name"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" id="pfLastName" placeholder="Last name"></div>
+          </div>
+          <div class="form-group"><label>Email Address</label><input type="email" id="pfEmail" placeholder="your@email.com"></div>
+          <div class="form-group"><label>Phone Number</label><input type="tel" id="pfPhone" placeholder="(555) 000-0000"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Home State</label>
+              <select id="pfState">
+                <option value="">Select state...</option>
+                <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+                <option>California</option><option>Colorado</option><option>Connecticut</option>
+                <option>Florida</option><option>Georgia</option><option>Idaho</option>
+                <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+                <option>Kentucky</option><option>Louisiana</option><option>Michigan</option><option>Minnesota</option>
+                <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+                <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+                <option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option>
+                <option>Tennessee</option><option>Texas</option><option>Utah</option>
+                <option>Virginia</option><option>Washington</option><option>Wisconsin</option><option>Wyoming</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Years Experience</label>
+              <select id="pfExp">
+                <option>Less than 1 year</option><option>1-2 years</option><option>3-5 years</option>
+                <option>5-10 years</option><option>10+ years</option>
+              </select>
+            </div>
+          </div>
+          <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-title">Equipment & Coverage</div>
+          <div class="form-group"><label>Vehicle Type</label>
+            <select id="pfVehicle">
+              <option>Pickup Truck</option><option>SUV</option><option>Dedicated Pilot Car</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label>States You Cover</label>
+            <input type="text" id="pfCoverage" placeholder="e.g. OH, PA, WV, KY, IN">
+          </div>
+          <div class="form-group"><label>Equipment</label>
+            <input type="text" id="pfEquipment" placeholder="e.g. Height pole, CB radio, flags, lights">
+          </div>
+          <div class="form-group"><label>Bio / Notes for Carriers</label>
+            <textarea id="pfBio" rows="3" placeholder="Tell carriers about your experience, routes you know well, etc."></textarea>
+          </div>
+          <button class="save-btn" onclick="saveEquipment()">Save Equipment Info</button>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-title">Change Password</div>
+          <div class="form-group"><label>Current Password</label><input type="password" id="pwCurrent" placeholder="••••••••"></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="pwNew" placeholder="Min 8 characters"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="pwConfirm" placeholder="Re-enter new password"></div>
+          <div id="pwMsg" style="display:none;padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;"></div>
+          <button class="save-btn" onclick="changePassword()">Update Password</button>
         </div>
       </div>
     </div>
   </div>
 
-</div>
+</div><!-- end dash-wrap -->
 
-<!-- MOBILE NAV -->
+<!-- MOBILE BOTTOM NAV -->
 <div class="mobile-nav">
   <div class="mobile-nav-items">
     <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon">🏠</span><span class="mn-label">Home</span></button>
-    <button class="mn-item" onclick="showPanel('myloads',this)"><span class="mn-icon">🚛</span><span class="mn-label">Loads</span></button>
-    <button class="mn-item" onclick="showPanel('applicants',this)"><span class="mn-icon">👥</span><span class="mn-label">Pilots</span></button>
-    <button class="mn-item" onclick="showPanel('postload',this)"><span class="mn-icon">➕</span><span class="mn-label">Post</span></button>
-    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">🏢</span><span class="mn-label">Profile</span></button>
+    <button class="mn-item" onclick="showPanel('jobs',this)"><span class="mn-icon">🚛</span><span class="mn-label">Jobs</span></button>
+    <button class="mn-item" onclick="showPanel('earnings',this)"><span class="mn-icon">💰</span><span class="mn-label">Earnings</span></button>
+    <button class="mn-item" onclick="showPanel('saved',this)"><span class="mn-icon">♡</span><span class="mn-label">Saved</span></button>
+    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">👤</span><span class="mn-label">Profile</span></button>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, serverTimestamp, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
@@ -520,272 +668,419 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentUser = null;
-let userProfile = null;
-let allApplications = [];
-
-// Auth check
+// Auth state check — redirect to login if not signed in
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href = 'login.html'; return; }
-  currentUser = user;
+  // Demo mode — show dashboard even without login for preview
+  const isDemo = window.location.search.includes('demo') || !window.location.hostname.includes('netlify');
+
+  if (!user && !isDemo) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Hide loading screen
   document.getElementById('loadingScreen').style.display = 'none';
 
+  if (!user) {
+    // Demo placeholder data
+    document.getElementById('navAvatar').textContent = 'JD';
+    document.getElementById('navName').textContent = 'Jesse';
+    document.getElementById('welcomeName').textContent = 'Jesse';
+    document.getElementById('profileAvatar').textContent = 'JD';
+    document.getElementById('profileName').textContent = 'Jesse D.';
+    document.getElementById('pfFirstName').value = 'Jesse';
+    document.getElementById('pfEmail').value = 'jesse@loadleader.com';
+    return;
+  }
+
+  // Load user profile from Firestore
   try {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
-    userProfile = userDoc.exists() ? userDoc.data() : {};
-    const firstName = userProfile.firstName || user.displayName?.split(' ')[0] || 'Carrier';
-    const lastName = userProfile.lastName || '';
+    const data = userDoc.exists() ? userDoc.data() : {};
+    const firstName = data.firstName || user.displayName?.split(' ')[0] || 'Pilot';
+    const lastName = data.lastName || '';
     const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
 
+    // Update UI with real user data
     document.getElementById('navAvatar').textContent = initials;
     document.getElementById('navName').textContent = firstName;
     document.getElementById('welcomeName').textContent = firstName;
     document.getElementById('profileAvatar').textContent = initials;
-    document.getElementById('profileName').textContent = userProfile.company || `${firstName} ${lastName}`.trim();
-    document.getElementById('pfContact').value = `${firstName} ${lastName}`.trim();
+    document.getElementById('profileName').textContent = `${firstName} ${lastName}`.trim();
+
+    // Pre-fill profile form
+    document.getElementById('pfFirstName').value = firstName;
+    document.getElementById('pfLastName').value = lastName;
     document.getElementById('pfEmail').value = user.email || '';
-    document.getElementById('pfPhone').value = userProfile.phone || '';
-    document.getElementById('pfCompany').value = userProfile.company || '';
-    document.getElementById('pfBio').value = userProfile.bio || '';
+    document.getElementById('pfPhone').value = data.phone || '';
+    if (data.state) {
+      const stateSelect = document.getElementById('pfState');
+      for (let opt of stateSelect.options) {
+        if (opt.value === data.state || opt.text === data.state) { opt.selected = true; break; }
+      }
+    }
+    document.getElementById('pfCoverage').value = data.coverage || '';
+    document.getElementById('pfEquipment').value = data.equipment || '';
+    document.getElementById('pfBio').value = data.bio || '';
+    loadSavedCerts(data);
 
     // Load real applications from Firestore
-    await loadApplications();
-  } catch(e) { console.error(e); }
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const appsSnap = await getDocs(query(collection(db, 'applications'), where('pilotId', '==', user.uid)));
+    const apps = [];
+    appsSnap.forEach(d => apps.push(d.data()));
+
+    const activeJobs = apps.filter(a => a.status === 'accepted');
+    const pendingApps = apps.filter(a => a.status === 'pending');
+    const completedJobs = apps.filter(a => a.status === 'completed');
+
+    // Update stats with real data
+    document.getElementById('statActiveJobs').textContent = activeJobs.length;
+    document.getElementById('statActiveJobsSub').textContent = activeJobs.length > 0 ? 'In progress right now' : 'No active jobs yet';
+    document.getElementById('statJobs').textContent = completedJobs.length;
+    document.getElementById('statJobsSub').textContent = completedJobs.length > 0 ? 'Since joining LoadLeader' : 'Complete jobs to build history';
+    document.getElementById('profileJobs').textContent = completedJobs.length;
+
+    // Update welcome message
+    if (activeJobs.length > 0 || pendingApps.length > 0) {
+      document.getElementById('welcomeSub').textContent =
+        `${activeJobs.length} active job${activeJobs.length !== 1 ? 's' : ''} · ${pendingApps.length} pending application${pendingApps.length !== 1 ? 's' : ''}`;
+    }
+
+    // Show real jobs in overview
+    if (apps.length > 0) {
+      const jobList = document.getElementById('overviewJobs');
+      jobList.innerHTML = apps.slice(0, 3).map(a => `
+        <div class="job-card ${a.status === 'accepted' ? 'active-job' : a.status === 'completed' ? 'completed-job' : 'pending-job'}">
+          <div class="job-left">
+            <div class="job-route"><div><span class="job-city">${a.loadRoute?.split('→')[0]?.trim() || 'Origin'}</span></div><span class="job-arr">→</span><div><span class="job-city">${a.loadRoute?.split('→')[1]?.trim() || 'Destination'}</span></div></div>
+            <div class="job-meta">
+              <div class="job-meta-item">Date <strong>${a.loadDate || '—'}</strong></div>
+              <div class="job-meta-item">Carrier <strong>${a.carrier || '—'}</strong></div>
+            </div>
+          </div>
+          <div class="job-right">
+            <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
+            <span class="badge ${a.status === 'accepted' ? 'badge-active' : a.status === 'completed' ? 'badge-completed' : 'badge-applied'}">${a.status === 'accepted' ? 'Accepted' : a.status === 'completed' ? 'Completed' : 'Applied'}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // Show real saved loads
+    const savedSnap = await getDocs(query(collection(db, 'savedLoads'), where('pilotId', '==', user.uid)));
+    if (!savedSnap.empty) {
+      document.getElementById('savedGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">♥</div><div class="empty-text">You have ' + savedSnap.size + ' saved load' + (savedSnap.size !== 1 ? 's' : '') + '</div><a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">View on Board →</a></div>';
+    }
+
+  } catch(e) {
+    console.error('Error loading profile:', e);
+  }
 });
 
-async function loadApplications() {
+// Logout
+window.handleLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'login.html';
+};
+
+// Save profile
+window.saveProfile = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const btn = document.querySelector('#panel-profile .save-btn');
+  btn.innerHTML = '<span class="spinner"></span>Saving...';
+  btn.disabled = true;
   try {
-    // In production, filter by carrierId. For now load all pending apps.
-    const appsSnap = await getDocs(query(collection(db, 'applications'), orderBy('appliedAt', 'desc')));
-    allApplications = [];
-    appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
-    renderApplications(allApplications);
-    renderOverviewApplicants(allApplications.slice(0, 3));
-    const pending = allApplications.filter(a => a.status === 'pending').length;
-    document.getElementById('newAppsCount').textContent = pending;
-    document.getElementById('appCount').textContent = pending;
+    const firstName = document.getElementById('pfFirstName').value.trim();
+    const lastName = document.getElementById('pfLastName').value.trim();
+    await updateDoc(doc(db, 'users', user.uid), {
+      firstName,
+      lastName,
+      phone: document.getElementById('pfPhone').value.trim(),
+      state: document.getElementById('pfState').value,
+    });
+    await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+    btn.innerHTML = '✓ Saved!';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = 'Save Changes'; btn.style.background = ''; btn.disabled = false; }, 2000);
   } catch(e) {
-    // Demo data if Firestore has nothing yet
-    renderDemoApplications();
-  }
-}
-
-function renderDemoApplications() {
-  const demo = [
-    { id:'demo1', pilotName:'Mike Reynolds', pilotEmail:'mike@email.com', pilotPhone:'555-334-9021', pilotRating:4.9, pilotJobs:43, pilotState:'Texas', message:"I've run this exact route many times. Very familiar with the road conditions and permit requirements.", availFrom:'2026-04-20', availTo:'2026-04-22', status:'pending', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-    { id:'demo2', pilotName:'Sara Lively', pilotEmail:'sara@email.com', pilotPhone:'555-778-4456', pilotRating:4.8, pilotJobs:28, pilotState:'Oklahoma', message:'Available and ready. Have all required equipment.', availFrom:'2026-04-21', availTo:'2026-04-21', status:'pending', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-    { id:'demo3', pilotName:'Ryan Teague', pilotEmail:'ryan@email.com', pilotPhone:'931-241-3838', pilotRating:5.0, pilotJobs:67, pilotState:'Ohio', message:'Top rated pilot, 5 star rating, 67 jobs completed. Available immediately.', availFrom:'2026-04-19', availTo:'2026-04-22', status:'pending', loadId:'LL-00479', loadRoute:'Denver CO → Salt Lake City UT', loadPay:740, loadDate:'Apr 19', carrier:'Demo Carrier' },
-    { id:'demo4', pilotName:'Jake Torres', pilotEmail:'jake@email.com', pilotPhone:'555-210-4832', pilotRating:4.7, pilotJobs:15, pilotState:'Colorado', message:'', availFrom:'2026-04-19', availTo:'2026-04-20', status:'accepted', loadId:'LL-00479', loadRoute:'Denver CO → Salt Lake City UT', loadPay:740, loadDate:'Apr 19', carrier:'Demo Carrier' },
-    { id:'demo5', pilotName:'Dave Patterson', pilotEmail:'dave@email.com', pilotPhone:'555-442-7731', pilotRating:4.6, pilotJobs:22, pilotState:'Texas', message:'Experienced with oversize loads across TX and OK.', availFrom:'2026-04-21', availTo:'2026-04-21', status:'declined', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-  ];
-  allApplications = demo;
-  renderApplications(demo);
-  renderOverviewApplicants(demo.slice(0, 3));
-}
-
-function renderOverviewApplicants(apps) {
-  const container = document.getElementById('overviewApplicants');
-  if (!apps.length) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No applications yet. Post a load to start receiving pilots.</div></div>'; return; }
-  container.innerHTML = `<div class="applicant-grid">${apps.map(a => buildAppCard(a)).join('')}</div>`;
-}
-
-function renderApplications(apps) {
-  const grid = document.getElementById('applicantGrid');
-  if (!apps.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No applications yet.</div></div>'; return; }
-  grid.innerHTML = apps.map(a => buildAppCard(a)).join('');
-}
-
-function buildAppCard(a) {
-  const initials = a.pilotName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-  const stars = '★'.repeat(Math.round(a.pilotRating)) + '☆'.repeat(5-Math.round(a.pilotRating));
-  const isAccepted = a.status === 'accepted';
-  const isDeclined = a.status === 'declined';
-
-  return `
-    <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" id="card-${a.id}">
-      <div class="ac-top">
-        <div class="ac-load-ref">${a.loadId} · ${a.loadDate}</div>
-        <span class="badge ${isAccepted?'badge-active':isDeclined?'badge-draft':'badge-pending'}">${isAccepted?'Accepted':isDeclined?'Declined':'Pending'}</span>
-      </div>
-      <div class="pilot-info">
-        <div class="pilot-av">${initials}</div>
-        <div>
-          <div class="pilot-name">${a.pilotName}</div>
-          <div class="pilot-rating">${stars} <span style="color:var(--muted)">${a.pilotRating} rating</span></div>
-          <div class="pilot-meta">${a.pilotState} · Pilot Car Driver</div>
-          <div class="pilot-badges"><span class="pb">✓ Certified</span><span class="pb">✓ Insured</span><span class="pb">✓ CDL</span></div>
-        </div>
-      </div>
-      <div class="pilot-stats">
-        <div class="ps-item"><div class="ps-val">${a.pilotJobs}</div><div class="ps-label">Jobs</div></div>
-        <div class="ps-item"><div class="ps-val">${a.pilotRating}</div><div class="ps-label">Rating</div></div>
-        <div class="ps-item"><div class="ps-val">100%</div><div class="ps-label">On Time</div></div>
-      </div>
-      ${a.message ? `<div class="pilot-message">${a.message}</div>` : ''}
-      <div class="avail-row">
-        <div class="avail-item"><div class="avail-label">Route</div><div class="avail-val" style="font-size:.72rem">${a.loadRoute}</div></div>
-        <div class="avail-item"><div class="avail-label">Pay</div><div class="avail-val" style="color:var(--yellow)">$${a.loadPay}</div></div>
-      </div>
-      <div class="ac-phone-reveal ${isAccepted?'show':''}" id="phone-${a.id}">
-        <div class="ac-phone-label">📞 Pilot Phone Number</div>
-        <div class="ac-phone-num">${a.pilotPhone||'Not provided'}</div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Contact ${a.pilotName.split(' ')[0]} directly to coordinate</div>
-      </div>
-      <div class="ac-actions">
-        ${isAccepted
-          ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button><button class="ac-btn decline" onclick="decisionApp('${a.id}','declined','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}')">Undo</button>`
-          : isDeclined
-          ? `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">Reconsider</button><button class="ac-btn declined-state" disabled>✗ Declined</button>`
-          : `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">✓ Accept Pilot</button>
-             <button class="ac-btn decline" onclick="decisionApp('${a.id}','declined','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}')">✗ Decline</button>`
-        }
-      </div>
-    </div>`;
-}
-
-window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, carrier, pilotPhone) => {
-  const card = document.getElementById('card-' + appId);
-  try {
-    // Update Firestore if real app
-    if (!appId.startsWith('demo')) {
-      await updateDoc(doc(db, 'applications', appId), { status: decision, decidedAt: serverTimestamp() });
-    }
-
-    // Update local data
-    const app = allApplications.find(a => a.id === appId);
-    if (app) app.status = decision;
-
-    // Send email notification
-    try {
-      await fetch('https://load-leader.onrender.com/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: decision,
-          pilotName, pilotEmail, route, pay, carrier,
-          carrierPhone: userProfile?.phone || '',
-        })
-      });
-    } catch(e) { console.log('Email notify:', e); }
-
-    // Re-render card
-    card.outerHTML = buildAppCard(allApplications.find(a => a.id === appId));
-
-    // Show phone number if accepted
-    if (decision === 'accepted') {
-      setTimeout(() => {
-        const phone = document.getElementById('phone-' + appId);
-        if (phone) phone.classList.add('show');
-      }, 100);
-    }
-
-    showToast(decision === 'accepted' ? `✓ ${pilotName.split(' ')[0]} accepted! Their phone number is now visible.` : `${pilotName.split(' ')[0]} has been declined.`);
-  } catch(e) {
-    console.error('Decision error:', e);
-    showToast('Error updating application. Try again.');
+    btn.innerHTML = 'Save Changes';
+    btn.disabled = false;
+    alert('Could not save. Try again.');
   }
 };
 
-window.submitLoad = async () => {
-  const btn = document.getElementById('postLoadBtn');
-  const msgBox = document.getElementById('postMsgBox');
-  const originCity = document.getElementById('pOriginCity').value.trim();
-  const destCity = document.getElementById('pDestCity').value.trim();
-  const originState = document.getElementById('pOriginState').value;
-  const destState = document.getElementById('pDestState').value;
-  const width = document.getElementById('pWidth').value.trim();
-  const height = document.getElementById('pHeight').value.trim();
-  const pay = document.getElementById('pPay').value.trim();
-  const date = document.getElementById('pDate').value;
+// Save equipment
+window.saveEquipment = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    await updateDoc(doc(db, 'users', user.uid), {
+      coverage: document.getElementById('pfCoverage').value,
+      equipment: document.getElementById('pfEquipment').value,
+      bio: document.getElementById('pfBio').value,
+      vehicle: document.getElementById('pfVehicle').value,
+    });
+    const btn = document.querySelectorAll('#panel-profile .save-btn')[1];
+    btn.innerHTML = '✓ Saved!';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = 'Save Equipment Info'; btn.style.background = ''; }, 2000);
+  } catch(e) {
+    alert('Could not save. Try again.');
+  }
+};
 
-  if (!originCity || !destCity || !originState || !destState) {
-    msgBox.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;';
-    msgBox.textContent = 'Please fill in origin and destination.'; return;
+// Panel switching
+// ── CERTIFICATIONS ──
+window.toggleCert = (id) => {
+  const item = document.getElementById('cert-' + id);
+  const isExpanded = item.classList.contains('expanded');
+  // Close all others
+  document.querySelectorAll('.cert-item').forEach(i => i.classList.remove('expanded'));
+  document.querySelectorAll('.cert-expand-btn').forEach(b => b.textContent = '+ Add');
+  if (!isExpanded) {
+    item.classList.add('expanded');
+    item.querySelector('.cert-expand-btn').textContent = '✕ Close';
+  }
+};
+
+window.handleCertFile = (id, input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('File too large — max 5MB'); return; }
+  const preview = document.getElementById('preview-' + id);
+  const img = document.getElementById('preview-img-' + id);
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  } else {
+    img.src = '';
+    preview.style.display = 'block';
+    img.style.display = 'none';
+    preview.innerHTML += '<div style="padding:.75rem;background:var(--mid);border-radius:6px;font-size:.8rem;color:#aaa;text-align:center;">📄 ' + file.name + '</div>';
+  }
+};
+
+window.removeCert = (id) => {
+  document.getElementById('preview-' + id).style.display = 'none';
+  document.getElementById('preview-img-' + id).src = '';
+  document.getElementById('cert-' + id).querySelector('input[type=file]').value = '';
+};
+
+window.saveCert = async (id, name) => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const expiry = document.getElementById('expiry-' + id).value;
+  const fileInput = document.getElementById('cert-' + id).querySelector('input[type=file]');
+  const hasFile = fileInput.files.length > 0;
+
+  if (!hasFile && !expiry) {
+    alert('Please upload a certificate image or enter an expiry date.');
+    return;
   }
 
+  const btn = document.getElementById('cert-' + id).querySelector('.cert-save-btn');
+  btn.innerHTML = '<span class="spinner"></span>';
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Posting...';
 
   try {
-    const loadData = {
-      carrierId: currentUser.uid,
-      carrierName: userProfile?.company || userProfile?.firstName || 'Carrier',
-      carrierPhone: userProfile?.phone || '',
-      from: originCity, fromSt: originState,
-      to: destCity, toSt: destState,
-      width, height,
-      weight: document.getElementById('pWeight').value,
-      type: document.getElementById('pType').value,
-      equipment: document.getElementById('pEquipment').value,
-      pilots: parseInt(document.getElementById('pPilots').value),
-      pay: parseFloat(pay) || 0,
-      date, time: document.getElementById('pTime').value,
-      notes: document.getElementById('pNotes').value,
-      status: 'active',
-      postedAt: serverTimestamp()
+    // Save cert metadata to Firestore
+    const certData = {
+      name,
+      expiry: expiry || '',
+      hasFile,
+      uploadedAt: new Date().toISOString(),
+      status: 'uploaded'
     };
 
-    await addDoc(collection(db, 'loads'), loadData);
+    const { doc: firestoreDoc, updateDoc: firestoreUpdate } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await firestoreUpdate(firestoreDoc(db, 'users', user.uid), {
+      ['cert_' + id]: certData
+    });
 
+    // Update UI
+    const statusEl = document.getElementById('status-' + id);
+    const expEl = document.getElementById('exp-' + id);
+    statusEl.textContent = 'Uploaded ✓';
+    statusEl.className = 'cert-status cert-valid';
+    document.getElementById('cert-' + id).classList.add('has-file');
+    if (expiry) {
+      const d = new Date(expiry);
+      expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+    }
+    const expandBtn = document.getElementById('cert-' + id).querySelector('.cert-expand-btn');
+    expandBtn.textContent = '✓ Saved';
+    expandBtn.style.color = 'var(--green)';
+    expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+    document.getElementById('cert-' + id).classList.remove('expanded');
+    document.getElementById('upload-' + id).style.display = 'none';
+
+    btn.innerHTML = 'Save';
     btn.disabled = false;
-    btn.innerHTML = '🚛 Post Load to Board';
-    msgBox.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;';
-    msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
-
-    // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pPay','pNotes'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('pDate').value = '';
-
-    showToast('✓ Load posted to board successfully!');
-    setTimeout(() => showPanel('myloads', document.querySelectorAll('.nav-tab')[1]), 2000);
   } catch(e) {
+    btn.innerHTML = 'Save';
     btn.disabled = false;
-    btn.innerHTML = '🚛 Post Load to Board';
-    msgBox.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;';
-    msgBox.textContent = 'Could not post load. Try again.';
+    alert('Could not save. Try again.');
   }
 };
 
-window.saveCarrierProfile = async () => {
-  if (!currentUser) return;
+window.addCustomCert = () => {
+  const name = prompt('Certificate name:');
+  if (!name) return;
+  const id = 'custom_' + Date.now();
+  const item = document.createElement('div');
+  item.className = 'cert-item';
+  item.id = 'cert-' + id;
+  item.innerHTML = `
+    <span class="cert-icon">📄</span>
+    <span class="cert-name">${name}</span>
+    <span class="cert-exp" id="exp-${id}">No expiry added</span>
+    <span class="cert-status cert-missing" id="status-${id}">Not uploaded</span>
+    <button class="cert-expand-btn" onclick="toggleCert('${id}')">+ Add</button>
+    <div class="cert-upload-area" id="upload-${id}">
+      <div class="cert-drop" id="drop-${id}">
+        <input type="file" accept="image/*,.pdf" onchange="handleCertFile('${id}',this)">
+        <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop</div>
+      </div>
+      <div class="cert-preview" id="preview-${id}" style="display:none">
+        <img id="preview-img-${id}" src="" alt="Certificate">
+        <button class="cert-preview-remove" onclick="removeCert('${id}')">✕</button>
+      </div>
+      <div class="cert-expiry-row">
+        <input type="date" id="expiry-${id}" style="color-scheme:dark">
+        <button class="cert-save-btn" onclick="saveCert('${id}','${name}')">Save</button>
+      </div>
+    </div>`;
+  document.getElementById('certList').appendChild(item);
+  toggleCert(id);
+};
+
+// Load saved certs on profile load
+async function loadSavedCerts(data) {
+  const certIds = ['pilot','license','insurance','osha'];
+  certIds.forEach(id => {
+    const cert = data['cert_' + id];
+    if (cert) {
+      const statusEl = document.getElementById('status-' + id);
+      const expEl = document.getElementById('exp-' + id);
+      const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+      if (statusEl) {
+        statusEl.textContent = 'Uploaded ✓';
+        statusEl.className = 'cert-status cert-valid';
+      }
+      if (expEl && cert.expiry) {
+        const d = new Date(cert.expiry);
+        expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+      }
+      if (expandBtn) {
+        expandBtn.textContent = '✓ On file';
+        expandBtn.style.color = 'var(--green)';
+        expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+      }
+      document.getElementById('cert-' + id)?.classList.add('has-file');
+    }
+  });
+}
+
+// Notification panel toggle
+window.toggleNotifPanel = () => {
+  const panel = document.getElementById('notifPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+};
+document.addEventListener('click', (e) => {
+  const btn = document.getElementById('notifBtn');
+  const panel = document.getElementById('notifPanel');
+  if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
+});
+
+// Avatar upload (preview only for now — Firebase Storage needed for persistence)
+window.handleAvatarUpload = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    const msg = document.getElementById('avatarMsg');
+    msg.textContent = 'File too large — max 2MB';
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const av = document.getElementById('profileAvatar');
+    av.style.backgroundImage = `url(${e.target.result})`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+    av.textContent = '';
+    const navAv = document.getElementById('navAvatar');
+    if (navAv) { navAv.style.backgroundImage = `url(${e.target.result})`; navAv.style.backgroundSize = 'cover'; navAv.textContent = ''; }
+    const msg = document.getElementById('avatarMsg');
+    msg.textContent = '✓ Photo updated (session only — full upload coming soon)';
+    msg.style.display = 'block';
+    msg.style.color = 'var(--muted)';
+  };
+  reader.readAsDataURL(file);
+};
+
+// Change password
+window.changePassword = async () => {
+  const current = document.getElementById('pwCurrent').value;
+  const newPw = document.getElementById('pwNew').value;
+  const confirm = document.getElementById('pwConfirm').value;
+  const msg = document.getElementById('pwMsg');
+
+  if (!current || !newPw || !confirm) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'Please fill in all password fields.'; return;
+  }
+  if (newPw.length < 8) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'New password must be at least 8 characters.'; return;
+  }
+  if (newPw !== confirm) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'New passwords do not match.'; return;
+  }
+  const btn = document.querySelector('#panel-profile .form-section:last-child .save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Updating...';
   try {
-    await setDoc(doc(db, 'users', currentUser.uid), {
-      company: document.getElementById('pfCompany').value,
-      phone: document.getElementById('pfPhone').value,
-      bio: document.getElementById('pfBio').value,
-      accountType: 'carrier'
-    }, { merge: true });
-    showToast('✓ Profile saved!');
-  } catch(e) { showToast('Error saving profile.'); }
+    const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, current);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPw);
+    msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = '✓ Password updated successfully!';
+    document.getElementById('pwCurrent').value = '';
+    document.getElementById('pwNew').value = '';
+    document.getElementById('pwConfirm').value = '';
+  } catch(e) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = e.code === 'auth/wrong-password' ? 'Current password is incorrect.' : 'Could not update password. Try again.';
+  }
+  btn.disabled = false;
+  btn.innerHTML = 'Update Password';
+};
+
+// Withdraw info toggle
+window.showWithdrawInfo = () => {
+  const el = document.getElementById('withdrawInfo');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
 window.showPanel = (name, el) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  document.querySelectorAll('.nav-tab, .mn-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mn-item').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
 };
 
-window.filterApps = (status, btn) => {
-  document.querySelectorAll('.filter-tabs .ft').forEach(f => f.classList.remove('on'));
-  btn.classList.add('on');
-  const filtered = status === 'all' ? allApplications : allApplications.filter(a => a.status === status);
-  renderApplications(filtered);
+window.filterJobs = (type, btn) => {
+  document.querySelectorAll('#panel-jobs .job-btn').forEach(b => b.classList.remove('primary'));
+  btn.classList.add('primary');
 };
-
-window.filterLoadStatus = (status, btn) => {
-  document.querySelectorAll('.filter-tabs .ft').forEach(f => f.classList.remove('on'));
-  btn.classList.add('on');
-};
-
-window.handleLogout = async () => { await signOut(auth); window.location.href = 'login.html'; };
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
-}
 </script>
 </body>
 </html>
