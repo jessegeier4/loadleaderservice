@@ -328,25 +328,8 @@ select option{background:var(--mid);}
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
-  authDomain: "load-leader.firebaseapp.com",
-  projectId: "load-leader",
-  storageBucket: "load-leader.firebasestorage.app",
-  messagingSenderId: "411492756195",
-  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
-
+<script>
+// ── UI FUNCTIONS (non-Firebase, available immediately) ──
 let selectedType = 'pilot';
 
 function switchTab(tab) {
@@ -356,20 +339,17 @@ function switchTab(tab) {
   document.getElementById('forgotPanel').classList.remove('active');
   clearMsgs();
 }
-
 function selectType(type) {
   selectedType = type;
   document.getElementById('typePilot').classList.toggle('selected', type==='pilot');
   document.getElementById('typeCarrier').classList.toggle('selected', type==='carrier');
 }
-
 function togglePw(id, btn) {
   const inp = document.getElementById(id);
   const isText = inp.type === 'text';
   inp.type = isText ? 'password' : 'text';
   btn.textContent = isText ? '👁' : '🙈';
 }
-
 function checkStrength(pw) {
   const wrap = document.getElementById('strengthWrap');
   const fill = document.getElementById('strengthFill');
@@ -395,24 +375,63 @@ function checkStrength(pw) {
   label.textContent = l.t;
   label.style.color = l.bg;
 }
-
 function showMsg(id, text, type) {
   const el = document.getElementById(id);
   el.textContent = text;
   el.className = `msg-box show ${type}`;
 }
-
 function clearMsgs() {
   document.querySelectorAll('.msg-box').forEach(m => { m.className='msg-box'; m.textContent=''; });
 }
-
 function setLoading(btnId, loading, label) {
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
   btn.innerHTML = loading ? '<span class="spinner"></span>Please wait...' : label;
 }
+function showForgot(e) {
+  e.preventDefault();
+  document.getElementById('loginPanel').classList.remove('active');
+  document.getElementById('forgotPanel').classList.add('active');
+}
+function hideForgot() {
+  document.getElementById('forgotPanel').classList.remove('active');
+  document.getElementById('loginPanel').classList.add('active');
+  clearMsgs();
+}
 
-function handleLogin() {
+
+// Check URL param immediately
+const _params = new URLSearchParams(window.location.search);
+if (_params.get('tab') === 'signup') {
+  document.addEventListener('DOMContentLoaded', () => {
+    switchTab('signup');
+    setTimeout(() => { const f = document.getElementById('firstName'); if(f) f.focus(); }, 50);
+  });
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
+  authDomain: "load-leader.firebaseapp.com",
+  projectId: "load-leader",
+  storageBucket: "load-leader.firebasestorage.app",
+  messagingSenderId: "411492756195",
+  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+
+
+async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pw = document.getElementById('loginPassword').value;
   clearMsgs();
@@ -441,7 +460,7 @@ function handleLogin() {
   }
 }
 
-function handleSignup() {
+async function handleSignup() {
   const first = document.getElementById('firstName').value.trim();
   const last = document.getElementById('lastName').value.trim();
   const email = document.getElementById('signupEmail').value.trim();
@@ -488,7 +507,7 @@ function handleSignup() {
   }
 }
 
-function handleForgot() {
+async function handleForgot() {
   const email = document.getElementById('forgotEmail').value.trim();
   if (!email || !email.includes('@')) { showMsg('forgotMsg','Please enter a valid email address.','error'); return; }
   const btn = document.querySelector('#forgotPanel .submit-btn');
@@ -506,17 +525,7 @@ function handleForgot() {
   }
 }
 
-function showForgot(e) {
-  e.preventDefault();
-  document.getElementById('loginPanel').classList.remove('active');
-  document.getElementById('forgotPanel').classList.add('active');
-}
 
-function hideForgot() {
-  document.getElementById('forgotPanel').classList.remove('active');
-  document.getElementById('loginPanel').classList.add('active');
-  clearMsgs();
-}
 
 async function socialAuth(providerName) {
   const btn = event.currentTarget;
@@ -562,32 +571,19 @@ async function resendVerification() {
   }
 }
 
-function showAuthCard() {
-  document.getElementById('verifyScreen').style.display = 'none';
-  document.getElementById('authCard').style.display = 'block';
-  switchTab('signup');
-}
 
-// Expose functions to HTML onclick handlers
-window.switchTab = switchTab;
-window.selectType = selectType;
-window.togglePw = togglePw;
-window.checkStrength = checkStrength;
+
+// Expose Firebase functions to HTML onclick handlers
 window.handleLogin = handleLogin;
 window.handleSignup = handleSignup;
 window.handleForgot = handleForgot;
-window.showForgot = showForgot;
-window.hideForgot = hideForgot;
 window.socialAuth = socialAuth;
 window.resendVerification = resendVerification;
-window.showAuthCard = showAuthCard;
 
 window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('tab') === 'signup') {
-    switchTab('signup');
-  } else {
-    document.getElementById('loginEmail').focus();
+  if (!new URLSearchParams(window.location.search).get('tab')) {
+    const el = document.getElementById('loginEmail');
+    if (el) el.focus();
   }
 });
 </script>
