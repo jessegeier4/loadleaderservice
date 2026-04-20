@@ -434,6 +434,7 @@ select option{background:var(--mid);}
       <div class="form-grid">
         <div class="form-group"><label>Width</label><input type="text" id="pWidth" placeholder='e.g. 14&apos;0"'></div>
         <div class="form-group"><label>Height</label><input type="text" id="pHeight" placeholder='e.g. 14&apos;6"'></div>
+        <div class="form-group"><label>Length</label><input type="text" id="pLength" placeholder='e.g. 120&apos;0"'></div>
         <div class="form-group"><label>Weight (tons)</label><input type="text" id="pWeight" placeholder="e.g. 23.5"></div>
         <div class="form-group"><label>Load Type</label><select id="pType"><option>Oversize</option><option>Overweight</option><option>Wide Load</option><option>Tall Load</option><option>Combination</option></select></div>
       </div>
@@ -732,7 +733,7 @@ window.submitLoad = async () => {
     msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
 
     // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pWeight','pEquipment','pPay','pNotes'].forEach(id => document.getElementById(id).value = '');
+    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pPay','pNotes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');

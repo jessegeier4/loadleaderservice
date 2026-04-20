@@ -439,6 +439,7 @@ async function fetchLoads() {
           type: data.type || 'Oversize',
           width: data.width || '',
           height: data.height || '',
+          length: data.length || '',
           miles: data.miles || 0,
           pilots: data.pilots || 1,
           pay: data.pay || 0,
@@ -506,6 +507,7 @@ function renderLoads() {
       <div class="card-grid">
         <div><div class="cg-label">Width</div><div class="cg-val">${l.width}</div></div>
         <div><div class="cg-label">Height</div><div class="cg-val">${l.height}</div></div>
+        ${l.length ? `<div><div class="cg-label">Length</div><div class="cg-val">${l.length}</div></div>` : ''}
         <div><div class="cg-label">Miles</div><div class="cg-val">${l.miles} mi</div></div>
         <div><div class="cg-label">Pilots</div><div class="cg-val">${l.pilots} needed</div></div>
         <div><div class="cg-label">Type</div><div class="cg-val">${l.type}</div></div>
