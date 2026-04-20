@@ -3,731 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoadLeader – Pilot Car Load Board</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>LoadLeader – The Future of Pilot Car Escorts</title>
+<meta name="description" content="LoadLeader is modernizing the oversize load industry. Connect certified pilot car escorts with carriers moving America's biggest freight.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#f5c400">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LoadLeader">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-  :root {
-    --black: #0a0a0a; --yellow: #f5c400; --yellow-dim: #c49a00;
-    --white: #f0ede6; --gray: #1a1a1a; --mid: #2e2e2e; --text-muted: #888;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+:root {
+  --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
+  --white:#f0ede6; --gray:#111; --mid:#1e1e1e; --card:#161616;
+  --border:#1e1e1e; --muted:#666; --green:#4ade80;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
 
-  /* NAV */
-  nav { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 3rem; border-bottom:1px solid #1f1f1f; position:sticky; top:0; background:rgba(10,10,10,0.95); backdrop-filter:blur(10px); z-index:200; }
-  .logo { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--yellow); }
-  .logo span { color:var(--white); }
-  nav ul { list-style:none; display:flex; gap:2.5rem; }
-  nav ul a { color:#aaa; text-decoration:none; font-size:.9rem; font-weight:500; letter-spacing:.5px; transition:color .2s; }
-  nav ul a:hover { color:var(--yellow); }
-  .nav-btns { display:flex; gap:.75rem; align-items:center; }
-  .btn-outline { border:1px solid #444; color:var(--white); padding:.5rem 1.25rem; border-radius:4px; text-decoration:none; font-size:.85rem; font-weight:500; transition:border-color .2s,color .2s; cursor:pointer; background:transparent; }
-  .btn-outline:hover { border-color:var(--yellow); color:var(--yellow); }
-  .btn-primary { background:var(--yellow); color:var(--black); padding:.5rem 1.25rem; border-radius:4px; text-decoration:none; font-size:.85rem; font-weight:600; transition:background .2s; border:none; cursor:pointer; }
-  .btn-primary:hover { background:var(--yellow-dim); }
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3rem;border-bottom:1px solid var(--border);position:fixed;top:0;width:100%;background:rgba(10,10,10,0.92);backdrop-filter:blur(16px);z-index:200;transition:padding .3s;}
+nav.scrolled{padding:.8rem 3rem;border-bottom-color:#222;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
+.logo span{color:var(--white);}
+.nav-links{display:flex;gap:2.5rem;}
+.nav-links a{color:#888;text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-right{display:flex;gap:.6rem;align-items:center;}
+.btn-ghost{background:transparent;border:1px solid #333;color:var(--white);padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.btn-yellow{background:var(--yellow);color:var(--black);padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .2s;text-decoration:none;border:none;}
+.btn-yellow:hover{background:var(--yellow-dim);}
 
-  /* HERO */
-  .hero { position:relative; padding:7rem 3rem 5rem; overflow:hidden; }
-  .hero-bg { position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(245,196,0,0.03) 80px,rgba(245,196,0,0.03) 81px),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(245,196,0,0.03) 80px,rgba(245,196,0,0.03) 81px); }
-  .hero-glow { position:absolute; top:-100px; left:-100px; width:600px; height:600px; background:radial-gradient(circle,rgba(245,196,0,0.08) 0%,transparent 70%); pointer-events:none; }
-  .hero-content { position:relative; max-width:700px; animation:fadeUp .8s ease both; }
-  .hero-badge { display:inline-block; background:rgba(245,196,0,0.12); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.75rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:.35rem .9rem; border-radius:100px; margin-bottom:1.5rem; }
-  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(3.5rem,8vw,6.5rem); line-height:.95; letter-spacing:1px; margin-bottom:1.5rem; }
-  .hero h1 em { color:var(--yellow); font-style:normal; display:block; }
-  .hero p { font-size:1.1rem; color:#999; line-height:1.7; max-width:500px; margin-bottom:2.5rem; }
-  .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
-  .btn-lg { padding:.85rem 2rem; font-size:1rem; font-weight:600; border-radius:5px; text-decoration:none; transition:all .2s; border:none; cursor:pointer; display:inline-block; }
-  .btn-lg.primary { background:var(--yellow); color:var(--black); }
-  .btn-lg.primary:hover { background:var(--yellow-dim); transform:translateY(-1px); }
-  .btn-lg.secondary { background:transparent; border:1px solid #333; color:var(--white); }
-  .btn-lg.secondary:hover { border-color:#666; }
-  .hero-stats { display:flex; gap:3rem; margin-top:4rem; padding-top:2rem; border-top:1px solid #1f1f1f; animation:fadeUp .8s .2s ease both; flex-wrap:wrap; }
-  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:var(--yellow); letter-spacing:1px; }
-  .stat-label { font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:.1rem; }
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 5rem;position:relative;overflow:hidden;}
+.hero-grid-bg{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(245,196,0,0.02) 80px,rgba(245,196,0,0.02) 81px),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(245,196,0,0.02) 80px,rgba(245,196,0,0.02) 81px);}
+.hero-glow-1{position:absolute;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(245,196,0,0.07) 0%,transparent 65%);pointer-events:none;}
+.hero-glow-2{position:absolute;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 65%);pointer-events:none;}
+.hero-content{position:relative;z-index:1;max-width:900px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);font-size:.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:.4rem 1rem;border-radius:100px;margin-bottom:2rem;animation:fadeUp .6s ease both;}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8rem);line-height:.9;letter-spacing:1px;margin-bottom:2rem;animation:fadeUp .6s .1s ease both;}
+.hero h1 .line1{display:block;color:var(--white);}
+.hero h1 .line2{display:block;color:var(--yellow);}
+.hero h1 .line3{display:block;color:var(--white);opacity:.35;}
+.hero-desc{font-size:1.15rem;color:#888;line-height:1.75;max-width:580px;margin-bottom:3rem;animation:fadeUp .6s .2s ease both;}
+.hero-desc strong{color:#ccc;font-weight:500;}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;animation:fadeUp .6s .3s ease both;}
+.cta-primary{background:var(--yellow);color:var(--black);padding:.9rem 2.25rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;border:none;display:inline-block;}
+.cta-primary:hover{background:var(--yellow-dim);transform:translateY(-2px);}
+.cta-secondary{background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.9rem 2.25rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.cta-secondary:hover{border-color:#444;}
+.hero-stats{display:flex;gap:3.5rem;flex-wrap:wrap;padding-top:2.5rem;border-top:1px solid var(--border);animation:fadeUp .6s .4s ease both;}
+.hs-num{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.hs-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:.2rem;}
 
-  /* AI SMART SEARCH */
-  .ai-search-section { background:var(--gray); padding:2.5rem 3rem; border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
-  .ai-label-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.3rem; font-size:.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--yellow); font-weight:600; }
-  .ai-tag { background:rgba(245,196,0,0.15); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.65rem; padding:.15rem .55rem; border-radius:100px; letter-spacing:1px; }
-  .ai-sub { font-size:.82rem; color:#555; margin-bottom:1rem; }
-  .ai-bar { display:flex; gap:.75rem; flex-wrap:wrap; }
-  .ai-bar input { flex:1; min-width:260px; background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:.85rem 1.25rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:16px; outline:none; transition:border-color .2s; }
-  .ai-bar input::placeholder { color:#555; }
-  .ai-bar input:focus { border-color:var(--yellow); }
-  .ai-bar button { background:var(--yellow); color:var(--black); border:none; padding:.85rem 1.75rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:background .2s; white-space:nowrap; }
-  .ai-bar button:hover { background:var(--yellow-dim); }
-  .ai-bar button:disabled { opacity:.5; cursor:not-allowed; }
-  .ai-result { margin-top:1.25rem; background:rgba(245,196,0,0.05); border:1px solid rgba(245,196,0,0.2); border-radius:6px; padding:1.25rem 1.5rem; font-size:.9rem; line-height:1.7; color:#ccc; display:none; }
-  .ai-result.show { display:block; animation:fadeUp .3s ease; }
-  .ai-result-title { color:var(--yellow); font-weight:700; font-size:.75rem; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:.5rem; }
+/* TICKER */
+.ticker-wrap{background:var(--yellow);padding:.6rem 0;overflow:hidden;}
+.ticker{display:flex;animation:ticker 25s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:var(--black);padding:0 2.5rem;opacity:.7;}
+.ticker-item.hl{opacity:1;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-  /* LOAD BOARD */
-  .board-section { padding:3rem; max-width:1300px; margin:auto; }
-  .section-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem; }
-  .section-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:1px; }
-  .section-title span { color:var(--yellow); }
-  .see-all { color:var(--yellow); text-decoration:none; font-size:.85rem; font-weight:500; }
-  .load-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.25rem; }
-  .load-card { background:var(--gray); border:1px solid #222; border-radius:8px; padding:1.5rem; transition:border-color .2s,transform .2s; cursor:pointer; position:relative; overflow:hidden; animation:fadeUp .5s ease both; }
-  .load-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--yellow); opacity:0; transition:opacity .2s; }
-  .load-card:hover { border-color:#3a3a3a; transform:translateY(-2px); }
-  .load-card:hover::before { opacity:1; }
-  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
-  .load-id { font-size:.7rem; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; }
-  .badge { font-size:.7rem; font-weight:600; padding:.2rem .65rem; border-radius:100px; letter-spacing:.5px; }
-  .badge-new { background:rgba(245,196,0,0.15); color:var(--yellow); }
-  .badge-urgent { background:rgba(255,80,80,0.15); color:#ff6b6b; }
-  .badge-open { background:rgba(80,200,120,0.15); color:#5ec87a; }
-  .route { display:flex; align-items:center; gap:.75rem; margin-bottom:.85rem; }
-  .city { font-weight:600; font-size:1rem; }
-  .state { color:var(--text-muted); font-size:.85rem; margin-left:.25rem; }
-  .arrow { color:var(--yellow); font-size:1.1rem; }
-  .load-details { display:flex; gap:1.25rem; margin-bottom:1.1rem; flex-wrap:wrap; }
-  .detail { font-size:.8rem; color:#777; }
-  .detail strong { color:#ccc; font-weight:500; display:block; margin-top:.1rem; font-size:.85rem; }
-  .card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:1rem; border-top:1px solid #2a2a2a; }
-  .pay { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--yellow); letter-spacing:1px; }
-  .pay-label { font-size:.7rem; color:var(--text-muted); }
-  .apply-btn { background:transparent; border:1px solid #444; color:var(--white); padding:.55rem 1.1rem; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; min-height:44px; }
-  .apply-btn:hover { background:var(--yellow); color:var(--black); border-color:var(--yellow); }
+/* SHARED SECTION STYLES */
+.section-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+.section-eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:2.5px;color:var(--yellow);font-weight:600;margin-bottom:1rem;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);letter-spacing:1px;line-height:.95;margin-bottom:1.5rem;}
+.section-title span{color:var(--yellow);}
 
-  /* AI LOAD PARSER */
-  .parser-section { padding:3rem; background:var(--gray); border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
-  .parser-inner { max-width:900px; margin:auto; }
-  .parser-head { display:flex; align-items:center; gap:.9rem; margin-bottom:.4rem; }
-  .parser-desc { color:#666; font-size:.875rem; margin-bottom:1.5rem; }
-  .parser-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
-  @media(max-width:700px){ .parser-grid{grid-template-columns:1fr;} nav ul{display:none;} }
-  .parser-left { display:flex; flex-direction:column; gap:.75rem; }
-  .parser-left textarea { background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:1rem 1.25rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.6; resize:vertical; min-height:170px; outline:none; transition:border-color .2s; }
-  .parser-left textarea::placeholder { color:#555; }
-  .parser-left textarea:focus { border-color:var(--yellow); }
-  .parser-left button { background:var(--yellow); color:var(--black); border:none; padding:.75rem 1.5rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:background .2s; }
-  .parser-left button:hover { background:var(--yellow-dim); }
-  .parser-left button:disabled { opacity:.5; cursor:not-allowed; }
-  .parser-output { background:var(--mid); border:1px solid #3a3a3a; border-radius:6px; padding:1.25rem; min-height:170px; font-size:.875rem; line-height:1.7; color:#555; }
-  .parser-output.ready { color:var(--white); }
-  .pf { margin-bottom:.65rem; }
-  .pf-label { font-size:.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:.15rem; }
-  .pf-val { color:var(--white); font-weight:500; }
-  .post-btn { margin-top:1rem; background:var(--yellow); color:var(--black); border:none; padding:.6rem 1.25rem; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:700; cursor:pointer; transition:background .2s; display:none; }
-  .post-btn.show { display:inline-block; }
-  .post-btn:hover { background:var(--yellow-dim); }
+/* INDUSTRY */
+.industry-section{padding:7rem 3rem;position:relative;overflow:hidden;}
+.industry-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+@media(max-width:800px){.industry-grid{grid-template-columns:1fr;gap:3rem;}}
+.section-body{font-size:1rem;color:#777;line-height:1.85;max-width:640px;}
+.section-body strong{color:#aaa;font-weight:500;}
+.industry-cards{display:flex;flex-direction:column;gap:1rem;}
+.ind-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.4rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color .2s,transform .2s;opacity:0;}
+.ind-card:hover{border-color:#2a2a2a;transform:translateX(4px);}
+.ind-icon{font-size:1.5rem;flex-shrink:0;width:44px;height:44px;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.ind-title{font-weight:600;font-size:.9rem;margin-bottom:.3rem;}
+.ind-desc{font-size:.8rem;color:var(--muted);line-height:1.55;}
 
-  /* HOW IT WORKS */
-  .how-section { padding:4rem 3rem; border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
-  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; max-width:1100px; margin:auto; }
-  .step-num { font-family:'Bebas Neue',sans-serif; font-size:4rem; color:rgba(245,196,0,0.12); line-height:1; margin-bottom:-.5rem; }
-  .step h3 { font-size:1rem; font-weight:600; margin-bottom:.5rem; }
-  .step p { font-size:.875rem; color:var(--text-muted); line-height:1.6; }
+/* MISSION */
+.mission-section{padding:7rem 3rem;background:linear-gradient(135deg,#060600 0%,#0a0a0a 40%,#000806 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.mission-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(245,196,0,0.04) 0%,transparent 60%);pointer-events:none;}
+.mission-inner{max-width:900px;margin:0 auto;text-align:center;position:relative;z-index:1;}
+.mission-quote{font-family:'Bebas Neue',sans-serif;font-size:8rem;color:rgba(245,196,0,0.07);line-height:.7;margin-bottom:1rem;letter-spacing:-4px;}
+.mission-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:1px;line-height:1.15;margin-bottom:2rem;}
+.mission-headline span{color:var(--yellow);}
+.mission-divider{width:60px;height:2px;background:var(--yellow);margin:0 auto 2rem;opacity:.4;}
+.mission-body{font-size:.975rem;color:#777;line-height:1.9;max-width:680px;margin:0 auto 2.5rem;}
+.mission-body strong{color:#aaa;font-weight:500;}
+.mission-values{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;}
+.mv-item{text-align:center;opacity:0;}
+.mv-icon{font-size:1.4rem;margin-bottom:.4rem;}
+.mv-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;}
 
-  /* FOOTER */
-  footer { padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-top:1px solid #1f1f1f; }
-  .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--yellow); letter-spacing:2px; }
-  .footer-links { display:flex; gap:2rem; }
-  .footer-links a { color:#555; text-decoration:none; font-size:.85rem; transition:color .2s; }
-  .footer-links a:hover { color:var(--white); }
-  .footer-copy { color:#444; font-size:.8rem; }
+/* HOW IT WORKS */
+.hiw-section{padding:7rem 3rem;}
+.hiw-inner{max-width:1100px;margin:0 auto;}
+.hiw-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;margin-bottom:3rem;}
+@media(max-width:700px){.hiw-header{grid-template-columns:1fr;gap:1.5rem;}}
+.hiw-header-right{font-size:.9rem;color:#555;line-height:1.8;}
+.hiw-tabs{display:flex;gap:.35rem;background:var(--mid);padding:.3rem;border-radius:8px;width:fit-content;margin-bottom:3rem;}
+.hiw-tab{padding:.5rem 1.25rem;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;}
+.hiw-tab.active{background:var(--yellow);color:var(--black);}
+.hiw-tab:hover:not(.active){color:var(--white);}
+.hiw-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+@media(max-width:900px){.hiw-steps{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.hiw-steps{grid-template-columns:1fr;}}
+.hiw-step{opacity:0;}
+.hiw-step-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:rgba(245,196,0,0.06);line-height:1;margin-bottom:-.75rem;letter-spacing:2px;}
+.hiw-step-icon{width:48px;height:48px;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
+.hiw-step-title{font-weight:600;font-size:.95rem;margin-bottom:.5rem;}
+.hiw-step-desc{font-size:.82rem;color:var(--muted);line-height:1.65;}
 
-  /* CHAT WIDGET */
-  .chat-bubble { position:fixed; bottom:2rem; right:2rem; z-index:1000; }
-  .chat-toggle { width:58px; height:58px; border-radius:50%; background:var(--yellow); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(245,196,0,0.35); transition:transform .2s,box-shadow .2s; font-size:1.5rem; position:relative; }
-  .chat-toggle:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(245,196,0,0.45); }
-  .notif { position:absolute; top:-2px; right:-2px; width:18px; height:18px; background:#ff6b6b; border-radius:50%; font-size:.6rem; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'DM Sans',sans-serif; }
-  .chat-win { position:absolute; bottom:70px; right:0; width:360px; background:#111; border:1px solid #2a2a2a; border-radius:12px; box-shadow:0 8px 40px rgba(0,0,0,.8); overflow:hidden; flex-direction:column; display:none; }
-  .chat-win.open { display:flex; animation:fadeUp .25s ease; }
-  .chat-head { background:var(--gray); padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; }
-  .chat-avatar { width:32px; height:32px; border-radius:50%; background:var(--yellow); display:flex; align-items:center; justify-content:center; font-size:.9rem; margin-right:.65rem; }
-  .chat-head-left { display:flex; align-items:center; }
-  .chat-name { font-weight:600; font-size:.9rem; }
-  .chat-status { font-size:.72rem; color:#5ec87a; }
-  .chat-close { background:none; border:none; color:#666; font-size:1.2rem; cursor:pointer; transition:color .2s; line-height:1; }
-  .chat-close:hover { color:var(--white); }
-  .chat-msgs { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:.75rem; max-height:320px; min-height:180px; }
-  .chat-msgs::-webkit-scrollbar { width:4px; }
-  .chat-msgs::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
-  .msg { max-width:86%; padding:.65rem .9rem; border-radius:10px; font-size:.85rem; line-height:1.55; }
-  .msg.bot { background:var(--mid); color:var(--white); align-self:flex-start; border-bottom-left-radius:3px; }
-  .msg.user { background:var(--yellow); color:var(--black); align-self:flex-end; border-bottom-right-radius:3px; font-weight:500; }
-  .msg.thinking { opacity:.55; font-style:italic; }
-  .chips { display:flex; flex-wrap:wrap; gap:.4rem; padding:.5rem 1rem; border-top:1px solid #1a1a1a; }
-  .chip { background:#1e1e1e; border:1px solid #2e2e2e; color:#aaa; font-size:.72rem; padding:.3rem .7rem; border-radius:100px; cursor:pointer; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
-  .chip:hover { border-color:var(--yellow); color:var(--yellow); }
-  .chat-foot { display:flex; gap:.5rem; padding:.75rem 1rem; border-top:1px solid #1f1f1f; background:var(--gray); }
-  .chat-foot input { flex:1; background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:.6rem .9rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:16px; outline:none; transition:border-color .2s; }
-  .chat-foot input:focus { border-color:var(--yellow); }
-  .chat-foot input::placeholder { color:#555; }
-  .chat-send { background:var(--yellow); color:var(--black); border:none; padding:.6rem .95rem; border-radius:6px; font-weight:700; cursor:pointer; font-size:.9rem; transition:background .2s; }
-  .chat-send:hover { background:var(--yellow-dim); }
-  .chat-send:disabled { opacity:.5; cursor:not-allowed; }
+/* FOR WHO */
+.forwho-section{padding:7rem 3rem;background:var(--gray);border-top:1px solid var(--border);}
+.forwho-inner{max-width:1100px;margin:0 auto;}
+.forwho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem;}
+@media(max-width:700px){.forwho-grid{grid-template-columns:1fr;}}
+.forwho-card{border-radius:12px;padding:2.5rem;position:relative;overflow:hidden;opacity:0;}
+.forwho-card.pilot{background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.15);}
+.forwho-card.carrier{background:linear-gradient(135deg,#000814,#0a0a0a);border:1px solid rgba(96,165,250,.15);}
+.forwho-card::after{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;pointer-events:none;}
+.forwho-card.pilot::after{background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 65%);}
+.forwho-card.carrier::after{background:radial-gradient(circle,rgba(96,165,250,0.06),transparent 65%);}
+.fw-badge{font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.25rem .75rem;border-radius:100px;display:inline-block;margin-bottom:1.25rem;}
+.fw-badge.pilot{background:rgba(245,196,0,.1);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
+.fw-badge.carrier{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2);}
+.fw-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;margin-bottom:.75rem;}
+.fw-desc{font-size:.875rem;color:#777;line-height:1.75;margin-bottom:1.75rem;}
+.fw-features{display:flex;flex-direction:column;gap:.55rem;margin-bottom:2rem;}
+.fw-feat{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:#aaa;}
+.fw-cta{display:inline-block;padding:.7rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:700;text-decoration:none;transition:all .2s;}
+.fw-cta.pilot{background:var(--yellow);color:var(--black);}
+.fw-cta.pilot:hover{background:var(--yellow-dim);}
+.fw-cta.carrier{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:#60a5fa;}
+.fw-cta.carrier:hover{background:rgba(96,165,250,.2);}
 
-  /* UTILS */
-  .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(245,196,0,0.25); border-top-color:var(--yellow); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:.45rem; }
-  @keyframes spin { to{transform:rotate(360deg);} }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
-  .load-card:nth-child(2){animation-delay:.1s} .load-card:nth-child(3){animation-delay:.2s}
-  .load-card:nth-child(4){animation-delay:.3s} .load-card:nth-child(5){animation-delay:.4s}
-  .load-card:nth-child(6){animation-delay:.5s}
+/* FINAL CTA */
+.final-cta{padding:7rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.final-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,#0a0900 50%,var(--black) 100%);}
+.final-cta::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(245,196,0,0.06) 0%,transparent 60%);pointer-events:none;}
+.fc-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;}
+.fc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);letter-spacing:1px;line-height:.95;margin-bottom:1.25rem;}
+.fc-title span{color:var(--yellow);}
+.fc-sub{font-size:1rem;color:#555;line-height:1.7;margin-bottom:2.5rem;}
+.fc-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
 
-  /* ── REFERRAL SECTION ── */
-  .referral-section { padding:4rem 3rem; background:linear-gradient(135deg,#0f0f00 0%,#0a0a0a 50%,#000d00 100%); border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; position:relative; overflow:hidden; }
-  .referral-section::before { content:''; position:absolute; top:-120px; right:-120px; width:500px; height:500px; background:radial-gradient(circle,rgba(245,196,0,0.06) 0%,transparent 65%); pointer-events:none; }
-  .referral-section::after { content:''; position:absolute; bottom:-80px; left:-80px; width:350px; height:350px; background:radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 65%); pointer-events:none; }
-  .referral-inner { max-width:1100px; margin:auto; display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; position:relative; z-index:1; }
-  @media(max-width:800px){ .referral-inner{grid-template-columns:1fr;gap:2.5rem;} }
+/* FOOTER */
+footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
+.footer-inner{max-width:1100px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+@media(max-width:800px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}}
+@media(max-width:500px){.footer-top{grid-template-columns:1fr;}}
+.footer-brand p{font-size:.82rem;color:#555;line-height:1.7;max-width:260px;margin-top:.75rem;}
+.footer-col-title{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:#444;font-weight:600;margin-bottom:1rem;}
+.footer-col a{display:block;color:#555;text-decoration:none;font-size:.82rem;margin-bottom:.5rem;transition:color .2s;}
+.footer-col a:hover{color:var(--white);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--border);flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:.78rem;color:#333;}
+.footer-legal{display:flex;gap:1.5rem;}
+.footer-legal a{color:#333;text-decoration:none;font-size:.78rem;transition:color .2s;}
+.footer-legal a:hover{color:#555;}
 
-  .referral-eyebrow { font-size:.72rem; text-transform:uppercase; letter-spacing:2.5px; color:var(--yellow); font-weight:600; margin-bottom:.9rem; }
-  .referral-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.2rem,5vw,3.2rem); line-height:.95; letter-spacing:1px; margin-bottom:1.1rem; }
-  .referral-title span { color:var(--yellow); }
-  .referral-desc { font-size:.9rem; color:#888; line-height:1.75; margin-bottom:2rem; }
-  .referral-desc strong { color:#ccc; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 
-  .referral-steps { display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem; }
-  .rstep { display:flex; align-items:flex-start; gap:.9rem; }
-  .rstep-icon { font-size:1.3rem; width:36px; height:36px; background:rgba(245,196,0,0.1); border:1px solid rgba(245,196,0,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .rstep-title { font-weight:600; font-size:.875rem; margin-bottom:.15rem; }
-  .rstep-sub { font-size:.78rem; color:var(--text-muted); line-height:1.4; }
-
-  .referral-link-box { background:rgba(245,196,0,0.04); border:1px solid rgba(245,196,0,0.15); border-radius:10px; padding:1.25rem; }
-  .referral-link-label { font-size:.7rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:.6rem; }
-  .referral-link-row { display:flex; gap:.6rem; margin-bottom:.9rem; }
-  .referral-link-input { flex:1; background:var(--mid); border:1px solid #333; border-radius:5px; padding:.6rem 1rem; font-size:.82rem; color:#aaa; font-family:'DM Sans',sans-serif; letter-spacing:.3px; }
-  .copy-btn { background:var(--yellow); color:var(--black); border:none; padding:.6rem 1.1rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:700; cursor:pointer; transition:background .2s; white-space:nowrap; }
-  .copy-btn:hover { background:var(--yellow-dim); }
-  .copy-btn.copied { background:#5ec87a; color:#fff; }
-  .share-btns { display:flex; gap:.5rem; }
-  .share-btn { background:transparent; border:1px solid #2e2e2e; color:#777; padding:.45rem .9rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.78rem; cursor:pointer; transition:all .2s; }
-  .share-btn:hover { border-color:var(--yellow); color:var(--yellow); }
-
-  /* Progress card */
-  .progress-card { background:var(--gray); border:1px solid #222; border-radius:12px; padding:1.75rem; }
-  .progress-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:1px; margin-bottom:.2rem; }
-  .progress-sub { font-size:.8rem; color:var(--text-muted); margin-bottom:1.5rem; }
-
-  .load-slots { display:grid; grid-template-columns:repeat(5,1fr); gap:.5rem; margin-bottom:1.25rem; }
-  .slot { background:var(--mid); border:1px solid #2a2a2a; border-radius:8px; padding:.65rem .4rem; text-align:center; transition:all .2s; }
-  .slot.earned { background:rgba(245,196,0,0.08); border-color:rgba(245,196,0,0.25); }
-  .slot-icon { font-size:1.1rem; margin-bottom:.25rem; }
-  .slot-label { font-size:.62rem; color:var(--text-muted); margin-bottom:.25rem; }
-  .slot-tag { font-size:.58rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--yellow); }
-  .pending-tag { color:#444; }
-
-  .progress-bar-wrap { margin-bottom:1.5rem; }
-  .progress-bar-bg { background:#1e1e1e; border-radius:100px; height:8px; overflow:hidden; margin-bottom:.4rem; }
-  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--yellow-dim),var(--yellow)); border-radius:100px; transition:width .6s ease; }
-  .progress-numbers { display:flex; justify-content:space-between; font-size:.72rem; color:var(--text-muted); }
-
-  .referral-list { border-top:1px solid #222; padding-top:1.1rem; }
-  .ref-list-title { font-size:.7rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:.75rem; }
-  .ref-item { display:flex; align-items:center; gap:.75rem; padding:.6rem 0; border-bottom:1px solid #1a1a1a; }
-  .ref-item:last-child { border-bottom:none; }
-  .ref-avatar { width:30px; height:30px; border-radius:50%; background:rgba(245,196,0,0.15); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .ref-name { font-size:.83rem; font-weight:600; }
-  .ref-date { font-size:.72rem; color:var(--text-muted); margin-top:.05rem; }
-  .ref-info { flex:1; }
-  .ref-badge { font-size:.68rem; font-weight:700; padding:.2rem .6rem; border-radius:100px; letter-spacing:.3px; white-space:nowrap; }
-  .earned-badge { background:rgba(74,222,128,0.12); color:#5ec87a; border:1px solid rgba(74,222,128,0.25); }
-
-  /* ── MOBILE RESPONSIVE ── */
-  @media(max-width:600px) {
-    /* NAV */
-    nav { padding:.9rem 1.2rem; }
-    nav ul { display:none; }
-    .nav-btns .btn-outline { display:none; }
-    .btn-primary { padding:.45rem 1rem; font-size:.8rem; }
-
-    /* HERO */
-    .hero { padding:3.5rem 1.25rem 2.5rem; }
-    .hero p { font-size:.95rem; }
-    .hero-actions { flex-direction:column; }
-    .btn-lg { width:100%; text-align:center; padding:.85rem 1rem; }
-    .hero-stats { gap:1.5rem; margin-top:2.5rem; padding-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; }
-
-    /* AI SEARCH */
-    .ai-search-section { padding:1.75rem 1.25rem; }
-    .ai-bar { flex-direction:column; }
-    .ai-bar input { min-width:unset; width:100%; }
-    .ai-bar button { width:100%; }
-
-    /* LOAD BOARD */
-    .board-section { padding:1.75rem 1.25rem; }
-    .load-grid { grid-template-columns:1fr; }
-    .load-details { gap:.75rem; }
-
-    /* PARSER */
-    .parser-section { padding:1.75rem 1.25rem; }
-    .parser-grid { grid-template-columns:1fr; }
-    .parser-left textarea { min-height:130px; font-size:.85rem; }
-
-    /* HOW IT WORKS */
-    .how-section { padding:2.5rem 1.25rem; }
-    .steps { grid-template-columns:1fr; gap:1.5rem; }
-
-    /* REFERRAL */
-    .referral-section { padding:2.5rem 1.25rem; }
-    .referral-inner { grid-template-columns:1fr; gap:2rem; }
-    .referral-link-row { flex-direction:column; }
-    .copy-btn { width:100%; }
-    .share-btns { flex-wrap:wrap; }
-    .share-btn { flex:1; text-align:center; }
-    .load-slots { grid-template-columns:repeat(5,1fr); gap:.3rem; }
-    .slot-icon { font-size:.9rem; }
-    .slot-label { display:none; }
-
-    /* FOOTER */
-    footer { flex-direction:column; align-items:flex-start; padding:1.5rem 1.25rem; gap:.75rem; }
-    .footer-links { flex-wrap:wrap; gap:1rem; }
-
-    /* CHAT WIDGET */
-    .chat-bubble { bottom:1rem; right:1rem; }
-    .chat-win { width:calc(100vw - 2rem); right:0; bottom:68px; }
-    .chat-msgs { max-height:260px; }
-  }
-
-  @media(min-width:601px) and (max-width:900px) {
-    nav { padding:1rem 1.5rem; }
-    nav ul { gap:1.5rem; }
-    .hero { padding:5rem 2rem 3.5rem; }
-    .ai-search-section { padding:2rem 2rem; }
-    .board-section { padding:2rem; }
-    .load-grid { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
-    .parser-section { padding:2rem; }
-    .referral-section { padding:3rem 2rem; }
-    .referral-inner { gap:2.5rem; }
-    footer { padding:1.5rem 2rem; }
-  }
+/* MOBILE */
+@media(max-width:600px){
+  nav{padding:.9rem 1.25rem;}
+  .nav-links{display:none;}
+  .hero{padding:7rem 1.25rem 4rem;}
+  .hero-stats{gap:1.5rem;display:grid;grid-template-columns:1fr 1fr;}
+  .industry-section,.mission-section,.hiw-section,.forwho-section,.final-cta{padding:4.5rem 1.25rem;}
+  .fc-btns,.hero-ctas{flex-direction:column;}
+  .cta-primary,.cta-secondary{width:100%;text-align:center;}
+  footer{padding:2rem 1.25rem;}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">Load<span>Leader</span></div>
-  <ul>
-    <li><a href="#">Board</a></li>
-    <li><a href="#parser">AI Parser</a></li>
-    <li><a href="#">Pilots</a></li>
-    <li><a href="#">Pricing</a></li>
-  </ul>
-  <div class="nav-btns">
-    <a href="login.html" class="btn-outline">Log In</a>
-    <a href="login.html?tab=signup" class="btn-primary">Sign Up Free</a>
+<nav id="mainNav">
+  <a href="index.html" class="logo">Load<span>Leader</span></a>
+  <div class="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#for-who">Pilots & Carriers</a>
+    <a href="loadboard.html">Load Board</a>
+    <a href="pricing.html">Pricing</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="btn-ghost">Log In</a>
+    <a href="login.html?tab=signup" class="btn-yellow">Get Started Free</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-glow"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
   <div class="hero-content">
-    <span class="hero-badge">🚩 #1 AI-Powered Pilot Car Load Board</span>
-    <h1>The Board That <em>Leads the Load</em></h1>
-    <p>Connect oversize carriers with certified pilot car escorts — now powered by AI to search smarter, parse faster, and match better.</p>
-    <div class="hero-actions">
-      <a href="#" class="btn-lg primary">Find Pilot Car Jobs</a>
-      <a href="#" class="btn-lg secondary">Post a Load</a>
+    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>The Future of Pilot Car Escorts</div>
+    <h1>
+      <span class="line1">America Moves</span>
+      <span class="line2">Oversize.</span>
+      <span class="line3">We Lead The Way.</span>
+    </h1>
+    <p class="hero-desc">LoadLeader is the <strong>first AI-powered load board</strong> built exclusively for the oversize transport industry — connecting certified pilot car escorts with the carriers moving America's biggest freight.</p>
+    <div class="hero-ctas">
+      <a href="login.html?tab=signup" class="cta-primary">🚩 Join as a Pilot — Free</a>
+      <a href="loadboard.html" class="cta-secondary">Browse Live Loads →</a>
     </div>
-  </div>
-  <div class="hero-stats">
-    <div><div class="stat-num">3,200+</div><div class="stat-label">Active Loads</div></div>
-    <div><div class="stat-num">8,400+</div><div class="stat-label">Registered Pilots</div></div>
-    <div><div class="stat-num">48</div><div class="stat-label">States Covered</div></div>
-    <div><div class="stat-num">24/7</div><div class="stat-label">Live Postings</div></div>
-  </div>
-</section>
-
-<!-- AI SMART SEARCH -->
-<section class="ai-search-section">
-  <div class="ai-label-row">🤖 AI Smart Search <span class="ai-tag">POWERED BY AI</span></div>
-  <div class="ai-sub">Describe what you're looking for in plain English — route, dimensions, pay, or anything else</div>
-  <div class="ai-bar">
-    <input id="aiInput" type="text" placeholder='e.g. "Wide load Texas to Oklahoma, need 2 pilots, $500+ pay"' />
-    <button id="aiSearchBtn" onclick="runAISearch()">🔍 Search with AI</button>
-  </div>
-  <div class="ai-result" id="aiResult">
-    <div class="ai-result-title">⚡ AI Analysis</div>
-    <div id="aiResultText"></div>
-  </div>
-</section>
-
-<!-- LOAD BOARD -->
-<section class="board-section">
-  <div class="section-header">
-    <div class="section-title">Latest <span>Loads</span></div>
-    <a href="#" class="see-all">View all 3,200+ loads →</a>
-  </div>
-  <div class="load-grid">
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00481</div><span class="badge badge-new">New</span></div>
-      <div class="route"><div><span class="city">Houston</span><span class="state">TX</span></div><span class="arrow">→</span><div><span class="city">Oklahoma City</span><span class="state">OK</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>16'W × 14'H</strong></div><div class="detail">Miles<strong>450 mi</strong></div><div class="detail">Pilots Needed<strong>2</strong></div><div class="detail">Date<strong>Apr 21</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$620</div></div><button class="apply-btn">Apply Now</button></div>
-    </div>
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00479</div><span class="badge badge-urgent">Urgent</span></div>
-      <div class="route"><div><span class="city">Denver</span><span class="state">CO</span></div><span class="arrow">→</span><div><span class="city">Salt Lake City</span><span class="state">UT</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>14'W × 15'H</strong></div><div class="detail">Miles<strong>525 mi</strong></div><div class="detail">Pilots Needed<strong>1</strong></div><div class="detail">Date<strong>Apr 19</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$740</div></div><button class="apply-btn">Apply Now</button></div>
-    </div>
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00477</div><span class="badge badge-open">Open</span></div>
-      <div class="route"><div><span class="city">Atlanta</span><span class="state">GA</span></div><span class="arrow">→</span><div><span class="city">Charlotte</span><span class="state">NC</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>18'W × 13'H</strong></div><div class="detail">Miles<strong>245 mi</strong></div><div class="detail">Pilots Needed<strong>3</strong></div><div class="detail">Date<strong>Apr 23</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$390</div></div><button class="apply-btn">Apply Now</button></div>
-    </div>
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00475</div><span class="badge badge-new">New</span></div>
-      <div class="route"><div><span class="city">Phoenix</span><span class="state">AZ</span></div><span class="arrow">→</span><div><span class="city">Albuquerque</span><span class="state">NM</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>15'W × 16'H</strong></div><div class="detail">Miles<strong>470 mi</strong></div><div class="detail">Pilots Needed<strong>2</strong></div><div class="detail">Date<strong>Apr 25</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$580</div></div><button class="apply-btn">Apply Now</button></div>
-    </div>
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00472</div><span class="badge badge-open">Open</span></div>
-      <div class="route"><div><span class="city">Chicago</span><span class="state">IL</span></div><span class="arrow">→</span><div><span class="city">Indianapolis</span><span class="state">IN</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>13'W × 14'H</strong></div><div class="detail">Miles<strong>182 mi</strong></div><div class="detail">Pilots Needed<strong>1</strong></div><div class="detail">Date<strong>Apr 22</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$310</div></div><button class="apply-btn">Apply Now</button></div>
-    </div>
-    <div class="load-card">
-      <div class="card-top"><div class="load-id">LL-00470</div><span class="badge badge-urgent">Urgent</span></div>
-      <div class="route"><div><span class="city">Seattle</span><span class="state">WA</span></div><span class="arrow">→</span><div><span class="city">Portland</span><span class="state">OR</span></div></div>
-      <div class="load-details"><div class="detail">Dimensions<strong>20'W × 15'H</strong></div><div class="detail">Miles<strong>175 mi</strong></div><div class="detail">Pilots Needed<strong>4</strong></div><div class="detail">Date<strong>Apr 19</strong></div></div>
-      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$480</div></div><button class="apply-btn">Apply Now</button></div>
+    <div class="hero-stats">
+      <div><div class="hs-num">3,200+</div><div class="hs-label">Active Loads</div></div>
+      <div><div class="hs-num">8,400+</div><div class="hs-label">Certified Pilots</div></div>
+      <div><div class="hs-num">48</div><div class="hs-label">States Covered</div></div>
+      <div><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
     </div>
   </div>
 </section>
 
-<!-- AI LOAD PARSER -->
-<section class="parser-section" id="parser">
-  <div class="parser-inner">
-    <div class="parser-head">
-      <div class="section-title">AI Load <span>Parser</span></div>
-      <span class="ai-tag">POWERED BY AI</span>
-    </div>
-    <p class="parser-desc">Paste any raw load description from an email, text message, or another board — AI instantly structures it into a clean LoadLeader posting.</p>
-    <div class="parser-grid">
-      <div class="parser-left">
-        <textarea id="parserInput" placeholder="Paste raw load info here...&#10;&#10;Example:&#10;Need pilot ASAP. Moving a house Dallas TX to Tulsa OK. 18 feet wide 14 tall. 380 miles. Need 2 escorts. $550 each. April 22. Call Mike 555-0192."></textarea>
-        <button id="parserBtn" onclick="parseLoad()">⚡ Parse with AI</button>
-      </div>
-      <div>
-        <div class="parser-output" id="parserOut">Parsed load details will appear here...</div>
-        <button class="post-btn" id="postBtn" onclick="confirmPost()">✓ Post This Load to Board</button>
-      </div>
-    </div>
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item hl">WIDE LOAD</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERSIZE ESCORT</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">PILOT CAR SERVICES</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERWEIGHT TRANSPORT</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">HEAVY HAUL</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERSIZE PERMITS</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">LOAD BOARD</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">WIDE LOAD</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERSIZE ESCORT</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">PILOT CAR SERVICES</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERWEIGHT TRANSPORT</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">HEAVY HAUL</span><span class="ticker-item">·</span>
+    <span class="ticker-item">OVERSIZE PERMITS</span><span class="ticker-item">·</span>
+    <span class="ticker-item hl">LOAD BOARD</span><span class="ticker-item">·</span>
   </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="how-section">
-  <div class="section-title" style="text-align:center;margin-bottom:2.5rem">How It <span style="color:var(--yellow)">Works</span></div>
-  <div class="steps">
-    <div class="step"><div class="step-num">01</div><h3>Create Your Profile</h3><p>Sign up as a pilot or carrier. Add certifications, equipment, and service areas.</p></div>
-    <div class="step"><div class="step-num">02</div><h3>Browse or Post Loads</h3><p>Carriers post loads with full details. Pilots search by route, pay, and date using AI.</p></div>
-    <div class="step"><div class="step-num">03</div><h3>Apply & Connect</h3><p>One-click apply. Carriers confirm. Connect via direct chat on the platform.</p></div>
-    <div class="step"><div class="step-num">04</div><h3>Move the Load</h3><p>Hit the road and build your LoadLeader reputation after every completed job.</p></div>
-  </div>
-</section>
-
-<!-- REFERRAL SECTION -->
-<section class="referral-section">
-  <div class="referral-inner">
-    <div class="referral-left">
-      <div class="referral-eyebrow">🚩 Pilot Referral Program</div>
-      <h2 class="referral-title">Refer a Pilot.<br><span>Get Free Loads.</span></h2>
-      <p class="referral-desc">For every pilot you refer who joins LoadLeader, you earn <strong>1 free load posting</strong> — up to <strong>5 free loads total</strong>. Share your link, grow the network, and keep more money in your pocket.</p>
-
-      <div class="referral-steps">
-        <div class="rstep"><div class="rstep-icon">🔗</div><div><div class="rstep-title">Share your link</div><div class="rstep-sub">Send your unique referral link to other pilot car drivers</div></div></div>
-        <div class="rstep"><div class="rstep-icon">✅</div><div><div class="rstep-title">They sign up</div><div class="rstep-sub">Your referral creates a free LoadLeader account</div></div></div>
-        <div class="rstep"><div class="rstep-icon">🎁</div><div><div class="rstep-title">You get a free load</div><div class="rstep-sub">1 free load posting credited to your account automatically</div></div></div>
-      </div>
-
-      <div class="referral-link-box">
-        <div class="referral-link-label">Your Referral Link</div>
-        <div class="referral-link-row">
-          <div class="referral-link-input" id="refLink">loadleader.com/ref/PILOT-7X29K</div>
-          <button class="copy-btn" onclick="copyRef()">Copy Link</button>
-        </div>
-        <div class="share-btns">
-          <button class="share-btn">📱 Text</button>
-          <button class="share-btn">📧 Email</button>
-          <button class="share-btn">👥 Facebook</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="referral-right">
-      <div class="progress-card">
-        <div class="progress-title">Your Referral Progress</div>
-        <div class="progress-sub">3 of 5 free loads earned</div>
-
-        <div class="load-slots">
-          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
-          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
-          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
-          <div class="slot pending"><div class="slot-icon">🔒</div><div class="slot-label">Free Load</div><div class="slot-tag pending-tag">2 more referrals</div></div>
-          <div class="slot pending"><div class="slot-icon">🔒</div><div class="slot-label">Free Load</div><div class="slot-tag pending-tag">2 more referrals</div></div>
-        </div>
-
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:60%"></div></div>
-          <div class="progress-numbers"><span>3 referrals</span><span style="color:var(--yellow)">5 max</span></div>
-        </div>
-
-        <div class="referral-list">
-          <div class="ref-list-title">Recent Referrals</div>
-          <div class="ref-item"><div class="ref-avatar">JT</div><div class="ref-info"><div class="ref-name">Jake T.</div><div class="ref-date">Joined Apr 14 · Texas</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
-          <div class="ref-item"><div class="ref-avatar">ML</div><div class="ref-info"><div class="ref-name">Maria L.</div><div class="ref-date">Joined Apr 9 · Oklahoma</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
-          <div class="ref-item"><div class="ref-avatar">DP</div><div class="ref-info"><div class="ref-name">Dave P.</div><div class="ref-date">Joined Mar 28 · Colorado</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">LoadLeader</div>
-  <div class="footer-links"><a href="#">About</a><a href="#">Pricing</a><a href="#">Safety</a><a href="#">Support</a><a href="#">Terms</a></div>
-  <div class="footer-copy">© 2026 LoadLeader. All rights reserved.</div>
-</footer>
-
-<!-- AI CHAT WIDGET -->
-<div class="chat-bubble">
-  <div class="chat-win" id="chatWin">
-    <div class="chat-head">
-      <div class="chat-head-left">
-        <div class="chat-avatar">🚩</div>
-        <div><div class="chat-name">LoadLeader AI</div><div class="chat-status">● Online now</div></div>
-      </div>
-      <button class="chat-close" onclick="toggleChat()">✕</button>
-    </div>
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="msg bot">Hey! 👋 I'm your LoadLeader AI. I can help you find loads, check permit requirements, estimate pay, or answer any pilot car questions. What do you need?</div>
-    </div>
-    <div class="chips" id="chips">
-      <span class="chip" onclick="useChip(this)">Find loads near Texas</span>
-      <span class="chip" onclick="useChip(this)">What permits do I need?</span>
-      <span class="chip" onclick="useChip(this)">Estimate my pay</span>
-      <span class="chip" onclick="useChip(this)">Wide load requirements</span>
-    </div>
-    <div class="chat-foot">
-      <input id="chatInput" type="text" placeholder="Ask about loads, permits, pay..." onkeydown="if(event.key==='Enter')sendChat()" />
-      <button class="chat-send" id="sendBtn" onclick="sendChat()">➤</button>
-    </div>
-  </div>
-  <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">
-    🚩
-    <span class="notif" id="notif">1</span>
-  </button>
 </div>
 
+<section class="industry-section">
+  <div class="section-inner">
+    <div class="industry-grid">
+      <div>
+        <div class="section-eyebrow">The Industry</div>
+        <h2 class="section-title">Oversize Transport<br>Is <span>Big Business</span></h2>
+        <p class="section-body">Every wind turbine blade, every bridge beam, every industrial machine that moves across America requires a certified pilot car escort. It's a <strong>multi-billion dollar industry</strong> — and it's growing fast.<br><br>Yet the way pilots and carriers connect hasn't changed in decades. Phone calls. Word of mouth. Outdated boards built for a different era.<br><br><strong>LoadLeader is changing that.</strong></p>
+      </div>
+      <div class="industry-cards">
+        <div class="ind-card"><div class="ind-icon">📈</div><div><div class="ind-title">Growing Industry</div><div class="ind-desc">Oversize transport demand is accelerating driven by infrastructure, energy, and industrial expansion across all 48 states.</div></div></div>
+        <div class="ind-card"><div class="ind-icon">🔗</div><div><div class="ind-title">Disconnected Market</div><div class="ind-desc">Pilots and carriers still rely on phone calls and word of mouth. There is no modern platform built for this industry — until now.</div></div></div>
+        <div class="ind-card"><div class="ind-icon">🤖</div><div><div class="ind-title">AI-Powered Matching</div><div class="ind-desc">LoadLeader uses AI to match the right pilot to the right load — faster, smarter, and more reliably than any board before it.</div></div></div>
+        <div class="ind-card"><div class="ind-icon">📱</div><div><div class="ind-title">Built for Mobile</div><div class="ind-desc">Pilots work on the road. LoadLeader is designed for the phone in your truck — apply to loads, track jobs, get paid, all from mobile.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mission-section">
+  <div class="mission-inner">
+    <div class="mission-quote">"</div>
+    <h2 class="mission-headline">We're building the <span>infrastructure</span> that moves<br>the infrastructure of America.</h2>
+    <div class="mission-divider"></div>
+    <p class="mission-body">The oversize transport industry is the backbone of American infrastructure — yet the people who keep it moving have been overlooked by technology for too long. Pilot car drivers are skilled professionals who deserve a modern platform that respects their time, grows their business, and connects them to opportunity.<br><br><strong>LoadLeader's mission is simple:</strong> build the most trusted, most efficient, and most complete platform the pilot car industry has ever seen. We're not just a load board. We're building the future of how oversize freight moves across America.</p>
+    <div class="mission-values">
+      <div class="mv-item"><div class="mv-icon">🚩</div><div class="mv-label">Pilot First</div></div>
+      <div class="mv-item"><div class="mv-icon">⚡</div><div class="mv-label">Built for Speed</div></div>
+      <div class="mv-item"><div class="mv-icon">🤝</div><div class="mv-label">Trust & Transparency</div></div>
+      <div class="mv-item"><div class="mv-icon">🌎</div><div class="mv-label">48 States Strong</div></div>
+      <div class="mv-item"><div class="mv-icon">🔒</div><div class="mv-label">Secure Payments</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="hiw-section" id="how-it-works">
+  <div class="hiw-inner">
+    <div class="hiw-header">
+      <div>
+        <div class="section-eyebrow">How It Works</div>
+        <h2 class="section-title">Simple.<br><span>Fast. Reliable.</span></h2>
+      </div>
+      <div class="hiw-header-right">LoadLeader handles the connection so you can focus on the road. Whether you're a pilot looking for work or a carrier needing escorts — the process takes minutes, not days.</div>
+    </div>
+    <div class="hiw-tabs">
+      <button class="hiw-tab active" onclick="switchTab('pilot',this)">🚩 For Pilots</button>
+      <button class="hiw-tab" onclick="switchTab('carrier',this)">🚛 For Carriers</button>
+    </div>
+    <div id="pilotSteps" class="hiw-steps">
+      <div class="hiw-step"><div class="hiw-step-num">01</div><div class="hiw-step-icon">👤</div><div class="hiw-step-title">Create Your Profile</div><div class="hiw-step-desc">Sign up free in under 2 minutes. Add your certifications, states you cover, vehicle type, and equipment.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">02</div><div class="hiw-step-icon">🔍</div><div class="hiw-step-title">Find the Right Load</div><div class="hiw-step-desc">Browse the live board or use AI search to describe exactly what you're looking for. Filter by route, pay, and date.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">03</div><div class="hiw-step-icon">📋</div><div class="hiw-step-title">Apply in One Tap</div><div class="hiw-step-desc">Send your application with a message to the carrier. Your rating, certifications, and experience are sent automatically.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">💰</div><div class="hiw-step-title">Get Accepted & Get Paid</div><div class="hiw-step-desc">Carrier accepts you — their phone number is revealed instantly. Complete the job and get paid directly.</div></div>
+    </div>
+    <div id="carrierSteps" class="hiw-steps" style="display:none;">
+      <div class="hiw-step"><div class="hiw-step-num">01</div><div class="hiw-step-icon">🏢</div><div class="hiw-step-title">Create Carrier Account</div><div class="hiw-step-desc">Sign up free — 30 day trial included. Set up your company profile with DOT number and contact info.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">02</div><div class="hiw-step-icon">📦</div><div class="hiw-step-title">Post Your Load</div><div class="hiw-step-desc">Enter route, dimensions, date, and pay. Or paste a dispatch message and let AI parse the details automatically.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">03</div><div class="hiw-step-icon">👥</div><div class="hiw-step-title">Review Pilot Applications</div><div class="hiw-step-desc">Pilots apply and you review their full profiles — ratings, jobs completed, certifications, and their message to you.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">✅</div><div class="hiw-step-title">Accept & Move the Load</div><div class="hiw-step-desc">Accept your pilot — they get your phone number instantly. Coordinate directly and move your load with confidence.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="forwho-section" id="for-who">
+  <div class="forwho-inner">
+    <div style="text-align:center;">
+      <div class="section-eyebrow">Who It's For</div>
+      <h2 class="section-title">Built for <span>Both Sides</span> of the Load</h2>
+      <p style="color:var(--muted);font-size:.875rem;margin-top:-.5rem;">Every oversize move needs two things — a carrier with a load and a pilot to lead it.</p>
+    </div>
+    <div class="forwho-grid">
+      <div class="forwho-card pilot">
+        <span class="fw-badge pilot">🚩 Pilot Car Drivers</span>
+        <div class="fw-title">Find More Work.<br>Earn More Money.</div>
+        <p class="fw-desc">Stop waiting for the phone to ring. LoadLeader puts thousands of loads in front of you — filtered to your routes, your availability, and your pay requirements.</p>
+        <div class="fw-features">
+          <div class="fw-feat">✓ Browse 3,200+ active loads across 48 states</div>
+          <div class="fw-feat">✓ Apply with one tap — no phone tag</div>
+          <div class="fw-feat">✓ AI matches you to loads that fit your route</div>
+          <div class="fw-feat">✓ Track all applications and earnings in one place</div>
+          <div class="fw-feat">✓ Build your reputation with verified reviews</div>
+          <div class="fw-feat">✓ Free to start — no credit card needed</div>
+        </div>
+        <a href="login.html?tab=signup" class="fw-cta pilot">Join as a Pilot — Free →</a>
+      </div>
+      <div class="forwho-card carrier">
+        <span class="fw-badge carrier">🚛 Carriers & Haulers</span>
+        <div class="fw-title">Find Trusted Escorts.<br>Move Every Load.</div>
+        <p class="fw-desc">Never scramble for a pilot again. Post your load and get applications from certified, rated, insured pilot car drivers — reviewed and ready to go.</p>
+        <div class="fw-features">
+          <div class="fw-feat" style="color:#aaa">✓ Post loads in under 2 minutes</div>
+          <div class="fw-feat" style="color:#aaa">✓ Review full pilot profiles before hiring</div>
+          <div class="fw-feat" style="color:#aaa">✓ AI parses dispatch messages automatically</div>
+          <div class="fw-feat" style="color:#aaa">✓ Email notifications when pilots apply</div>
+          <div class="fw-feat" style="color:#aaa">✓ Accept pilots and exchange contacts instantly</div>
+          <div class="fw-feat" style="color:#aaa">✓ 30-day free trial — no commitment</div>
+        </div>
+        <a href="login.html?tab=signup" class="fw-cta carrier">Start Free Trial →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="fc-inner">
+    <h2 class="fc-title">The Road<br><span>Starts Here.</span></h2>
+    <p class="fc-sub">Join thousands of pilot car drivers and carriers already using LoadLeader to move America's oversize freight. Free to start. No credit card required.</p>
+    <div class="fc-btns">
+      <a href="login.html?tab=signup" class="cta-primary">🚩 Create Free Account</a>
+      <a href="loadboard.html" class="cta-secondary">Browse Live Loads →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Load<span>Leader</span></a>
+        <p>The AI-powered load board built exclusively for the oversize transport industry. Connecting pilot car escorts with carriers across all 48 states.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Platform</div>
+        <a href="loadboard.html">Load Board</a>
+        <a href="dashboard.html">Pilot Dashboard</a>
+        <a href="carrier-dashboard.html">Carrier Dashboard</a>
+        <a href="pricing.html">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#for-who">For Pilots</a>
+        <a href="#for-who">For Carriers</a>
+        <a href="pricing.html">Plans</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="pricing.html">Refund Policy</a>
+        <a href="mailto:support@loadleaderservice.com">Support</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 LoadLeader. All rights reserved. Built for the oversize transport industry.</div>
+      <div class="footer-legal">
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="mailto:support@loadleaderservice.com">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>
-// Shared Claude API call
-// ── CONFIG: replace with your Render URL after deploying backend ──
-const API_URL = 'https://load-leader.onrender.com/api/ai';
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 50);
+});
 
-async function claude(system, messages) {
-  const allMessages = [
-    { role: "user", content: "System instructions: " + system + "\n\nNow here is my request:\n" + messages[0].content }
-  ];
-  const r = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: allMessages, max_tokens: 1000 })
-  });
-  const d = await r.json();
-  if (d.error) throw new Error(d.error);
-  return d.text;
+function switchTab(type, btn) {
+  document.querySelectorAll('.hiw-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pilotSteps').style.display = type === 'pilot' ? 'grid' : 'none';
+  document.getElementById('carrierSteps').style.display = type === 'carrier' ? 'grid' : 'none';
 }
 
-// ── AI SMART SEARCH ──
-async function runAISearch() {
-  const q = document.getElementById("aiInput").value.trim();
-  if (!q) return;
-  const btn = document.getElementById("aiSearchBtn");
-  const box = document.getElementById("aiResult");
-  const txt = document.getElementById("aiResultText");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Searching...';
-  box.classList.add("show");
-  txt.innerHTML = '<span class="spinner"></span><em>Analyzing your request...</em>';
-
-  const loads = [
-    {id:"LL-00481",from:"Houston TX",to:"Oklahoma City OK",w:"16ft",h:"14ft",mi:450,pilots:2,pay:620,date:"Apr 21"},
-    {id:"LL-00479",from:"Denver CO",to:"Salt Lake City UT",w:"14ft",h:"15ft",mi:525,pilots:1,pay:740,date:"Apr 19"},
-    {id:"LL-00477",from:"Atlanta GA",to:"Charlotte NC",w:"18ft",h:"13ft",mi:245,pilots:3,pay:390,date:"Apr 23"},
-    {id:"LL-00475",from:"Phoenix AZ",to:"Albuquerque NM",w:"15ft",h:"16ft",mi:470,pilots:2,pay:580,date:"Apr 25"},
-    {id:"LL-00472",from:"Chicago IL",to:"Indianapolis IN",w:"13ft",h:"14ft",mi:182,pilots:1,pay:310,date:"Apr 22"},
-    {id:"LL-00470",from:"Seattle WA",to:"Portland OR",w:"20ft",h:"15ft",mi:175,pilots:4,pay:480,date:"Apr 19"}
-  ];
-
-  try {
-    const reply = await claude(
-      `You are a load board search assistant for LoadLeader, a pilot car escort platform. Available loads: ${JSON.stringify(loads)}. Analyze the user's search and identify the best matching loads, explain why they match, and give a brief recommendation. Keep it to 3-5 sentences in plain text, no markdown.`,
-      [{role:"user",content:q}]
-    );
-    txt.innerHTML = reply;
-  } catch(e) {
-    txt.innerHTML = "⚠️ AI search unavailable right now. Browse the loads above or try again shortly.";
-  }
-  btn.disabled = false;
-  btn.innerHTML = '🔍 Search with AI';
-}
-
-// ── AI LOAD PARSER ──
-async function parseLoad() {
-  const raw = document.getElementById("parserInput").value.trim();
-  if (!raw) return;
-  const btn = document.getElementById("parserBtn");
-  const out = document.getElementById("parserOut");
-  const post = document.getElementById("postBtn");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Parsing...';
-  out.innerHTML = '<span class="spinner"></span><em style="color:#555">Reading load details...</em>';
-  out.classList.remove("ready");
-  post.classList.remove("show");
-
-  try {
-    const reply = await claude(
-      `You are an expert at parsing real-world oversize load dispatch messages sent by trucking companies. These messages are often informal, multi-stop, and contain addresses, GPS links, driver names, phone numbers, dates, and equipment details in no particular order.
-
-Extract structured data and return ONLY valid JSON with these fields:
-{
-  "carrier": "",
-  "origin": "",
-  "destination": "",
-  "stops": "",
-  "equipment": "",
-  "width": "",
-  "height": "",
-  "weight": "",
-  "startDate": "",
-  "startTime": "",
-  "deliveryDate": "",
-  "pilotsNeeded": "",
-  "payPerPilot": "",
-  "driver": "",
-  "contact": "",
-  "truckNumber": "",
-  "notes": ""
-}
-
-Rules:
-- "origin" = first pickup address including city and state
-- "destination" = final delivery address including city and state
-- "stops" = any intermediate stops between origin and destination, comma separated
-- "equipment" = the name/model of the machine or load being hauled
-- "width" and "height" = dimensions found anywhere in the text (e.g. 14' Wide, 14'6 Tall)
-- "weight" = any weight or scale ticket number found (e.g. 23.0552 likely refers to scale weight in tons)
-- "startDate" and "deliveryDate" = dates in readable format
-- "driver" = driver name if present
-- "contact" = phone number if present
-- "truckNumber" = truck or unit number if present
-- "notes" = anything unusual like UNLOAD & RELOAD, special entry instructions, permit info
-- Use "N/A" for missing fields
-- No markdown, no extra text, return only the JSON object`,
-      [{role:"user",content:raw}]
-    );
-    const cleanReply = reply.replace(/```json|```/g,"").trim();
-    out.innerHTML = '<span style="color:#888;font-size:.75rem">Raw AI response (debug): ' + cleanReply.substring(0,400) + '</span>';
-    const parsed = JSON.parse(cleanReply);
-    const fields = [
-      ["Carrier",parsed.carrier],["Driver",parsed.driver],["Truck #",parsed.truckNumber],
-      ["Contact",parsed.contact],["Equipment",parsed.equipment],
-      ["Width",parsed.width],["Height",parsed.height],["Weight",parsed.weight],
-      ["Origin",parsed.origin],["Intermediate Stops",parsed.stops],["Destination",parsed.destination],
-      ["Start Date",parsed.startDate],["Start Time",parsed.startTime],["Delivery Date",parsed.deliveryDate],
-      ["Pilots Needed",parsed.pilotsNeeded],["Pay Per Pilot",parsed.payPerPilot],["Notes",parsed.notes]
-    ].filter(([,v]) => v && v !== "N/A");
-
-    if (fields.length === 0) {
-      out.innerHTML = '<span style="color:#fbbf24">⚠️ AI responded but found no fields. Raw reply: ' + reply.substring(0,300) + '</span>';
-    } else {
-      out.innerHTML = fields.map(([l,v]) =>
-        `<div class="pf"><div class="pf-label">${l}</div><div class="pf-val">${v}</div></div>`
-      ).join("");
-      out.classList.add("ready");
-      post.classList.add("show");
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.style.animation = 'fadeUp .6s ease forwards';
+      }, i * 80);
+      observer.unobserve(entry.target);
     }
-  } catch(e) {
-    const msg = e.message || String(e);
-    out.innerHTML = '<span style="color:#ff6b6b;font-size:.8rem;line-height:1.6;word-break:break-all;">⚠️ Error: ' + msg + '</span>';
-  }
-  btn.disabled = false;
-  btn.innerHTML = '⚡ Parse with AI';
-}
+  });
+}, { threshold: 0.1 });
 
-function confirmPost() {
-  const btn = document.getElementById("postBtn");
-  btn.textContent = "✓ Posted to Board!";
-  btn.style.background = "#5ec87a";
-  setTimeout(() => { btn.textContent = "✓ Post This Load to Board"; btn.style.background = ""; }, 2500);
-}
+document.querySelectorAll('.ind-card, .hiw-step, .forwho-card, .mv-item').forEach(el => observer.observe(el));
 
-// ── AI CHAT ──
-let history = [];
-let isOpen = false;
-
-function toggleChat() {
-  isOpen = !isOpen;
-  document.getElementById("chatWin").classList.toggle("open", isOpen);
-  document.getElementById("chatToggle").innerHTML = isOpen ? '<span style="font-size:1.2rem">✕</span>' : '🚩';
-  document.getElementById("notif").style.display = "none";
-  if (isOpen) document.getElementById("chatInput").focus();
-}
-
-function useChip(el) {
-  document.getElementById("chatInput").value = el.textContent;
-  document.getElementById("chips").style.display = "none";
-  sendChat();
-}
-
-function addMsg(text, role) {
-  const el = document.createElement("div");
-  el.className = `msg ${role}`;
-  el.textContent = text;
-  const msgs = document.getElementById("chatMsgs");
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
-  return el;
-}
-
-async function sendChat() {
-  const inp = document.getElementById("chatInput");
-  const send = document.getElementById("sendBtn");
-  const text = inp.value.trim();
-  if (!text) return;
-  addMsg(text, "user");
-  inp.value = "";
-  send.disabled = true;
-  history.push({role:"user", content:text});
-  const thinking = addMsg("Thinking...", "bot thinking");
-
-  try {
-    const reply = await claude(
-      `You are LoadLeader AI, a friendly assistant for a pilot car escort load board. Help with: finding loads, oversize permit requirements by state, pay rates, route planning, equipment requirements (flags/lights/signs/CB), safety, and platform usage. Be concise (2-4 sentences). Use industry terms. Current board: 3,200+ loads, 8,400+ pilots, 48 states.`,
-      history
-    );
-    history.push({role:"assistant", content:reply});
-    thinking.textContent = reply;
-    thinking.classList.remove("thinking");
-  } catch(e) {
-    thinking.textContent = "Sorry, having trouble connecting. Try again in a moment.";
-    thinking.classList.remove("thinking");
-  }
-  send.disabled = false;
-  document.getElementById("chatMsgs").scrollTop = 9999;
-}
-
-document.getElementById("aiInput").addEventListener("keydown", e => { if(e.key==="Enter") runAISearch(); });
-
-function copyRef() {
-  const btn = document.querySelector(".copy-btn");
-  navigator.clipboard.writeText("loadleader.com/ref/PILOT-7X29K").catch(()=>{});
-  btn.textContent = "✓ Copied!";
-  btn.classList.add("copied");
-  setTimeout(()=>{ btn.textContent = "Copy Link"; btn.classList.remove("copied"); }, 2000);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
 </script>
 </body>
