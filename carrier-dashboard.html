@@ -262,7 +262,7 @@ select option{background:var(--mid);}
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div class="notif-btn" onclick="toggleNotifPanel()" id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;">
+    <div class="notif-btn" onclick="toggleNotifPanel(event)" id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;">
       🔔
       <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.8);">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
@@ -651,8 +651,9 @@ select option{background:var(--mid);}
 </div>
 
 <script>
-// Notification panel — must be in regular script so onclick works immediately
-function toggleNotifPanel() {
+// Notification panel — regular script so onclick works immediately
+function toggleNotifPanel(e) {
+  if (e) e.stopPropagation();
   const panel = document.getElementById('notifPanel');
   if (!panel) return;
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
