@@ -231,8 +231,11 @@ textarea.modal-input{min-height:90px;resize:vertical;line-height:1.5;}
       <button class="btn-sm btn-yellow" onclick="document.getElementById('postModal').style.display='flex'">+ Post a Load</button>
     </div>
   </div>
+  <div id="boardNotice" style="display:none;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:.75rem 1.25rem;margin-bottom:1rem;font-size:.82rem;color:#aaa;">
+    📋 Sample loads shown — be the first to <a href="carrier-dashboard.html" style="color:var(--yellow)">post a real load</a> on LoadLeader!
+  </div>
   <div class="stats-bar">
-    <div class="stat-item"><span class="stat-n">3,247</span><span class="stat-l">Active Loads</span></div>
+    <div class="stat-item"><span class="stat-n" id="statLoads">3,247</span><span class="stat-l">Active Loads</span></div>
     <div class="stat-item"><span class="stat-n">48</span><span class="stat-l">States</span></div>
     <div class="stat-item"><span class="stat-n">142</span><span class="stat-l">Posted Today</span></div>
     <div class="stat-item"><span class="stat-n">8,400+</span><span class="stat-l">Pilots</span></div>
@@ -385,10 +388,11 @@ onAuthStateChanged(auth, async (user) => {
       savedSnap.forEach(d => savedLoads.add(d.data().loadId));
     } catch(e) { console.error(e); }
   }
-  renderLoads();
+  await fetchLoads();
 });
 
-const LOADS = [
+// ── SAMPLE LOADS shown when Firestore has no real loads yet ──
+const SAMPLE_LOADS = [
   {id:"LL-00481",from:"Houston",fromSt:"TX",to:"Oklahoma City",toSt:"OK",type:"Wide Load",width:"16'0\"",height:"14'0\"",miles:450,pilots:2,pay:620,date:"Apr 21",status:"new",carrier:"Lone Star Hauling"},
   {id:"LL-00479",from:"Denver",fromSt:"CO",to:"Salt Lake City",toSt:"UT",type:"Oversize",width:"14'0\"",height:"15'0\"",miles:525,pilots:1,pay:740,date:"Apr 19",status:"urgent",carrier:"Rocky Mtn Transport"},
   {id:"LL-00477",from:"Atlanta",fromSt:"GA",to:"Charlotte",toSt:"NC",type:"Combination",width:"18'0\"",height:"13'0\"",miles:245,pilots:3,pay:390,date:"Apr 23",status:"open",carrier:"Southeast Freight"},
@@ -403,9 +407,58 @@ const LOADS = [
   {id:"LL-00458",from:"Sacramento",fromSt:"CA",to:"Las Vegas",toSt:"NV",type:"Tall Load",width:"14'0\"",height:"17'0\"",miles:590,pilots:2,pay:720,date:"Apr 23",status:"open",carrier:"West Coast Heavy"},
 ];
 
+let LOADS = [];
 let activeTags = new Set();
 let currentPage = 1;
 const PER_PAGE = 12;
+
+// ── LOAD FROM FIRESTORE ──
+async function fetchLoads() {
+  const grid = document.getElementById('loadGrid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);"><span class="spinner spinner-white"></span> Loading board...</div>';
+  try {
+    const snap = await getDocs(query(
+      collection(db, 'loads'),
+      where('status', '==', 'active'),
+      orderBy('postedAt', 'desc'),
+      limit(100)
+    ));
+    if (snap.empty) {
+      // No real loads yet — show samples with a notice
+      LOADS = SAMPLE_LOADS;
+      document.getElementById('boardNotice').style.display = 'block';
+    } else {
+      LOADS = snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          from: data.from || '',
+          fromSt: data.fromSt || '',
+          to: data.to || '',
+          toSt: data.toSt || '',
+          type: data.type || 'Oversize',
+          width: data.width || '',
+          height: data.height || '',
+          miles: data.miles || 0,
+          pilots: data.pilots || 1,
+          pay: data.pay || 0,
+          date: data.date || '',
+          status: data.status || 'open',
+          carrier: data.carrierName || 'Carrier',
+          equipment: data.equipment || '',
+          notes: data.notes || ''
+        };
+      });
+      // Update stats
+      document.getElementById('statLoads').textContent = LOADS.length + '+';
+    }
+  } catch(e) {
+    console.error('Firestore load error:', e);
+    LOADS = SAMPLE_LOADS;
+    document.getElementById('boardNotice').style.display = 'block';
+  }
+  renderLoads();
+}
 
 function getFiltered() {
   let loads = [...LOADS];
