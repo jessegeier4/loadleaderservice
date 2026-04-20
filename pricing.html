@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoadLeader – Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
+  --white:#f0ede6; --gray:#141414; --mid:#1e1e1e; --card:#181818;
+  --border:#222; --muted:#666; --green:#4ade80; --green-bg:rgba(74,222,128,0.08);
+  --blue:#60a5fa; --blue-bg:rgba(96,165,250,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2.5rem;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
+.logo span{color:var(--white);}
+.nav-links{display:flex;gap:2rem;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-right{display:flex;gap:.6rem;}
+.btn-sm{padding:.4rem 1rem;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;border:none;}
+.btn-ghost{background:transparent;border:1px solid #333;color:var(--white);}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.btn-yellow{background:var(--yellow);color:var(--black);}
+.btn-yellow:hover{background:var(--yellow-dim);}
+
+/* HERO */
+.pricing-hero{text-align:center;padding:5rem 2rem 3rem;position:relative;overflow:hidden;}
+.pricing-hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(245,196,0,0.06) 0%,transparent 65%);pointer-events:none;}
+.hero-eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:2.5px;color:var(--yellow);font-weight:600;margin-bottom:1rem;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5rem);letter-spacing:1px;line-height:.95;margin-bottom:1rem;}
+.hero-title span{color:var(--yellow);}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:520px;margin:0 auto 2rem;line-height:1.7;}
+
+/* TOGGLE */
+.billing-toggle{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-bottom:3rem;}
+.toggle-label{font-size:.875rem;color:var(--muted);}
+.toggle-label.active{color:var(--white);font-weight:600;}
+.toggle-switch{width:44px;height:24px;background:var(--mid);border:1px solid #333;border-radius:100px;cursor:pointer;position:relative;transition:background .2s;}
+.toggle-switch.on{background:var(--yellow);}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:var(--white);border-radius:50%;transition:transform .2s;}
+.toggle-switch.on::after{transform:translateX(20px);background:var(--black);}
+.save-badge{background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,.25);color:var(--green);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;letter-spacing:.5px;}
+
+/* PRICING SECTIONS */
+.pricing-wrap{max-width:1200px;margin:0 auto;padding:0 2rem 5rem;}
+
+.section-label{text-align:center;margin-bottom:2rem;}
+.section-label h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;margin-bottom:.3rem;}
+.section-label h2 span{color:var(--yellow);}
+.section-label p{font-size:.875rem;color:var(--muted);}
+
+/* PILOT CARDS */
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:4rem;}
+@media(max-width:800px){.cards-row{grid-template-columns:1fr;}}
+@media(min-width:600px) and (max-width:800px){.cards-row{grid-template-columns:1fr 1fr;}}
+
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;position:relative;transition:border-color .2s,transform .2s;}
+.price-card:hover{border-color:#2e2e2e;transform:translateY(-3px);}
+.price-card.popular{border-color:rgba(245,196,0,.35);background:linear-gradient(135deg,#111100 0%,var(--card) 60%);}
+.popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--yellow);color:var(--black);font-size:.72rem;font-weight:700;padding:.3rem .9rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+.card-icon{font-size:1.75rem;margin-bottom:.9rem;}
+.card-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:.25rem;}
+.card-desc{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.5;}
+.card-price{margin-bottom:1.5rem;}
+.price-amount{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.price-amount.free{color:var(--green);}
+.price-period{font-size:.8rem;color:var(--muted);margin-left:.25rem;}
+.price-annual{font-size:.75rem;color:#555;margin-top:.2rem;}
+.price-annual span{color:var(--green);}
+.card-cta{width:100%;padding:.75rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;border:none;margin-bottom:1.5rem;text-align:center;display:block;text-decoration:none;}
+.cta-yellow{background:var(--yellow);color:var(--black);}
+.cta-yellow:hover{background:var(--yellow-dim);}
+.cta-outline{background:transparent;border:1px solid #333;color:var(--white);}
+.cta-outline:hover{border-color:var(--yellow);color:var(--yellow);}
+.cta-green{background:var(--green);color:var(--black);}
+.cta-green:hover{background:#22c55e;}
+.feature-list{display:flex;flex-direction:column;gap:.6rem;}
+.feature-item{display:flex;align-items:flex-start;gap:.6rem;font-size:.82rem;color:#aaa;line-height:1.4;}
+.feature-item.included{color:var(--white);}
+.feature-item.not-included{color:#444;}
+.fi-icon{font-size:.8rem;flex-shrink:0;margin-top:.1rem;}
+.fi-icon.yes{color:var(--green);}
+.fi-icon.no{color:#333;}
+
+/* DIVIDER */
+.section-divider{border:none;border-top:1px solid var(--border);margin:1rem 0 3rem;}
+
+/* CARRIER CARDS */
+.carrier-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:4rem;}
+@media(max-width:700px){.carrier-cards{grid-template-columns:1fr;}}
+
+/* COMPARE TABLE */
+.compare-wrap{margin-bottom:4rem;}
+.compare-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;text-align:center;margin-bottom:1.5rem;}
+.compare-title span{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden;}
+.compare-table th{padding:.9rem 1.25rem;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;}
+.compare-table th.highlight{color:var(--yellow);}
+.compare-table td{padding:.85rem 1.25rem;font-size:.85rem;border-bottom:1px solid #1a1a1a;color:#aaa;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table tr:hover td{background:rgba(255,255,255,.015);}
+.compare-table td:first-child{color:var(--white);font-weight:500;}
+.check{color:var(--green);}
+.cross{color:#2a2a2a;}
+.partial{color:var(--yellow);}
+
+/* FAQ */
+.faq-wrap{max-width:700px;margin:0 auto 4rem;}
+.faq-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;text-align:center;margin-bottom:1.5rem;}
+.faq-title span{color:var(--yellow);}
+.faq-item{border-bottom:1px solid var(--border);overflow:hidden;}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;cursor:pointer;font-weight:500;font-size:.9rem;transition:color .2s;}
+.faq-q:hover{color:var(--yellow);}
+.faq-icon{color:var(--yellow);font-size:1.1rem;transition:transform .2s;flex-shrink:0;margin-left:1rem;}
+.faq-a{font-size:.85rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:1rem;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+
+/* BOTTOM CTA */
+.bottom-cta{text-align:center;background:linear-gradient(135deg,#111100,#0a0a0a,#001100);border:1px solid rgba(245,196,0,.12);border-radius:14px;padding:3.5rem 2rem;margin-bottom:4rem;position:relative;overflow:hidden;}
+.bottom-cta::after{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 65%);pointer-events:none;}
+.bottom-cta h2{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:1px;margin-bottom:.5rem;}
+.bottom-cta h2 span{color:var(--yellow);}
+.bottom-cta p{color:var(--muted);font-size:.9rem;margin-bottom:2rem;}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.cta-btn{padding:.85rem 2rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;border:none;display:inline-block;}
+
+/* FOOTER */
+footer{padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid var(--border);}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);letter-spacing:2px;}
+.footer-links{display:flex;gap:2rem;}
+.footer-links a{color:#555;text-decoration:none;font-size:.85rem;transition:color .2s;}
+.footer-links a:hover{color:var(--white);}
+.footer-copy{color:#444;font-size:.8rem;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.price-card{animation:fadeUp .5s ease both;}
+.price-card:nth-child(2){animation-delay:.1s;}
+.price-card:nth-child(3){animation-delay:.2s;}
+
+@media(max-width:600px){
+  nav{padding:.9rem 1.25rem;}
+  .nav-links{display:none;}
+  .pricing-hero{padding:3.5rem 1.25rem 2.5rem;}
+  .pricing-wrap{padding:0 1.25rem 3rem;}
+  .compare-table{font-size:.78rem;}
+  .compare-table th,.compare-table td{padding:.7rem .85rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Load<span>Leader</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="loadboard.html">Board</a>
+    <a href="pricing.html" style="color:var(--yellow)">Pricing</a>
+    <a href="about.html">About</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="btn-sm btn-ghost">Log In</a>
+    <a href="login.html?tab=signup" class="btn-sm btn-yellow">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="pricing-hero">
+  <div class="hero-eyebrow">Simple, Transparent Pricing</div>
+  <h1 class="hero-title">Move More Loads.<br><span>Pay Less.</span></h1>
+  <p class="hero-sub">Pilots get full board access and tools to grow their business. Carriers post free for 30 days then choose a plan that fits.</p>
+
+  <div class="billing-toggle">
+    <span class="toggle-label active" id="monthlyLabel">Monthly</span>
+    <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()"></div>
+    <span class="toggle-label" id="annualLabel">Annual</span>
+    <span class="save-badge">Save 20%</span>
+  </div>
+</div>
+
+<div class="pricing-wrap">
+
+  <!-- PILOT PLANS -->
+  <div class="section-label">
+    <h2>For <span>Pilot Car Drivers</span></h2>
+    <p>Apply to unlimited loads, track earnings, and grow your reputation on the platform</p>
+  </div>
+
+  <div class="cards-row">
+    <!-- Free -->
+    <div class="price-card">
+      <div class="card-icon">🚩</div>
+      <div class="card-name">Starter</div>
+      <div class="card-desc">Get started and explore the board before committing</div>
+      <div class="card-price">
+        <span class="price-amount free">$0</span>
+        <span class="price-period">/ forever</span>
+      </div>
+      <a href="login.html?tab=signup" class="card-cta cta-outline">Create Free Account</a>
+      <div class="feature-list">
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Browse the full load board</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Apply to 3 loads per month</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Basic profile page</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Application tracking</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Unlimited applications</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Priority listing to carriers</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Load alerts & notifications</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Earnings dashboard</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>1099-K tax reporting</div>
+      </div>
+    </div>
+
+    <!-- Pro — Popular -->
+    <div class="price-card popular">
+      <div class="popular-badge">⭐ Most Popular</div>
+      <div class="card-icon">🚀</div>
+      <div class="card-name">Pro Pilot</div>
+      <div class="card-desc">Everything you need to run your pilot car business full time</div>
+      <div class="card-price">
+        <span class="price-amount" id="proPilotPrice">$39</span>
+        <span class="price-period">/ month</span>
+        <div class="price-annual" id="proPilotAnnual" style="display:none">Billed annually — <span>save $94/yr</span></div>
+      </div>
+      <a href="login.html?tab=signup" class="card-cta cta-yellow">Start Pro — 7 Days Free</a>
+      <div class="feature-list">
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Everything in Starter</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Unlimited load applications</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Priority profile visibility to carriers</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Instant load alerts by route & pay</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Full earnings dashboard</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>1099-K tax reporting</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Certification badge on profile</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Save unlimited loads</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Featured top placement</div>
+      </div>
+    </div>
+
+    <!-- Elite -->
+    <div class="price-card">
+      <div class="card-icon">👑</div>
+      <div class="card-name">Elite Pilot</div>
+      <div class="card-desc">Maximum visibility and tools for high-volume pilot car operators</div>
+      <div class="card-price">
+        <span class="price-amount" id="elitePilotPrice">$49</span>
+        <span class="price-period">/ month</span>
+        <div class="price-annual" id="elitePilotAnnual" style="display:none">Billed annually — <span>save $118/yr</span></div>
+      </div>
+      <a href="login.html?tab=signup" class="card-cta cta-outline">Start Elite — 7 Days Free</a>
+      <div class="feature-list">
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Everything in Pro</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Featured top placement on every load</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Elite badge — stands out to carriers</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Priority customer support</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Early access to new loads before public</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Monthly earnings report PDF</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Profile video introduction</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Direct carrier messaging</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- CARRIER PLANS -->
+  <div class="section-label">
+    <h2>For <span>Carriers & Haulers</span></h2>
+    <p>Post loads, review pilot profiles, and hire the best escorts for your oversize moves</p>
+  </div>
+
+  <div class="carrier-cards">
+    <!-- Free Trial -->
+    <div class="price-card" style="border-color:rgba(96,165,250,.25);background:linear-gradient(135deg,#000814,var(--card));">
+      <div class="card-icon">🆓</div>
+      <div class="card-name">Free Trial</div>
+      <div class="card-desc">Full access for 30 days — no credit card required</div>
+      <div class="card-price">
+        <span class="price-amount free">$0</span>
+        <span class="price-period">/ 30 days</span>
+      </div>
+      <a href="login.html?tab=signup" class="card-cta cta-green">Start Free Trial</a>
+      <div class="feature-list">
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Post up to 5 loads</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Review all pilot applications</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Accept & hire pilots</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Full carrier dashboard</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Email notifications</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Unlimited load postings</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Preferred pilot lists</div>
+        <div class="feature-item not-included"><span class="fi-icon no">✗</span>Multi-load management</div>
+      </div>
+    </div>
+
+    <!-- Carrier Pro -->
+    <div class="price-card popular">
+      <div class="popular-badge">⭐ Best Value</div>
+      <div class="card-icon">🚛</div>
+      <div class="card-name">Carrier Pro</div>
+      <div class="card-desc">Unlimited loads, full pilot management, and premium tools</div>
+      <div class="card-price">
+        <span class="price-amount" id="carrierProPrice">$89</span>
+        <span class="price-period">/ month</span>
+        <div class="price-annual" id="carrierProAnnual" style="display:none">Billed annually — <span>save $214/yr</span></div>
+      </div>
+      <a href="login.html?tab=signup" class="card-cta cta-yellow">Start After Free Trial</a>
+      <div class="feature-list">
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Unlimited load postings</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Full pilot profile access</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Preferred pilot lists</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Multi-load management dashboard</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Instant pilot notifications</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Load history & reporting</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>AI load parser tool</div>
+        <div class="feature-item included"><span class="fi-icon yes">✓</span>Priority customer support</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE TABLE -->
+  <div class="compare-wrap">
+    <div class="compare-title">Feature <span>Comparison</span></div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Starter</th>
+          <th class="highlight">Pro Pilot</th>
+          <th>Elite Pilot</th>
+          <th>Carrier Pro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Browse load board</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td>Apply to loads</td><td class="partial">3/mo</td><td class="check">Unlimited</td><td class="check">Unlimited</td><td>—</td></tr>
+        <tr><td>Post loads</td><td>—</td><td>—</td><td>—</td><td class="check">Unlimited</td></tr>
+        <tr><td>Pilot profile page</td><td class="check">Basic</td><td class="check">Full</td><td class="check">Featured</td><td>—</td></tr>
+        <tr><td>Load alerts</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+        <tr><td>Earnings dashboard</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
+        <tr><td>1099-K reporting</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
+        <tr><td>Priority placement</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td><td>—</td></tr>
+        <tr><td>AI load parser</td><td class="cross">✗</td><td class="partial">Basic</td><td class="check">Full</td><td class="check">Full</td></tr>
+        <tr><td>Preferred pilot lists</td><td>—</td><td>—</td><td>—</td><td class="check">✓</td></tr>
+        <tr><td>Multi-load dashboard</td><td>—</td><td>—</td><td>—</td><td class="check">✓</td></tr>
+        <tr><td>Customer support</td><td>Email</td><td class="check">Priority</td><td class="check">Priority</td><td class="check">Priority</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-wrap">
+    <div class="faq-title">Common <span>Questions</span></div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes — cancel anytime from your account settings. You keep access until the end of your billing period. No cancellation fees ever.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Does LoadLeader take a cut of my earnings? <span class="faq-icon">+</span></div>
+      <div class="faq-a">No. Your subscription is a flat monthly fee. LoadLeader never takes a percentage of what you earn per job — 100% of what a carrier pays goes to you.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What happens after my carrier free trial ends? <span class="faq-icon">+</span></div>
+      <div class="faq-a">After 30 days you'll be prompted to subscribe to Carrier Pro to continue posting loads. Your existing loads and data are saved. You can also export your history at any time.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is there a contract or minimum commitment? <span class="faq-icon">+</span></div>
+      <div class="faq-a">No contracts. Monthly plans are month-to-month. Annual plans are billed once per year and save you 20% compared to monthly.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can I switch plans? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes — upgrade or downgrade at any time. When you upgrade you get immediate access. When you downgrade the change takes effect at the next billing cycle.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Do you offer refunds? <span class="faq-icon">+</span></div>
+      <div class="faq-a">We offer a 7-day money back guarantee on all paid plans. If you're not satisfied in your first 7 days contact support for a full refund.</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <h2>Ready to Lead <span>the Load?</span></h2>
+    <p>Join thousands of pilot car drivers and carriers already using LoadLeader</p>
+    <div class="cta-btns">
+      <a href="login.html?tab=signup" class="cta-btn" style="background:var(--yellow);color:var(--black);">🚩 Start as a Pilot — Free</a>
+      <a href="login.html?tab=signup" class="cta-btn" style="background:transparent;border:1px solid #333;color:var(--white);">🚛 Start Carrier Free Trial</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">LoadLeader</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="loadboard.html">Board</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="#">Support</a>
+  </div>
+  <div class="footer-copy">© 2026 LoadLeader. All rights reserved.</div>
+</footer>
+
+<script>
+let isAnnual = false;
+
+function toggleBilling() {
+  isAnnual = !isAnnual;
+  document.getElementById('billingToggle').classList.toggle('on', isAnnual);
+  document.getElementById('monthlyLabel').classList.toggle('active', !isAnnual);
+  document.getElementById('annualLabel').classList.toggle('active', isAnnual);
+
+  const prices = {
+    proPilot: isAnnual ? '$31' : '$39',
+    elitePilot: isAnnual ? '$39' : '$49',
+    carrierPro: isAnnual ? '$71' : '$89'
+  };
+
+  document.getElementById('proPilotPrice').textContent = prices.proPilot;
+  document.getElementById('elitePilotPrice').textContent = prices.elitePilot;
+  document.getElementById('carrierProPrice').textContent = prices.carrierPro;
+
+  ['proPilotAnnual','elitePilotAnnual','carrierProAnnual'].forEach(id => {
+    document.getElementById(id).style.display = isAnnual ? 'block' : 'none';
+  });
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>

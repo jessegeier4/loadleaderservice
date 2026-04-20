@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoadLeader – Pilot Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
+  --white:#f0ede6; --gray:#141414; --mid:#1e1e1e; --card:#181818;
+  --border:#222; --muted:#666; --green:#4ade80; --green-bg:rgba(74,222,128,0.08);
+  --red:#f87171; --blue:#60a5fa; --blue-bg:rgba(96,165,250,0.08);
+  --orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* LOADING SCREEN */
+#loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+.loading-logo{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px;color:var(--yellow);}
+.loading-logo span{color:var(--white);}
+.loading-bar{width:200px;height:2px;background:#1a1a1a;border-radius:2px;overflow:hidden;}
+.loading-fill{height:100%;background:var(--yellow);border-radius:2px;animation:loadBar 1.5s ease forwards;}
+@keyframes loadBar{from{width:0}to{width:100%}}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
+.logo span{color:var(--white);}
+.nav-center{display:flex;gap:.25rem;background:var(--mid);padding:.3rem;border-radius:8px;}
+.nav-tab{padding:.38rem .9rem;border-radius:5px;font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.nav-tab.active{background:var(--yellow);color:var(--black);font-weight:700;}
+.nav-tab:hover:not(.active){color:var(--white);}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.user-chip{display:flex;align-items:center;gap:.6rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;cursor:pointer;transition:background .2s;}
+.user-chip:hover{background:#2a2a2a;}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--black);}
+.user-name{font-size:.82rem;font-weight:500;}
+.notif-btn{width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;transition:background .2s;}
+.notif-btn:hover{background:#2a2a2a;}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--black);}
+.logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* MAIN */
+.dash-wrap{max-width:1300px;margin:0 auto;padding:2rem;}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,#111100 0%,#0a0a0a 60%,#001100 100%);border:1px solid rgba(245,196,0,0.15);border-radius:12px;padding:1.75rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
+.welcome-banner::after{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 70%);pointer-events:none;}
+.welcome-text{}
+.welcome-sup{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:rgba(245,196,0,.6);margin-bottom:.3rem;}
+.welcome-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:1;}
+.welcome-name span{color:var(--yellow);}
+.welcome-sub{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
+.welcome-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+.btn{border:none;padding:.55rem 1.1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-y{background:var(--yellow);color:var(--black);}
+.btn-y:hover{background:var(--yellow-dim);}
+.btn-o{background:transparent;border:1px solid #2a2a2a;color:var(--white);}
+.btn-o:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+@media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.stats-row{grid-template-columns:1fr;}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0;}
+.stat-card.yellow::before{background:var(--yellow);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card.orange::before{background:var(--orange);}
+.sc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;}
+.sc-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
+.stat-card.yellow .sc-val{color:var(--yellow);}
+.stat-card.green .sc-val{color:var(--green);}
+.stat-card.blue .sc-val{color:var(--blue);}
+.stat-card.orange .sc-val{color:var(--orange);}
+.sc-sub{font-size:.72rem;color:var(--muted);}
+
+/* SECTION HEADERS */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;}
+.sec-title span{color:var(--yellow);}
+.sec-link{color:var(--yellow);font-size:.8rem;text-decoration:none;font-weight:500;}
+.sec-link:hover{text-decoration:underline;}
+
+/* JOB CARDS */
+.job-list{display:flex;flex-direction:column;gap:.75rem;}
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;transition:border-color .2s;position:relative;overflow:hidden;}
+.job-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.job-card.active-job::before{background:var(--green);}
+.job-card.pending-job::before{background:var(--yellow);}
+.job-card.completed-job::before{background:var(--muted);}
+.job-card:hover{border-color:#2e2e2e;}
+.job-left{}
+.job-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;}
+.job-city{font-weight:600;font-size:.95rem;}
+.job-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
+.job-arr{color:var(--yellow);}
+.job-meta{display:flex;gap:1rem;flex-wrap:wrap;}
+.job-meta-item{font-size:.75rem;color:var(--muted);}
+.job-meta-item strong{color:#bbb;font-weight:500;}
+.job-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+.job-pay{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.job-pay-label{font-size:.65rem;color:var(--muted);text-align:right;}
+.badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;}
+.badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
+.badge-completed{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
+.badge-applied{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
+.job-actions{display:flex;gap:.4rem;margin-top:.25rem;}
+.job-btn{background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.35rem .75rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;}
+.job-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+.job-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);}
+.job-btn.primary:hover{background:var(--yellow-dim);}
+
+/* EARNINGS */
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+@media(max-width:700px){.earnings-grid{grid-template-columns:1fr;}}
+.earnings-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;}
+.ec-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.5rem;}
+.ec-amount{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--green);letter-spacing:1px;line-height:1;margin-bottom:.25rem;}
+.ec-sub{font-size:.75rem;color:var(--muted);}
+.payout-card{background:linear-gradient(135deg,#001400,#0a0a0a);border:1px solid rgba(74,222,128,.15);border-radius:10px;padding:1.5rem;}
+.payout-amount{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--green);letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
+.bank-row{display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.03);border-radius:6px;padding:.55rem .8rem;margin:.9rem 0;font-size:.8rem;color:#888;}
+.withdraw-btn{width:100%;background:var(--green);color:var(--black);border:none;padding:.65rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s;}
+.withdraw-btn:hover{background:#22c55e;}
+
+/* TX TABLE */
+.tx-table{width:100%;border-collapse:collapse;}
+.tx-table th{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:.6rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-weight:600;}
+.tx-table td{padding:.8rem 1rem;font-size:.82rem;border-bottom:1px solid #1a1a1a;vertical-align:middle;}
+.tx-table tr:last-child td{border-bottom:none;}
+.tx-table tr:hover td{background:rgba(255,255,255,.015);}
+.tx-cr{color:var(--green);font-weight:600;}
+.tx-hold{color:var(--blue);font-weight:600;}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:.4rem;vertical-align:middle;}
+
+/* SAVED LOADS */
+.saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
+.saved-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;transition:border-color .2s,transform .2s;position:relative;}
+.saved-card:hover{border-color:#2e2e2e;transform:translateY(-2px);}
+.saved-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);opacity:0;transition:opacity .2s;border-radius:0 0 0 10px;}
+.saved-card:hover::before{opacity:1;}
+.sc-top{display:flex;justify-content:space-between;margin-bottom:.8rem;}
+.sc-id{font-size:.65rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
+.unsave-btn{background:none;border:none;color:#333;cursor:pointer;font-size:.85rem;transition:color .2s;}
+.unsave-btn:hover{color:var(--red);}
+.sc-route{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;}
+.sc-city{font-weight:600;font-size:.95rem;}
+.sc-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
+.sc-arr{color:var(--yellow);}
+.sc-details{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .75rem;margin-bottom:.9rem;}
+.sc-det-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:#444;}
+.sc-det-val{font-size:.8rem;color:#bbb;font-weight:500;}
+.sc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.85rem;border-top:1px solid #1f1f1f;}
+.sc-pay{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--yellow);letter-spacing:1px;}
+.sc-pay-label{font-size:.62rem;color:var(--muted);}
+
+/* PROFILE */
+.profile-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;}
+@media(max-width:900px){.profile-grid{grid-template-columns:1fr;}}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.75rem;text-align:center;}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--black);margin:0 auto 1rem;letter-spacing:1px;}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;margin-bottom:.2rem;}
+.profile-type{display:inline-block;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.2);color:var(--yellow);font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin:1rem 0;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ps-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);}
+.ps-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.rating-row{display:flex;align-items:center;justify-content:center;gap:.3rem;margin-bottom:1rem;}
+.star{color:var(--yellow);font-size:1rem;}
+.star.empty{color:#2a2a2a;}
+.rating-num{font-size:.875rem;font-weight:600;margin-left:.25rem;}
+.edit-profile-btn{width:100%;background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.65rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.edit-profile-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* FORM FIELDS */
+.form-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1rem;}
+.fs-title{font-weight:600;font-size:.9rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem;}
+.fs-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+@media(max-width:500px){.form-row{grid-template-columns:1fr;}}
+.form-group{margin-bottom:.85rem;}
+.form-group:last-child{margin-bottom:0;}
+label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
+input,select,textarea{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--yellow);}
+input::placeholder,textarea::placeholder{color:#3a3a3a;}
+select option{background:var(--mid);}
+.save-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem;}
+.save-btn:hover{background:var(--yellow-dim);}
+
+/* CERTS */
+.cert-list{display:flex;flex-direction:column;gap:.6rem;}
+.cert-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--mid);border-radius:7px;border:1px solid #2a2a2a;}
+.cert-icon{font-size:1.1rem;flex-shrink:0;}
+.cert-name{font-size:.85rem;font-weight:500;flex:1;}
+.cert-status{font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:100px;}
+.cert-valid{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
+.cert-expired{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.cert-missing{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
+.cert-exp{font-size:.7rem;color:var(--muted);margin-left:auto;margin-right:.5rem;}
+.add-cert-btn{width:100%;background:transparent;border:1px dashed #2a2a2a;color:var(--muted);padding:.65rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;margin-top:.6rem;}
+.add-cert-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;}
+.empty-text{font-size:.875rem;margin-bottom:1rem;}
+
+/* MOBILE */
+@media(max-width:600px){
+  nav{padding:.75rem 1rem;}
+  .nav-center{display:none;}
+  .dash-wrap{padding:1.25rem 1rem;}
+  .welcome-banner{padding:1.25rem;}
+  .job-card{flex-direction:column;align-items:flex-start;}
+  .job-right{align-items:flex-start;}
+  .saved-grid{grid-template-columns:1fr;}
+}
+
+/* SPINNER */
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(245,196,0,.2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* MOBILE NAV BOTTOM */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 .8rem;z-index:100;}
+.mobile-nav-items{display:flex;justify-content:space-around;}
+.mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:6px;transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;}
+.mn-item.active{color:var(--yellow);}
+.mn-icon{font-size:1.1rem;}
+.mn-label{font-size:.6rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+@media(max-width:600px){.mobile-nav{display:block;}.dash-wrap{padding-bottom:5rem;}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+  <div class="loading-logo">Load<span>Leader</span></div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">Load<span>Leader</span></a>
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="showPanel('overview',this)">Overview</button>
+    <button class="nav-tab" onclick="showPanel('jobs',this)">My Jobs</button>
+    <button class="nav-tab" onclick="showPanel('earnings',this)">Earnings</button>
+    <button class="nav-tab" onclick="showPanel('saved',this)">Saved Loads</button>
+    <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
+  </div>
+  <div class="nav-right">
+    <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    <div class="user-chip">
+      <div class="user-av" id="navAvatar">--</div>
+      <span class="user-name" id="navName">Loading...</span>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="dash-wrap">
+
+  <!-- OVERVIEW PANEL -->
+  <div class="panel active" id="panel-overview">
+
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <div class="welcome-sup">🚩 Pilot Dashboard</div>
+        <div class="welcome-name">Welcome Back, <span id="welcomeName">Pilot</span></div>
+        <div class="welcome-sub" id="welcomeSub">You have 2 active jobs and 1 pending application</div>
+      </div>
+      <div class="welcome-actions">
+        <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
+        <button class="btn btn-o" onclick="showPanel('profile',document.querySelectorAll('.nav-tab')[4])">Edit Profile</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card yellow">
+        <div class="sc-label">Active Jobs</div>
+        <div class="sc-val">2</div>
+        <div class="sc-sub">In progress right now</div>
+      </div>
+      <div class="stat-card green">
+        <div class="sc-label">Earnings (2026)</div>
+        <div class="sc-val">$14,260</div>
+        <div class="sc-sub">↑ 23% vs last year</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="sc-label">Jobs Completed</div>
+        <div class="sc-val">38</div>
+        <div class="sc-sub">Since joining LoadLeader</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="sc-label">Rating</div>
+        <div class="sc-val">4.9</div>
+        <div class="sc-sub">Based on 36 reviews</div>
+      </div>
+    </div>
+
+    <!-- ACTIVE JOBS PREVIEW -->
+    <div class="sec-head">
+      <div class="sec-title">Active <span>Jobs</span></div>
+      <a href="#" class="sec-link" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);return false;">View all →</a>
+    </div>
+    <div class="job-list" style="margin-bottom:2rem;">
+      <div class="job-card active-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Denver</span><span class="job-st">CO</span></div><span class="job-arr">→</span><div><span class="job-city">Salt Lake City</span><span class="job-st">UT</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00479</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 19</strong></div>
+            <div class="job-meta-item">Miles <strong>525 mi</strong></div>
+            <div class="job-meta-item">Width <strong>14'0"</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$740</div></div>
+          <span class="badge badge-active">In Progress</span>
+          <div class="job-actions">
+            <button class="job-btn">View Details</button>
+            <button class="job-btn primary">Confirm Delivery</button>
+          </div>
+        </div>
+      </div>
+      <div class="job-card pending-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Phoenix</span><span class="job-st">AZ</span></div><span class="job-arr">→</span><div><span class="job-city">Albuquerque</span><span class="job-st">NM</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00475</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 25</strong></div>
+            <div class="job-meta-item">Miles <strong>470 mi</strong></div>
+            <div class="job-meta-item">Width <strong>15'0"</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$580</div></div>
+          <span class="badge badge-applied">Applied</span>
+          <div class="job-actions">
+            <button class="job-btn">View Details</button>
+            <button class="job-btn">Withdraw</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPCOMING PAYOUT -->
+    <div class="sec-head">
+      <div class="sec-title">Upcoming <span>Payout</span></div>
+      <a href="#" class="sec-link" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[2]);return false;">View earnings →</a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.3rem;">In Escrow — Releasing Apr 22</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--blue);letter-spacing:1px;">$740.00</div>
+        <div style="font-size:.75rem;color:var(--muted);">Denver CO → Salt Lake City UT · LL-00479</div>
+      </div>
+      <button class="btn btn-o" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[2])">View Wallet →</button>
+    </div>
+  </div>
+
+  <!-- JOBS PANEL -->
+  <div class="panel" id="panel-jobs">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">My <span>Jobs</span></div>
+      <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">+ Find New Loads</a>
+    </div>
+
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+      <button class="job-btn primary" onclick="filterJobs('all',this)">All</button>
+      <button class="job-btn" onclick="filterJobs('active',this)">In Progress</button>
+      <button class="job-btn" onclick="filterJobs('applied',this)">Applied</button>
+      <button class="job-btn" onclick="filterJobs('completed',this)">Completed</button>
+    </div>
+
+    <div class="job-list" id="jobsList">
+      <div class="job-card active-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Denver</span><span class="job-st">CO</span></div><span class="job-arr">→</span><div><span class="job-city">Salt Lake City</span><span class="job-st">UT</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00479</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 19</strong></div>
+            <div class="job-meta-item">Miles <strong>525 mi</strong></div>
+            <div class="job-meta-item">Type <strong>Oversize</strong></div>
+            <div class="job-meta-item">Carrier <strong>Rocky Mtn Hauling</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$740</div></div>
+          <span class="badge badge-active">In Progress</span>
+          <div class="job-actions">
+            <button class="job-btn">Contact Carrier</button>
+            <button class="job-btn primary">Confirm Delivery</button>
+          </div>
+        </div>
+      </div>
+      <div class="job-card pending-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Phoenix</span><span class="job-st">AZ</span></div><span class="job-arr">→</span><div><span class="job-city">Albuquerque</span><span class="job-st">NM</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00475</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 25</strong></div>
+            <div class="job-meta-item">Miles <strong>470 mi</strong></div>
+            <div class="job-meta-item">Type <strong>Tall Load</strong></div>
+            <div class="job-meta-item">Carrier <strong>Sun State Transport</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$580</div></div>
+          <span class="badge badge-applied">Applied</span>
+          <div class="job-actions">
+            <button class="job-btn">View Load</button>
+            <button class="job-btn">Withdraw</button>
+          </div>
+        </div>
+      </div>
+      <div class="job-card completed-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Atlanta</span><span class="job-st">GA</span></div><span class="job-arr">→</span><div><span class="job-city">Charlotte</span><span class="job-st">NC</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00455</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 12</strong></div>
+            <div class="job-meta-item">Miles <strong>245 mi</strong></div>
+            <div class="job-meta-item">Type <strong>Combination</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Paid Out</div><div class="job-pay" style="color:var(--green)">$390</div></div>
+          <span class="badge badge-completed">Completed</span>
+          <div class="job-actions">
+            <button class="job-btn">View Receipt</button>
+            <button class="job-btn">Leave Review</button>
+          </div>
+        </div>
+      </div>
+      <div class="job-card completed-job">
+        <div class="job-left">
+          <div class="job-route"><div><span class="job-city">Seattle</span><span class="job-st">WA</span></div><span class="job-arr">→</span><div><span class="job-city">Portland</span><span class="job-st">OR</span></div></div>
+          <div class="job-meta">
+            <div class="job-meta-item">Load ID <strong>LL-00441</strong></div>
+            <div class="job-meta-item">Date <strong>Apr 5</strong></div>
+            <div class="job-meta-item">Miles <strong>175 mi</strong></div>
+            <div class="job-meta-item">Type <strong>Wide Load</strong></div>
+          </div>
+        </div>
+        <div class="job-right">
+          <div><div class="job-pay-label">Paid Out</div><div class="job-pay" style="color:var(--green)">$480</div></div>
+          <span class="badge badge-completed">Completed</span>
+          <div class="job-actions">
+            <button class="job-btn">View Receipt</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EARNINGS PANEL -->
+  <div class="panel" id="panel-earnings">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">Earnings & <span>Payouts</span></div>
+    </div>
+
+    <div class="earnings-grid">
+      <div class="earnings-card">
+        <div class="ec-title">Total Earned (2026)</div>
+        <div class="ec-amount">$14,260</div>
+        <div class="ec-sub">Across 38 completed jobs</div>
+        <div style="margin-top:1rem;display:flex;gap:.5rem;">
+          <button class="job-btn">📄 2025 1099-K</button>
+          <button class="job-btn">📊 Export Report</button>
+        </div>
+      </div>
+      <div class="payout-card">
+        <div class="ec-title" style="color:rgba(74,222,128,.5)">Available to Withdraw</div>
+        <div class="payout-amount">$1,840.00</div>
+        <div class="ec-sub" style="color:#555">Ready in your LoadLeader wallet</div>
+        <div class="bank-row">🏦 Chase Bank ···· 4821 <span style="margin-left:auto;color:var(--green);font-size:.72rem;">Connected</span></div>
+        <button class="withdraw-btn">💸 Withdraw to Bank Account</button>
+      </div>
+    </div>
+
+    <!-- TX TABLE -->
+    <div class="sec-head"><div class="sec-title">Transaction <span>History</span></div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <table class="tx-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Job</th><th>Status</th><th style="text-align:right">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:var(--muted)">Apr 18</td><td>Escrow hold · Denver → SLC</td><td style="color:#444;font-size:.72rem;">LL-00479</td><td><span class="dot" style="background:var(--blue)"></span>Holding</td><td class="tx-hold" style="text-align:right">$740</td></tr>
+          <tr><td style="color:var(--muted)">Apr 16</td><td>Payout · Atlanta → Charlotte</td><td style="color:#444;font-size:.72rem;">LL-00455</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$390</td></tr>
+          <tr><td style="color:var(--muted)">Apr 7</td><td>Withdrawal to Chase ···· 4821</td><td style="color:#444;font-size:.72rem;">—</td><td><span class="dot" style="background:var(--green)"></span>Deposited</td><td style="text-align:right;color:var(--red)">-$2,400</td></tr>
+          <tr><td style="color:var(--muted)">Apr 5</td><td>Payout · Seattle → Portland</td><td style="color:#444;font-size:.72rem;">LL-00441</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$480</td></tr>
+          <tr><td style="color:var(--muted)">Mar 28</td><td>Payout · Chicago → Indianapolis</td><td style="color:#444;font-size:.72rem;">LL-00421</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$310</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SAVED LOADS PANEL -->
+  <div class="panel" id="panel-saved">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">Saved <span>Loads</span></div>
+      <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">Browse Board</a>
+    </div>
+    <div class="saved-grid">
+      <div class="saved-card">
+        <div class="sc-top"><div class="sc-id">LL-00481</div><button class="unsave-btn" title="Remove">♥</button></div>
+        <div class="sc-route"><div><span class="sc-city">Houston</span><span class="sc-st">TX</span></div><span class="sc-arr">→</span><div><span class="sc-city">Oklahoma City</span><span class="sc-st">OK</span></div></div>
+        <div class="sc-details">
+          <div><div class="sc-det-label">Width</div><div class="sc-det-val">16'0"</div></div>
+          <div><div class="sc-det-label">Height</div><div class="sc-det-val">14'0"</div></div>
+          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">450 mi</div></div>
+          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 21</div></div>
+        </div>
+        <div class="sc-footer">
+          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$620</div></div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="job-btn">View</button>
+            <button class="job-btn primary">Apply</button>
+          </div>
+        </div>
+      </div>
+      <div class="saved-card">
+        <div class="sc-top"><div class="sc-id">LL-00460</div><button class="unsave-btn" title="Remove">♥</button></div>
+        <div class="sc-route"><div><span class="sc-city">Minneapolis</span><span class="sc-st">MN</span></div><span class="sc-arr">→</span><div><span class="sc-city">Milwaukee</span><span class="sc-st">WI</span></div></div>
+        <div class="sc-details">
+          <div><div class="sc-det-label">Width</div><div class="sc-det-val">16'6"</div></div>
+          <div><div class="sc-det-label">Height</div><div class="sc-det-val">15'6"</div></div>
+          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">345 mi</div></div>
+          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 26</div></div>
+        </div>
+        <div class="sc-footer">
+          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$650</div></div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="job-btn">View</button>
+            <button class="job-btn primary">Apply</button>
+          </div>
+        </div>
+      </div>
+      <div class="saved-card">
+        <div class="sc-top"><div class="sc-id">LL-00450</div><button class="unsave-btn" title="Remove">♥</button></div>
+        <div class="sc-route"><div><span class="sc-city">Billings</span><span class="sc-st">MT</span></div><span class="sc-arr">→</span><div><span class="sc-city">Boise</span><span class="sc-st">ID</span></div></div>
+        <div class="sc-details">
+          <div><div class="sc-det-label">Width</div><div class="sc-det-val">18'6"</div></div>
+          <div><div class="sc-det-label">Height</div><div class="sc-det-val">16'0"</div></div>
+          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">620 mi</div></div>
+          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 28</div></div>
+        </div>
+        <div class="sc-footer">
+          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$810</div></div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="job-btn">View</button>
+            <button class="job-btn primary">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PANEL -->
+  <div class="panel" id="panel-profile">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">My <span>Profile</span></div>
+    </div>
+    <div class="profile-grid">
+
+      <!-- LEFT: Profile card -->
+      <div>
+        <div class="profile-card" style="margin-bottom:1rem;">
+          <div class="profile-avatar" id="profileAvatar">--</div>
+          <div class="profile-name" id="profileName">Your Name</div>
+          <div class="profile-type">🚩 Pilot Car Driver</div>
+          <div class="rating-row">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+            <span class="rating-num">4.9</span>
+          </div>
+          <div class="profile-stats">
+            <div><div class="ps-val">38</div><div class="ps-label">Jobs</div></div>
+            <div><div class="ps-val">48</div><div class="ps-label">States</div></div>
+            <div><div class="ps-val">100%</div><div class="ps-label">On Time</div></div>
+          </div>
+          <button class="edit-profile-btn">📷 Change Photo</button>
+        </div>
+
+        <!-- Certifications -->
+        <div class="form-section">
+          <div class="fs-title">Certifications</div>
+          <div class="cert-list">
+            <div class="cert-item"><span class="cert-icon">📋</span><span class="cert-name">Pilot Car Certification</span><span class="cert-exp">Exp: Dec 2026</span><span class="cert-status cert-valid">Valid</span></div>
+            <div class="cert-item"><span class="cert-icon">🚗</span><span class="cert-name">Driver's License (CDL)</span><span class="cert-exp">Exp: Aug 2027</span><span class="cert-status cert-valid">Valid</span></div>
+            <div class="cert-item"><span class="cert-icon">🛡️</span><span class="cert-name">Liability Insurance</span><span class="cert-exp">Exp: Jan 2026</span><span class="cert-status cert-expired">Expired</span></div>
+            <div class="cert-item"><span class="cert-icon">🔰</span><span class="cert-name">OSHA Safety Training</span><span class="cert-exp"></span><span class="cert-status cert-missing">Not Added</span></div>
+          </div>
+          <button class="add-cert-btn">+ Upload New Certificate</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Edit form -->
+      <div>
+        <div class="form-section">
+          <div class="fs-title">Personal Info</div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" id="pfFirstName" placeholder="First name"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" id="pfLastName" placeholder="Last name"></div>
+          </div>
+          <div class="form-group"><label>Email Address</label><input type="email" id="pfEmail" placeholder="your@email.com"></div>
+          <div class="form-group"><label>Phone Number</label><input type="tel" id="pfPhone" placeholder="(555) 000-0000"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Home State</label>
+              <select id="pfState">
+                <option value="">Select state...</option>
+                <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+                <option>California</option><option>Colorado</option><option>Connecticut</option>
+                <option>Florida</option><option>Georgia</option><option>Idaho</option>
+                <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+                <option>Kentucky</option><option>Louisiana</option><option>Michigan</option><option>Minnesota</option>
+                <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+                <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+                <option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option>
+                <option>Tennessee</option><option>Texas</option><option>Utah</option>
+                <option>Virginia</option><option>Washington</option><option>Wisconsin</option><option>Wyoming</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Years Experience</label>
+              <select id="pfExp">
+                <option>Less than 1 year</option><option>1-2 years</option><option>3-5 years</option>
+                <option>5-10 years</option><option>10+ years</option>
+              </select>
+            </div>
+          </div>
+          <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-title">Equipment & Coverage</div>
+          <div class="form-group"><label>Vehicle Type</label>
+            <select id="pfVehicle">
+              <option>Pickup Truck</option><option>SUV</option><option>Dedicated Pilot Car</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label>States You Cover</label>
+            <input type="text" id="pfCoverage" placeholder="e.g. OH, PA, WV, KY, IN">
+          </div>
+          <div class="form-group"><label>Equipment</label>
+            <input type="text" id="pfEquipment" placeholder="e.g. Height pole, CB radio, flags, lights">
+          </div>
+          <div class="form-group"><label>Bio / Notes for Carriers</label>
+            <textarea id="pfBio" rows="3" placeholder="Tell carriers about your experience, routes you know well, etc."></textarea>
+          </div>
+          <button class="save-btn" onclick="saveEquipment()">Save Equipment Info</button>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-title">Change Password</div>
+          <div class="form-group"><label>Current Password</label><input type="password" placeholder="••••••••"></div>
+          <div class="form-group"><label>New Password</label><input type="password" placeholder="••••••••"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" placeholder="••••••••"></div>
+          <button class="save-btn">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end dash-wrap -->
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-nav">
+  <div class="mobile-nav-items">
+    <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon">🏠</span><span class="mn-label">Home</span></button>
+    <button class="mn-item" onclick="showPanel('jobs',this)"><span class="mn-icon">🚛</span><span class="mn-label">Jobs</span></button>
+    <button class="mn-item" onclick="showPanel('earnings',this)"><span class="mn-icon">💰</span><span class="mn-label">Earnings</span></button>
+    <button class="mn-item" onclick="showPanel('saved',this)"><span class="mn-icon">♡</span><span class="mn-label">Saved</span></button>
+    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">👤</span><span class="mn-label">Profile</span></button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
+  authDomain: "load-leader.firebaseapp.com",
+  projectId: "load-leader",
+  storageBucket: "load-leader.firebasestorage.app",
+  messagingSenderId: "411492756195",
+  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Auth state check — redirect to login if not signed in
+onAuthStateChanged(auth, async (user) => {
+  // Demo mode — show dashboard even without login for preview
+  const isDemo = window.location.search.includes('demo') || !window.location.hostname.includes('netlify');
+
+  if (!user && !isDemo) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Hide loading screen
+  document.getElementById('loadingScreen').style.display = 'none';
+
+  if (!user) {
+    // Demo placeholder data
+    document.getElementById('navAvatar').textContent = 'JD';
+    document.getElementById('navName').textContent = 'Jesse';
+    document.getElementById('welcomeName').textContent = 'Jesse';
+    document.getElementById('profileAvatar').textContent = 'JD';
+    document.getElementById('profileName').textContent = 'Jesse D.';
+    document.getElementById('pfFirstName').value = 'Jesse';
+    document.getElementById('pfEmail').value = 'jesse@loadleader.com';
+    return;
+  }
+
+  // Load user profile from Firestore
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const data = userDoc.exists() ? userDoc.data() : {};
+    const firstName = data.firstName || user.displayName?.split(' ')[0] || 'Pilot';
+    const lastName = data.lastName || '';
+    const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
+
+    // Update UI with real user data
+    document.getElementById('navAvatar').textContent = initials;
+    document.getElementById('navName').textContent = firstName;
+    document.getElementById('welcomeName').textContent = firstName;
+    document.getElementById('profileAvatar').textContent = initials;
+    document.getElementById('profileName').textContent = `${firstName} ${lastName}`.trim();
+
+    // Pre-fill profile form
+    document.getElementById('pfFirstName').value = firstName;
+    document.getElementById('pfLastName').value = lastName;
+    document.getElementById('pfEmail').value = user.email || '';
+    document.getElementById('pfPhone').value = data.phone || '';
+    if (data.state) {
+      const stateSelect = document.getElementById('pfState');
+      for (let opt of stateSelect.options) {
+        if (opt.value === data.state || opt.text === data.state) { opt.selected = true; break; }
+      }
+    }
+    document.getElementById('pfCoverage').value = data.coverage || '';
+    document.getElementById('pfEquipment').value = data.equipment || '';
+    document.getElementById('pfBio').value = data.bio || '';
+
+  } catch(e) {
+    console.error('Error loading profile:', e);
+  }
+});
+
+// Logout
+window.handleLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'login.html';
+};
+
+// Save profile
+window.saveProfile = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const btn = document.querySelector('#panel-profile .save-btn');
+  btn.innerHTML = '<span class="spinner"></span>Saving...';
+  btn.disabled = true;
+  try {
+    const firstName = document.getElementById('pfFirstName').value.trim();
+    const lastName = document.getElementById('pfLastName').value.trim();
+    await updateDoc(doc(db, 'users', user.uid), {
+      firstName,
+      lastName,
+      phone: document.getElementById('pfPhone').value.trim(),
+      state: document.getElementById('pfState').value,
+    });
+    await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+    btn.innerHTML = '✓ Saved!';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = 'Save Changes'; btn.style.background = ''; btn.disabled = false; }, 2000);
+  } catch(e) {
+    btn.innerHTML = 'Save Changes';
+    btn.disabled = false;
+    alert('Could not save. Try again.');
+  }
+};
+
+// Save equipment
+window.saveEquipment = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    await updateDoc(doc(db, 'users', user.uid), {
+      coverage: document.getElementById('pfCoverage').value,
+      equipment: document.getElementById('pfEquipment').value,
+      bio: document.getElementById('pfBio').value,
+      vehicle: document.getElementById('pfVehicle').value,
+    });
+    const btn = document.querySelectorAll('#panel-profile .save-btn')[1];
+    btn.innerHTML = '✓ Saved!';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = 'Save Equipment Info'; btn.style.background = ''; }, 2000);
+  } catch(e) {
+    alert('Could not save. Try again.');
+  }
+};
+
+// Panel switching
+window.showPanel = (name, el) => {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mn-item').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+};
+
+window.filterJobs = (type, btn) => {
+  document.querySelectorAll('#panel-jobs .job-btn').forEach(b => b.classList.remove('primary'));
+  btn.classList.add('primary');
+};
+</script>
+</body>
+</html>

@@ -3,709 +3,732 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoadLeader – Load Board</title>
+<title>LoadLeader – Pilot Car Load Board</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
-  --white:#f0ede6; --gray:#141414; --mid:#1e1e1e; --card:#181818;
-  --border:#222; --muted:#666; --green:#4ade80; --green-bg:rgba(74,222,128,0.08);
-  --red:#f87171; --blue:#60a5fa; --blue-bg:rgba(96,165,250,0.08);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
-nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
-.logo span{color:var(--white);}
-.nav-links{display:flex;gap:2rem;}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s;}
-.nav-links a:hover,.nav-links a.active{color:var(--yellow);}
-.nav-right{display:flex;gap:.6rem;align-items:center;}
-.btn-sm{padding:.4rem 1rem;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;border:none;}
-.btn-ghost{background:transparent;border:1px solid #333;color:var(--white);}
-.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
-.btn-yellow{background:var(--yellow);color:var(--black);}
-.btn-yellow:hover{background:var(--yellow-dim);}
-.user-chip{display:flex;align-items:center;gap:.5rem;background:var(--mid);padding:.3rem .8rem .3rem .4rem;border-radius:100px;cursor:pointer;text-decoration:none;color:var(--white);}
-.user-av{width:26px;height:26px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--black);}
-.user-n{font-size:.8rem;font-weight:500;}
-.page-header{padding:2rem 2rem 0;max-width:1400px;margin:0 auto;}
-.page-header-top{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
-.page-title{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:1px;line-height:1;}
-.page-title span{color:var(--yellow);}
-.live-badge{display:flex;align-items:center;gap:.4rem;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:var(--green);font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s ease infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-.stats-bar{display:flex;gap:2rem;flex-wrap:wrap;padding:1rem 0;border-bottom:1px solid var(--border);margin-bottom:1.5rem;}
-.stat-item{display:flex;align-items:baseline;gap:.4rem;}
-.stat-n{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--yellow);letter-spacing:1px;}
-.stat-l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-.filters-wrap{background:var(--gray);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;}
-.filters-top{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;}
-.filter-input{background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;flex:1;min-width:140px;}
-.filter-input::placeholder{color:#444;}
-.filter-input:focus{border-color:var(--yellow);}
-select.filter-input{cursor:pointer;}
-select.filter-input option{background:var(--mid);}
-.filter-search-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;}
-.filter-search-btn:hover{background:var(--yellow-dim);}
-.filters-bottom{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;}
-.filter-tag{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);font-size:.75rem;padding:.3rem .8rem;border-radius:100px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.filter-tag:hover,.filter-tag.on{background:var(--yellow-bg);border-color:rgba(245,196,0,.3);color:var(--yellow);}
-.sort-wrap{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
-.sort-label{font-size:.75rem;color:var(--muted);}
-.sort-select{background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.3rem .7rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;cursor:pointer;}
-.sort-select option{background:var(--mid);}
-.ai-bar-wrap{background:rgba(245,196,0,0.04);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;}
-.ai-bar-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--yellow);font-weight:600;white-space:nowrap;}
-.ai-tag{background:rgba(245,196,0,0.12);border:1px solid rgba(245,196,0,0.25);color:var(--yellow);font-size:.6rem;padding:.1rem .45rem;border-radius:100px;letter-spacing:.5px;font-weight:700;}
-.ai-input{flex:1;min-width:200px;background:transparent;border:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;}
-.ai-input::placeholder{color:#444;}
-.ai-btn{background:var(--yellow);color:var(--black);border:none;padding:.5rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;}
-.ai-btn:hover{background:var(--yellow-dim);}
-.ai-btn:disabled{opacity:.5;cursor:not-allowed;}
-.ai-result-bar{background:rgba(245,196,0,0.05);border:1px solid rgba(245,196,0,0.15);border-radius:6px;padding:.85rem 1.1rem;font-size:.85rem;color:#bbb;line-height:1.6;display:none;margin-bottom:1rem;}
-.ai-result-bar.show{display:block;}
-.board-layout{max-width:1400px;margin:0 auto;padding:0 2rem 3rem;}
-.board-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
-.result-count{font-size:.8rem;color:var(--muted);}
-.result-count strong{color:var(--white);}
-.view-toggle{display:flex;gap:.25rem;}
-.vt-btn{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);width:30px;height:30px;border-radius:4px;cursor:pointer;transition:all .2s;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
-.vt-btn.on{background:var(--yellow-bg);border-color:rgba(245,196,0,.3);color:var(--yellow);}
-.load-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem;}
-.load-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.4rem;transition:border-color .25s,transform .2s;position:relative;overflow:hidden;animation:fadeUp .4s ease both;}
-.load-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;opacity:0;transition:opacity .2s;}
-.load-card.new::before{background:var(--yellow);}
-.load-card.urgent::before{background:var(--red);}
-.load-card.open::before{background:var(--green);}
-.load-card:hover{border-color:#2e2e2e;transform:translateY(-2px);}
-.load-card:hover::before{opacity:1;}
-.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;}
-.load-id{font-size:.68rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
-.badges{display:flex;gap:.4rem;}
-.badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;}
-.badge-new{background:rgba(245,196,0,0.12);color:var(--yellow);border:1px solid rgba(245,196,0,0.2);}
-.badge-urgent{background:rgba(248,113,113,0.12);color:var(--red);border:1px solid rgba(248,113,113,0.2);}
-.badge-open{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.2);}
-.badge-applied{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,0.2);}
-.route{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
-.route-city{font-weight:600;font-size:1.05rem;}
-.route-st{color:var(--muted);font-size:.82rem;margin-left:.2rem;}
-.route-arrow{color:var(--yellow);font-size:1rem;flex-shrink:0;}
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;margin-bottom:1rem;}
-.cg-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#444;margin-bottom:.15rem;}
-.cg-val{font-size:.85rem;color:#ccc;font-weight:500;}
-.card-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:.9rem;border-top:1px solid #222;}
-.pay-amount{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
-.pay-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-.card-actions{display:flex;gap:.5rem;}
-.save-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);width:36px;height:36px;border-radius:5px;cursor:pointer;transition:all .2s;font-size:.95rem;display:flex;align-items:center;justify-content:center;}
-.save-btn:hover,.save-btn.saved{border-color:var(--red);color:var(--red);}
-.apply-btn{background:var(--yellow);color:var(--black);border:none;padding:.5rem 1.25rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:36px;}
-.apply-btn:hover{background:var(--yellow-dim);}
-.apply-btn.applied{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.3);cursor:default;}
-.pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:2rem;flex-wrap:wrap;}
-.page-btn{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);padding:.45rem .85rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;transition:all .2s;}
-.page-btn:hover{border-color:var(--yellow);color:var(--yellow);}
-.page-btn.on{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:700;}
+  :root {
+    --black: #0a0a0a; --yellow: #f5c400; --yellow-dim: #c49a00;
+    --white: #f0ede6; --gray: #1a1a1a; --mid: #2e2e2e; --text-muted: #888;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
-.modal-overlay.open{display:flex;animation:fadeIn .2s ease;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.modal{background:#121212;border:1px solid #2a2a2a;border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease;}
-@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.modal-head{padding:1.5rem 1.75rem 0;display:flex;justify-content:space-between;align-items:flex-start;}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;}
-.modal-title span{color:var(--yellow);}
-.modal-close{background:none;border:none;color:#555;font-size:1.3rem;cursor:pointer;transition:color .2s;line-height:1;padding:0;}
-.modal-close:hover{color:var(--white);}
-.modal-body{padding:1.25rem 1.75rem 1.75rem;}
-.modal-load-summary{background:var(--mid);border:1px solid #2a2a2a;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;}
-.mls-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;}
-.mls-arr{color:var(--yellow);}
-.mls-details{display:flex;gap:1.25rem;flex-wrap:wrap;}
-.mls-item{font-size:.75rem;color:var(--muted);}
-.mls-item strong{color:#bbb;font-weight:500;display:block;}
-.mls-pay{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);letter-spacing:1px;margin-top:.5rem;}
-.pilot-preview{background:rgba(245,196,0,0.04);border:1px solid rgba(245,196,0,0.12);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;}
-.pp-avatar{width:44px;height:44px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--black);flex-shrink:0;}
-.pp-name{font-weight:600;font-size:.95rem;margin-bottom:.15rem;}
-.pp-meta{font-size:.75rem;color:var(--muted);}
-.pp-badges{display:flex;gap:.3rem;margin-top:.3rem;flex-wrap:wrap;}
-.pp-badge{background:#1a1a1a;border:1px solid #2a2a2a;color:#777;font-size:.62rem;padding:.15rem .5rem;border-radius:100px;}
-.modal-form-group{margin-bottom:1rem;}
-.modal-label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.45rem;font-weight:600;}
-.modal-input{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;}
-.modal-input:focus{border-color:var(--yellow);}
-.modal-input::placeholder{color:#3a3a3a;}
-textarea.modal-input{min-height:90px;resize:vertical;line-height:1.5;}
-.avail-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
-.check-row{display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;cursor:pointer;margin-bottom:1rem;}
-.check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--yellow);flex-shrink:0;}
-.check-row label{font-size:.82rem;color:#aaa;cursor:pointer;line-height:1.4;}
-.modal-submit{width:100%;background:var(--yellow);color:var(--black);border:none;padding:.9rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:.5rem;}
-.modal-submit:hover{background:var(--yellow-dim);transform:translateY(-1px);}
-.modal-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.modal-note{text-align:center;font-size:.72rem;color:#444;margin-top:.75rem;line-height:1.5;}
-.success-state{text-align:center;padding:1.5rem 1rem;}
-.success-icon{font-size:3rem;margin-bottom:1rem;}
-.success-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px;margin-bottom:.5rem;}
-.success-title span{color:var(--yellow);}
-.success-desc{font-size:.875rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;}
-.success-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
-.success-btn{padding:.65rem 1.4rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;border:none;display:inline-block;}
-.login-prompt{text-align:center;padding:2rem 1rem;}
-.login-prompt-icon{font-size:2.5rem;margin-bottom:1rem;}
-.login-prompt-title{font-weight:600;font-size:1.1rem;margin-bottom:.5rem;}
-.login-prompt-desc{font-size:.875rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+  /* NAV */
+  nav { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 3rem; border-bottom:1px solid #1f1f1f; position:sticky; top:0; background:rgba(10,10,10,0.95); backdrop-filter:blur(10px); z-index:200; }
+  .logo { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--yellow); }
+  .logo span { color:var(--white); }
+  nav ul { list-style:none; display:flex; gap:2.5rem; }
+  nav ul a { color:#aaa; text-decoration:none; font-size:.9rem; font-weight:500; letter-spacing:.5px; transition:color .2s; }
+  nav ul a:hover { color:var(--yellow); }
+  .nav-btns { display:flex; gap:.75rem; align-items:center; }
+  .btn-outline { border:1px solid #444; color:var(--white); padding:.5rem 1.25rem; border-radius:4px; text-decoration:none; font-size:.85rem; font-weight:500; transition:border-color .2s,color .2s; cursor:pointer; background:transparent; }
+  .btn-outline:hover { border-color:var(--yellow); color:var(--yellow); }
+  .btn-primary { background:var(--yellow); color:var(--black); padding:.5rem 1.25rem; border-radius:4px; text-decoration:none; font-size:.85rem; font-weight:600; transition:background .2s; border:none; cursor:pointer; }
+  .btn-primary:hover { background:var(--yellow-dim); }
 
-/* CHAT */
-.chat-bubble{position:fixed;bottom:1.5rem;right:1.5rem;z-index:1000;}
-.chat-toggle{width:52px;height:52px;border-radius:50%;background:var(--yellow);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(245,196,0,.3);transition:transform .2s;font-size:1.3rem;position:relative;}
-.chat-toggle:hover{transform:scale(1.08);}
-.chat-win{position:absolute;bottom:62px;right:0;width:340px;background:#111;border:1px solid #2a2a2a;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.8);overflow:hidden;flex-direction:column;display:none;}
-.chat-win.open{display:flex;animation:fadeUp .25s ease;}
-.chat-head{background:var(--gray);padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;}
-.chat-avatar{width:28px;height:28px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.8rem;margin-right:.6rem;flex-shrink:0;}
-.chat-head-left{display:flex;align-items:center;}
-.chat-name{font-weight:600;font-size:.875rem;}
-.chat-status{font-size:.68rem;color:var(--green);}
-.chat-close{background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;}
-.chat-msgs{flex:1;overflow-y:auto;padding:.9rem;display:flex;flex-direction:column;gap:.6rem;max-height:300px;min-height:160px;}
-.msg{max-width:88%;padding:.6rem .85rem;border-radius:10px;font-size:.82rem;line-height:1.5;}
-.msg.bot{background:var(--mid);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px;}
-.msg.user{background:var(--yellow);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
-.msg.thinking{opacity:.5;font-style:italic;}
-.chips{display:flex;flex-wrap:wrap;gap:.35rem;padding:.4rem .9rem;border-top:1px solid #1a1a1a;}
-.chip{background:#1a1a1a;border:1px solid #2a2a2a;color:#888;font-size:.68rem;padding:.28rem .65rem;border-radius:100px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.chip:hover{border-color:var(--yellow);color:var(--yellow);}
-.chat-foot{display:flex;gap:.4rem;padding:.65rem .9rem;border-top:1px solid #1f1f1f;background:var(--gray);}
-.chat-foot input{flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .85rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;}
-.chat-foot input:focus{border-color:var(--yellow);}
-.chat-foot input::placeholder{color:#444;}
-.chat-send{background:var(--yellow);color:var(--black);border:none;padding:.55rem .85rem;border-radius:6px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s;}
-.chat-send:hover{background:var(--yellow-dim);}
-.chat-send:disabled{opacity:.5;cursor:not-allowed;}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
-.spinner-white{border:2px solid rgba(245,196,0,.2);border-top-color:var(--yellow);}
-@keyframes spin{to{transform:rotate(360deg);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.no-results{text-align:center;padding:4rem 2rem;color:var(--muted);}
-@media(max-width:600px){
-  nav{padding:.75rem 1rem;}
-  .nav-links{display:none;}
-  .page-header,.board-layout{padding-left:1rem;padding-right:1rem;}
-  .load-grid{grid-template-columns:1fr;}
-  .filters-top{flex-direction:column;}
-  .filter-input,.filter-search-btn{width:100%;}
-  .chat-win{width:calc(100vw - 2rem);}
-  .modal{border-radius:10px;}
-  .modal-body,.modal-head{padding-left:1.25rem;padding-right:1.25rem;}
-  .avail-row{grid-template-columns:1fr;}
-}
+  /* HERO */
+  .hero { position:relative; padding:7rem 3rem 5rem; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(245,196,0,0.03) 80px,rgba(245,196,0,0.03) 81px),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(245,196,0,0.03) 80px,rgba(245,196,0,0.03) 81px); }
+  .hero-glow { position:absolute; top:-100px; left:-100px; width:600px; height:600px; background:radial-gradient(circle,rgba(245,196,0,0.08) 0%,transparent 70%); pointer-events:none; }
+  .hero-content { position:relative; max-width:700px; animation:fadeUp .8s ease both; }
+  .hero-badge { display:inline-block; background:rgba(245,196,0,0.12); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.75rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:.35rem .9rem; border-radius:100px; margin-bottom:1.5rem; }
+  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(3.5rem,8vw,6.5rem); line-height:.95; letter-spacing:1px; margin-bottom:1.5rem; }
+  .hero h1 em { color:var(--yellow); font-style:normal; display:block; }
+  .hero p { font-size:1.1rem; color:#999; line-height:1.7; max-width:500px; margin-bottom:2.5rem; }
+  .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+  .btn-lg { padding:.85rem 2rem; font-size:1rem; font-weight:600; border-radius:5px; text-decoration:none; transition:all .2s; border:none; cursor:pointer; display:inline-block; }
+  .btn-lg.primary { background:var(--yellow); color:var(--black); }
+  .btn-lg.primary:hover { background:var(--yellow-dim); transform:translateY(-1px); }
+  .btn-lg.secondary { background:transparent; border:1px solid #333; color:var(--white); }
+  .btn-lg.secondary:hover { border-color:#666; }
+  .hero-stats { display:flex; gap:3rem; margin-top:4rem; padding-top:2rem; border-top:1px solid #1f1f1f; animation:fadeUp .8s .2s ease both; flex-wrap:wrap; }
+  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:var(--yellow); letter-spacing:1px; }
+  .stat-label { font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:.1rem; }
+
+  /* AI SMART SEARCH */
+  .ai-search-section { background:var(--gray); padding:2.5rem 3rem; border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
+  .ai-label-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.3rem; font-size:.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--yellow); font-weight:600; }
+  .ai-tag { background:rgba(245,196,0,0.15); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.65rem; padding:.15rem .55rem; border-radius:100px; letter-spacing:1px; }
+  .ai-sub { font-size:.82rem; color:#555; margin-bottom:1rem; }
+  .ai-bar { display:flex; gap:.75rem; flex-wrap:wrap; }
+  .ai-bar input { flex:1; min-width:260px; background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:.85rem 1.25rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:16px; outline:none; transition:border-color .2s; }
+  .ai-bar input::placeholder { color:#555; }
+  .ai-bar input:focus { border-color:var(--yellow); }
+  .ai-bar button { background:var(--yellow); color:var(--black); border:none; padding:.85rem 1.75rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:background .2s; white-space:nowrap; }
+  .ai-bar button:hover { background:var(--yellow-dim); }
+  .ai-bar button:disabled { opacity:.5; cursor:not-allowed; }
+  .ai-result { margin-top:1.25rem; background:rgba(245,196,0,0.05); border:1px solid rgba(245,196,0,0.2); border-radius:6px; padding:1.25rem 1.5rem; font-size:.9rem; line-height:1.7; color:#ccc; display:none; }
+  .ai-result.show { display:block; animation:fadeUp .3s ease; }
+  .ai-result-title { color:var(--yellow); font-weight:700; font-size:.75rem; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:.5rem; }
+
+  /* LOAD BOARD */
+  .board-section { padding:3rem; max-width:1300px; margin:auto; }
+  .section-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem; }
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:1px; }
+  .section-title span { color:var(--yellow); }
+  .see-all { color:var(--yellow); text-decoration:none; font-size:.85rem; font-weight:500; }
+  .load-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.25rem; }
+  .load-card { background:var(--gray); border:1px solid #222; border-radius:8px; padding:1.5rem; transition:border-color .2s,transform .2s; cursor:pointer; position:relative; overflow:hidden; animation:fadeUp .5s ease both; }
+  .load-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--yellow); opacity:0; transition:opacity .2s; }
+  .load-card:hover { border-color:#3a3a3a; transform:translateY(-2px); }
+  .load-card:hover::before { opacity:1; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+  .load-id { font-size:.7rem; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; }
+  .badge { font-size:.7rem; font-weight:600; padding:.2rem .65rem; border-radius:100px; letter-spacing:.5px; }
+  .badge-new { background:rgba(245,196,0,0.15); color:var(--yellow); }
+  .badge-urgent { background:rgba(255,80,80,0.15); color:#ff6b6b; }
+  .badge-open { background:rgba(80,200,120,0.15); color:#5ec87a; }
+  .route { display:flex; align-items:center; gap:.75rem; margin-bottom:.85rem; }
+  .city { font-weight:600; font-size:1rem; }
+  .state { color:var(--text-muted); font-size:.85rem; margin-left:.25rem; }
+  .arrow { color:var(--yellow); font-size:1.1rem; }
+  .load-details { display:flex; gap:1.25rem; margin-bottom:1.1rem; flex-wrap:wrap; }
+  .detail { font-size:.8rem; color:#777; }
+  .detail strong { color:#ccc; font-weight:500; display:block; margin-top:.1rem; font-size:.85rem; }
+  .card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:1rem; border-top:1px solid #2a2a2a; }
+  .pay { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--yellow); letter-spacing:1px; }
+  .pay-label { font-size:.7rem; color:var(--text-muted); }
+  .apply-btn { background:transparent; border:1px solid #444; color:var(--white); padding:.55rem 1.1rem; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; min-height:44px; }
+  .apply-btn:hover { background:var(--yellow); color:var(--black); border-color:var(--yellow); }
+
+  /* AI LOAD PARSER */
+  .parser-section { padding:3rem; background:var(--gray); border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
+  .parser-inner { max-width:900px; margin:auto; }
+  .parser-head { display:flex; align-items:center; gap:.9rem; margin-bottom:.4rem; }
+  .parser-desc { color:#666; font-size:.875rem; margin-bottom:1.5rem; }
+  .parser-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  @media(max-width:700px){ .parser-grid{grid-template-columns:1fr;} nav ul{display:none;} }
+  .parser-left { display:flex; flex-direction:column; gap:.75rem; }
+  .parser-left textarea { background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:1rem 1.25rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.6; resize:vertical; min-height:170px; outline:none; transition:border-color .2s; }
+  .parser-left textarea::placeholder { color:#555; }
+  .parser-left textarea:focus { border-color:var(--yellow); }
+  .parser-left button { background:var(--yellow); color:var(--black); border:none; padding:.75rem 1.5rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:background .2s; }
+  .parser-left button:hover { background:var(--yellow-dim); }
+  .parser-left button:disabled { opacity:.5; cursor:not-allowed; }
+  .parser-output { background:var(--mid); border:1px solid #3a3a3a; border-radius:6px; padding:1.25rem; min-height:170px; font-size:.875rem; line-height:1.7; color:#555; }
+  .parser-output.ready { color:var(--white); }
+  .pf { margin-bottom:.65rem; }
+  .pf-label { font-size:.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:.15rem; }
+  .pf-val { color:var(--white); font-weight:500; }
+  .post-btn { margin-top:1rem; background:var(--yellow); color:var(--black); border:none; padding:.6rem 1.25rem; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:700; cursor:pointer; transition:background .2s; display:none; }
+  .post-btn.show { display:inline-block; }
+  .post-btn:hover { background:var(--yellow-dim); }
+
+  /* HOW IT WORKS */
+  .how-section { padding:4rem 3rem; border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; }
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; max-width:1100px; margin:auto; }
+  .step-num { font-family:'Bebas Neue',sans-serif; font-size:4rem; color:rgba(245,196,0,0.12); line-height:1; margin-bottom:-.5rem; }
+  .step h3 { font-size:1rem; font-weight:600; margin-bottom:.5rem; }
+  .step p { font-size:.875rem; color:var(--text-muted); line-height:1.6; }
+
+  /* FOOTER */
+  footer { padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-top:1px solid #1f1f1f; }
+  .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--yellow); letter-spacing:2px; }
+  .footer-links { display:flex; gap:2rem; }
+  .footer-links a { color:#555; text-decoration:none; font-size:.85rem; transition:color .2s; }
+  .footer-links a:hover { color:var(--white); }
+  .footer-copy { color:#444; font-size:.8rem; }
+
+  /* CHAT WIDGET */
+  .chat-bubble { position:fixed; bottom:2rem; right:2rem; z-index:1000; }
+  .chat-toggle { width:58px; height:58px; border-radius:50%; background:var(--yellow); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(245,196,0,0.35); transition:transform .2s,box-shadow .2s; font-size:1.5rem; position:relative; }
+  .chat-toggle:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(245,196,0,0.45); }
+  .notif { position:absolute; top:-2px; right:-2px; width:18px; height:18px; background:#ff6b6b; border-radius:50%; font-size:.6rem; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'DM Sans',sans-serif; }
+  .chat-win { position:absolute; bottom:70px; right:0; width:360px; background:#111; border:1px solid #2a2a2a; border-radius:12px; box-shadow:0 8px 40px rgba(0,0,0,.8); overflow:hidden; flex-direction:column; display:none; }
+  .chat-win.open { display:flex; animation:fadeUp .25s ease; }
+  .chat-head { background:var(--gray); padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; }
+  .chat-avatar { width:32px; height:32px; border-radius:50%; background:var(--yellow); display:flex; align-items:center; justify-content:center; font-size:.9rem; margin-right:.65rem; }
+  .chat-head-left { display:flex; align-items:center; }
+  .chat-name { font-weight:600; font-size:.9rem; }
+  .chat-status { font-size:.72rem; color:#5ec87a; }
+  .chat-close { background:none; border:none; color:#666; font-size:1.2rem; cursor:pointer; transition:color .2s; line-height:1; }
+  .chat-close:hover { color:var(--white); }
+  .chat-msgs { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:.75rem; max-height:320px; min-height:180px; }
+  .chat-msgs::-webkit-scrollbar { width:4px; }
+  .chat-msgs::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+  .msg { max-width:86%; padding:.65rem .9rem; border-radius:10px; font-size:.85rem; line-height:1.55; }
+  .msg.bot { background:var(--mid); color:var(--white); align-self:flex-start; border-bottom-left-radius:3px; }
+  .msg.user { background:var(--yellow); color:var(--black); align-self:flex-end; border-bottom-right-radius:3px; font-weight:500; }
+  .msg.thinking { opacity:.55; font-style:italic; }
+  .chips { display:flex; flex-wrap:wrap; gap:.4rem; padding:.5rem 1rem; border-top:1px solid #1a1a1a; }
+  .chip { background:#1e1e1e; border:1px solid #2e2e2e; color:#aaa; font-size:.72rem; padding:.3rem .7rem; border-radius:100px; cursor:pointer; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+  .chip:hover { border-color:var(--yellow); color:var(--yellow); }
+  .chat-foot { display:flex; gap:.5rem; padding:.75rem 1rem; border-top:1px solid #1f1f1f; background:var(--gray); }
+  .chat-foot input { flex:1; background:var(--mid); border:1px solid #3a3a3a; color:var(--white); padding:.6rem .9rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:16px; outline:none; transition:border-color .2s; }
+  .chat-foot input:focus { border-color:var(--yellow); }
+  .chat-foot input::placeholder { color:#555; }
+  .chat-send { background:var(--yellow); color:var(--black); border:none; padding:.6rem .95rem; border-radius:6px; font-weight:700; cursor:pointer; font-size:.9rem; transition:background .2s; }
+  .chat-send:hover { background:var(--yellow-dim); }
+  .chat-send:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* UTILS */
+  .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(245,196,0,0.25); border-top-color:var(--yellow); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:.45rem; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  .load-card:nth-child(2){animation-delay:.1s} .load-card:nth-child(3){animation-delay:.2s}
+  .load-card:nth-child(4){animation-delay:.3s} .load-card:nth-child(5){animation-delay:.4s}
+  .load-card:nth-child(6){animation-delay:.5s}
+
+  /* ── REFERRAL SECTION ── */
+  .referral-section { padding:4rem 3rem; background:linear-gradient(135deg,#0f0f00 0%,#0a0a0a 50%,#000d00 100%); border-top:1px solid #1f1f1f; border-bottom:1px solid #1f1f1f; position:relative; overflow:hidden; }
+  .referral-section::before { content:''; position:absolute; top:-120px; right:-120px; width:500px; height:500px; background:radial-gradient(circle,rgba(245,196,0,0.06) 0%,transparent 65%); pointer-events:none; }
+  .referral-section::after { content:''; position:absolute; bottom:-80px; left:-80px; width:350px; height:350px; background:radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 65%); pointer-events:none; }
+  .referral-inner { max-width:1100px; margin:auto; display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; position:relative; z-index:1; }
+  @media(max-width:800px){ .referral-inner{grid-template-columns:1fr;gap:2.5rem;} }
+
+  .referral-eyebrow { font-size:.72rem; text-transform:uppercase; letter-spacing:2.5px; color:var(--yellow); font-weight:600; margin-bottom:.9rem; }
+  .referral-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.2rem,5vw,3.2rem); line-height:.95; letter-spacing:1px; margin-bottom:1.1rem; }
+  .referral-title span { color:var(--yellow); }
+  .referral-desc { font-size:.9rem; color:#888; line-height:1.75; margin-bottom:2rem; }
+  .referral-desc strong { color:#ccc; }
+
+  .referral-steps { display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem; }
+  .rstep { display:flex; align-items:flex-start; gap:.9rem; }
+  .rstep-icon { font-size:1.3rem; width:36px; height:36px; background:rgba(245,196,0,0.1); border:1px solid rgba(245,196,0,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .rstep-title { font-weight:600; font-size:.875rem; margin-bottom:.15rem; }
+  .rstep-sub { font-size:.78rem; color:var(--text-muted); line-height:1.4; }
+
+  .referral-link-box { background:rgba(245,196,0,0.04); border:1px solid rgba(245,196,0,0.15); border-radius:10px; padding:1.25rem; }
+  .referral-link-label { font-size:.7rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:.6rem; }
+  .referral-link-row { display:flex; gap:.6rem; margin-bottom:.9rem; }
+  .referral-link-input { flex:1; background:var(--mid); border:1px solid #333; border-radius:5px; padding:.6rem 1rem; font-size:.82rem; color:#aaa; font-family:'DM Sans',sans-serif; letter-spacing:.3px; }
+  .copy-btn { background:var(--yellow); color:var(--black); border:none; padding:.6rem 1.1rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:700; cursor:pointer; transition:background .2s; white-space:nowrap; }
+  .copy-btn:hover { background:var(--yellow-dim); }
+  .copy-btn.copied { background:#5ec87a; color:#fff; }
+  .share-btns { display:flex; gap:.5rem; }
+  .share-btn { background:transparent; border:1px solid #2e2e2e; color:#777; padding:.45rem .9rem; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:.78rem; cursor:pointer; transition:all .2s; }
+  .share-btn:hover { border-color:var(--yellow); color:var(--yellow); }
+
+  /* Progress card */
+  .progress-card { background:var(--gray); border:1px solid #222; border-radius:12px; padding:1.75rem; }
+  .progress-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:1px; margin-bottom:.2rem; }
+  .progress-sub { font-size:.8rem; color:var(--text-muted); margin-bottom:1.5rem; }
+
+  .load-slots { display:grid; grid-template-columns:repeat(5,1fr); gap:.5rem; margin-bottom:1.25rem; }
+  .slot { background:var(--mid); border:1px solid #2a2a2a; border-radius:8px; padding:.65rem .4rem; text-align:center; transition:all .2s; }
+  .slot.earned { background:rgba(245,196,0,0.08); border-color:rgba(245,196,0,0.25); }
+  .slot-icon { font-size:1.1rem; margin-bottom:.25rem; }
+  .slot-label { font-size:.62rem; color:var(--text-muted); margin-bottom:.25rem; }
+  .slot-tag { font-size:.58rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--yellow); }
+  .pending-tag { color:#444; }
+
+  .progress-bar-wrap { margin-bottom:1.5rem; }
+  .progress-bar-bg { background:#1e1e1e; border-radius:100px; height:8px; overflow:hidden; margin-bottom:.4rem; }
+  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--yellow-dim),var(--yellow)); border-radius:100px; transition:width .6s ease; }
+  .progress-numbers { display:flex; justify-content:space-between; font-size:.72rem; color:var(--text-muted); }
+
+  .referral-list { border-top:1px solid #222; padding-top:1.1rem; }
+  .ref-list-title { font-size:.7rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:.75rem; }
+  .ref-item { display:flex; align-items:center; gap:.75rem; padding:.6rem 0; border-bottom:1px solid #1a1a1a; }
+  .ref-item:last-child { border-bottom:none; }
+  .ref-avatar { width:30px; height:30px; border-radius:50%; background:rgba(245,196,0,0.15); border:1px solid rgba(245,196,0,0.3); color:var(--yellow); font-size:.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ref-name { font-size:.83rem; font-weight:600; }
+  .ref-date { font-size:.72rem; color:var(--text-muted); margin-top:.05rem; }
+  .ref-info { flex:1; }
+  .ref-badge { font-size:.68rem; font-weight:700; padding:.2rem .6rem; border-radius:100px; letter-spacing:.3px; white-space:nowrap; }
+  .earned-badge { background:rgba(74,222,128,0.12); color:#5ec87a; border:1px solid rgba(74,222,128,0.25); }
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media(max-width:600px) {
+    /* NAV */
+    nav { padding:.9rem 1.2rem; }
+    nav ul { display:none; }
+    .nav-btns .btn-outline { display:none; }
+    .btn-primary { padding:.45rem 1rem; font-size:.8rem; }
+
+    /* HERO */
+    .hero { padding:3.5rem 1.25rem 2.5rem; }
+    .hero p { font-size:.95rem; }
+    .hero-actions { flex-direction:column; }
+    .btn-lg { width:100%; text-align:center; padding:.85rem 1rem; }
+    .hero-stats { gap:1.5rem; margin-top:2.5rem; padding-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; }
+
+    /* AI SEARCH */
+    .ai-search-section { padding:1.75rem 1.25rem; }
+    .ai-bar { flex-direction:column; }
+    .ai-bar input { min-width:unset; width:100%; }
+    .ai-bar button { width:100%; }
+
+    /* LOAD BOARD */
+    .board-section { padding:1.75rem 1.25rem; }
+    .load-grid { grid-template-columns:1fr; }
+    .load-details { gap:.75rem; }
+
+    /* PARSER */
+    .parser-section { padding:1.75rem 1.25rem; }
+    .parser-grid { grid-template-columns:1fr; }
+    .parser-left textarea { min-height:130px; font-size:.85rem; }
+
+    /* HOW IT WORKS */
+    .how-section { padding:2.5rem 1.25rem; }
+    .steps { grid-template-columns:1fr; gap:1.5rem; }
+
+    /* REFERRAL */
+    .referral-section { padding:2.5rem 1.25rem; }
+    .referral-inner { grid-template-columns:1fr; gap:2rem; }
+    .referral-link-row { flex-direction:column; }
+    .copy-btn { width:100%; }
+    .share-btns { flex-wrap:wrap; }
+    .share-btn { flex:1; text-align:center; }
+    .load-slots { grid-template-columns:repeat(5,1fr); gap:.3rem; }
+    .slot-icon { font-size:.9rem; }
+    .slot-label { display:none; }
+
+    /* FOOTER */
+    footer { flex-direction:column; align-items:flex-start; padding:1.5rem 1.25rem; gap:.75rem; }
+    .footer-links { flex-wrap:wrap; gap:1rem; }
+
+    /* CHAT WIDGET */
+    .chat-bubble { bottom:1rem; right:1rem; }
+    .chat-win { width:calc(100vw - 2rem); right:0; bottom:68px; }
+    .chat-msgs { max-height:260px; }
+  }
+
+  @media(min-width:601px) and (max-width:900px) {
+    nav { padding:1rem 1.5rem; }
+    nav ul { gap:1.5rem; }
+    .hero { padding:5rem 2rem 3.5rem; }
+    .ai-search-section { padding:2rem 2rem; }
+    .board-section { padding:2rem; }
+    .load-grid { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+    .parser-section { padding:2rem; }
+    .referral-section { padding:3rem 2rem; }
+    .referral-inner { gap:2.5rem; }
+    footer { padding:1.5rem 2rem; }
+  }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <a href="index.html" class="logo">Load<span>Leader</span></a>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="loadboard.html" class="active">Board</a>
-    <a href="index.html#parser">AI Parser</a>
-    <a href="dashboard.html">Dashboard</a>
-  </div>
-  <div class="nav-right" id="navRight">
-    <a href="login.html" class="btn-sm btn-ghost">Log In</a>
-    <a href="login.html?tab=signup" class="btn-sm btn-yellow">Sign Up Free</a>
+  <div class="logo">Load<span>Leader</span></div>
+  <ul>
+    <li><a href="#">Board</a></li>
+    <li><a href="#parser">AI Parser</a></li>
+    <li><a href="#">Pilots</a></li>
+    <li><a href="#">Pricing</a></li>
+  </ul>
+  <div class="nav-btns">
+    <a href="login.html" class="btn-outline">Log In</a>
+    <a href="login.html?tab=signup" class="btn-primary">Sign Up Free</a>
   </div>
 </nav>
 
-<div class="page-header">
-  <div class="page-header-top">
-    <div><div class="page-title">Pilot Car <span>Load Board</span></div></div>
-    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-      <div class="live-badge"><span class="live-dot"></span>Live Updates</div>
-      <button class="btn-sm btn-yellow" onclick="document.getElementById('postModal').style.display='flex'">+ Post a Load</button>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <span class="hero-badge">🚩 #1 AI-Powered Pilot Car Load Board</span>
+    <h1>The Board That <em>Leads the Load</em></h1>
+    <p>Connect oversize carriers with certified pilot car escorts — now powered by AI to search smarter, parse faster, and match better.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-lg primary">Find Pilot Car Jobs</a>
+      <a href="#" class="btn-lg secondary">Post a Load</a>
     </div>
   </div>
-  <div class="stats-bar">
-    <div class="stat-item"><span class="stat-n">3,247</span><span class="stat-l">Active Loads</span></div>
-    <div class="stat-item"><span class="stat-n">48</span><span class="stat-l">States</span></div>
-    <div class="stat-item"><span class="stat-n">142</span><span class="stat-l">Posted Today</span></div>
-    <div class="stat-item"><span class="stat-n">8,400+</span><span class="stat-l">Pilots</span></div>
+  <div class="hero-stats">
+    <div><div class="stat-num">3,200+</div><div class="stat-label">Active Loads</div></div>
+    <div><div class="stat-num">8,400+</div><div class="stat-label">Registered Pilots</div></div>
+    <div><div class="stat-num">48</div><div class="stat-label">States Covered</div></div>
+    <div><div class="stat-num">24/7</div><div class="stat-label">Live Postings</div></div>
   </div>
-  <div class="ai-bar-wrap">
-    <span class="ai-bar-label">🤖 AI Search</span>
-    <span class="ai-tag">AI</span>
-    <input class="ai-input" id="aiInput" type="text" placeholder='e.g. "Wide load from Ohio heading west, $500+"'/>
-    <button class="ai-btn" id="aiBtn" onclick="runAISearch()">Search</button>
+</section>
+
+<!-- AI SMART SEARCH -->
+<section class="ai-search-section">
+  <div class="ai-label-row">🤖 AI Smart Search <span class="ai-tag">POWERED BY AI</span></div>
+  <div class="ai-sub">Describe what you're looking for in plain English — route, dimensions, pay, or anything else</div>
+  <div class="ai-bar">
+    <input id="aiInput" type="text" placeholder='e.g. "Wide load Texas to Oklahoma, need 2 pilots, $500+ pay"' />
+    <button id="aiSearchBtn" onclick="runAISearch()">🔍 Search with AI</button>
   </div>
-  <div class="ai-result-bar" id="aiResult"></div>
-  <div class="filters-wrap">
-    <div class="filters-top">
-      <input class="filter-input" id="fOrigin" type="text" placeholder="Origin state or city..." oninput="filterLoads()">
-      <input class="filter-input" id="fDest" type="text" placeholder="Destination state or city..." oninput="filterLoads()">
-      <select class="filter-input" id="fType" onchange="filterLoads()">
-        <option value="">All Load Types</option>
-        <option>Oversize</option><option>Overweight</option><option>Wide Load</option>
-        <option>Tall Load</option><option>Combination</option>
-      </select>
-      <select class="filter-input" id="fPilots" onchange="filterLoads()">
-        <option value="">Pilots Needed</option>
-        <option value="1">1 Pilot</option><option value="2">2 Pilots</option>
-        <option value="3">3 Pilots</option><option value="4">4+ Pilots</option>
-      </select>
-      <button class="filter-search-btn" onclick="resetFilters()">Clear</button>
+  <div class="ai-result" id="aiResult">
+    <div class="ai-result-title">⚡ AI Analysis</div>
+    <div id="aiResultText"></div>
+  </div>
+</section>
+
+<!-- LOAD BOARD -->
+<section class="board-section">
+  <div class="section-header">
+    <div class="section-title">Latest <span>Loads</span></div>
+    <a href="#" class="see-all">View all 3,200+ loads →</a>
+  </div>
+  <div class="load-grid">
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00481</div><span class="badge badge-new">New</span></div>
+      <div class="route"><div><span class="city">Houston</span><span class="state">TX</span></div><span class="arrow">→</span><div><span class="city">Oklahoma City</span><span class="state">OK</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>16'W × 14'H</strong></div><div class="detail">Miles<strong>450 mi</strong></div><div class="detail">Pilots Needed<strong>2</strong></div><div class="detail">Date<strong>Apr 21</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$620</div></div><button class="apply-btn">Apply Now</button></div>
     </div>
-    <div class="filters-bottom">
-      <span style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:#444;margin-right:.25rem;">Quick:</span>
-      <span class="filter-tag" onclick="toggleTag(this,'urgent')">🔴 Urgent</span>
-      <span class="filter-tag" onclick="toggleTag(this,'new')">⭐ New</span>
-      <span class="filter-tag" onclick="toggleTag(this,'high-pay')">💰 $500+</span>
-      <div class="sort-wrap">
-        <span class="sort-label">Sort:</span>
-        <select class="sort-select" id="sortBy" onchange="filterLoads()">
-          <option value="newest">Newest</option>
-          <option value="pay-high">Highest Pay</option>
-          <option value="pay-low">Lowest Pay</option>
-          <option value="distance">Distance</option>
-        </select>
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00479</div><span class="badge badge-urgent">Urgent</span></div>
+      <div class="route"><div><span class="city">Denver</span><span class="state">CO</span></div><span class="arrow">→</span><div><span class="city">Salt Lake City</span><span class="state">UT</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>14'W × 15'H</strong></div><div class="detail">Miles<strong>525 mi</strong></div><div class="detail">Pilots Needed<strong>1</strong></div><div class="detail">Date<strong>Apr 19</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$740</div></div><button class="apply-btn">Apply Now</button></div>
+    </div>
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00477</div><span class="badge badge-open">Open</span></div>
+      <div class="route"><div><span class="city">Atlanta</span><span class="state">GA</span></div><span class="arrow">→</span><div><span class="city">Charlotte</span><span class="state">NC</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>18'W × 13'H</strong></div><div class="detail">Miles<strong>245 mi</strong></div><div class="detail">Pilots Needed<strong>3</strong></div><div class="detail">Date<strong>Apr 23</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$390</div></div><button class="apply-btn">Apply Now</button></div>
+    </div>
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00475</div><span class="badge badge-new">New</span></div>
+      <div class="route"><div><span class="city">Phoenix</span><span class="state">AZ</span></div><span class="arrow">→</span><div><span class="city">Albuquerque</span><span class="state">NM</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>15'W × 16'H</strong></div><div class="detail">Miles<strong>470 mi</strong></div><div class="detail">Pilots Needed<strong>2</strong></div><div class="detail">Date<strong>Apr 25</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$580</div></div><button class="apply-btn">Apply Now</button></div>
+    </div>
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00472</div><span class="badge badge-open">Open</span></div>
+      <div class="route"><div><span class="city">Chicago</span><span class="state">IL</span></div><span class="arrow">→</span><div><span class="city">Indianapolis</span><span class="state">IN</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>13'W × 14'H</strong></div><div class="detail">Miles<strong>182 mi</strong></div><div class="detail">Pilots Needed<strong>1</strong></div><div class="detail">Date<strong>Apr 22</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$310</div></div><button class="apply-btn">Apply Now</button></div>
+    </div>
+    <div class="load-card">
+      <div class="card-top"><div class="load-id">LL-00470</div><span class="badge badge-urgent">Urgent</span></div>
+      <div class="route"><div><span class="city">Seattle</span><span class="state">WA</span></div><span class="arrow">→</span><div><span class="city">Portland</span><span class="state">OR</span></div></div>
+      <div class="load-details"><div class="detail">Dimensions<strong>20'W × 15'H</strong></div><div class="detail">Miles<strong>175 mi</strong></div><div class="detail">Pilots Needed<strong>4</strong></div><div class="detail">Date<strong>Apr 19</strong></div></div>
+      <div class="card-footer"><div><div class="pay-label">Per Pilot</div><div class="pay">$480</div></div><button class="apply-btn">Apply Now</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- AI LOAD PARSER -->
+<section class="parser-section" id="parser">
+  <div class="parser-inner">
+    <div class="parser-head">
+      <div class="section-title">AI Load <span>Parser</span></div>
+      <span class="ai-tag">POWERED BY AI</span>
+    </div>
+    <p class="parser-desc">Paste any raw load description from an email, text message, or another board — AI instantly structures it into a clean LoadLeader posting.</p>
+    <div class="parser-grid">
+      <div class="parser-left">
+        <textarea id="parserInput" placeholder="Paste raw load info here...&#10;&#10;Example:&#10;Need pilot ASAP. Moving a house Dallas TX to Tulsa OK. 18 feet wide 14 tall. 380 miles. Need 2 escorts. $550 each. April 22. Call Mike 555-0192."></textarea>
+        <button id="parserBtn" onclick="parseLoad()">⚡ Parse with AI</button>
+      </div>
+      <div>
+        <div class="parser-output" id="parserOut">Parsed load details will appear here...</div>
+        <button class="post-btn" id="postBtn" onclick="confirmPost()">✓ Post This Load to Board</button>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="board-layout">
-  <div class="board-header">
-    <div class="result-count" id="resultCount"><strong>12</strong> loads found</div>
-    <div class="view-toggle">
-      <button class="vt-btn on" id="gridBtn" onclick="setView('grid')">⊞</button>
-      <button class="vt-btn" id="listBtn" onclick="setView('list')">☰</button>
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="section-title" style="text-align:center;margin-bottom:2.5rem">How It <span style="color:var(--yellow)">Works</span></div>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><h3>Create Your Profile</h3><p>Sign up as a pilot or carrier. Add certifications, equipment, and service areas.</p></div>
+    <div class="step"><div class="step-num">02</div><h3>Browse or Post Loads</h3><p>Carriers post loads with full details. Pilots search by route, pay, and date using AI.</p></div>
+    <div class="step"><div class="step-num">03</div><h3>Apply & Connect</h3><p>One-click apply. Carriers confirm. Connect via direct chat on the platform.</p></div>
+    <div class="step"><div class="step-num">04</div><h3>Move the Load</h3><p>Hit the road and build your LoadLeader reputation after every completed job.</p></div>
+  </div>
+</section>
+
+<!-- REFERRAL SECTION -->
+<section class="referral-section">
+  <div class="referral-inner">
+    <div class="referral-left">
+      <div class="referral-eyebrow">🚩 Pilot Referral Program</div>
+      <h2 class="referral-title">Refer a Pilot.<br><span>Get Free Loads.</span></h2>
+      <p class="referral-desc">For every pilot you refer who joins LoadLeader, you earn <strong>1 free load posting</strong> — up to <strong>5 free loads total</strong>. Share your link, grow the network, and keep more money in your pocket.</p>
+
+      <div class="referral-steps">
+        <div class="rstep"><div class="rstep-icon">🔗</div><div><div class="rstep-title">Share your link</div><div class="rstep-sub">Send your unique referral link to other pilot car drivers</div></div></div>
+        <div class="rstep"><div class="rstep-icon">✅</div><div><div class="rstep-title">They sign up</div><div class="rstep-sub">Your referral creates a free LoadLeader account</div></div></div>
+        <div class="rstep"><div class="rstep-icon">🎁</div><div><div class="rstep-title">You get a free load</div><div class="rstep-sub">1 free load posting credited to your account automatically</div></div></div>
+      </div>
+
+      <div class="referral-link-box">
+        <div class="referral-link-label">Your Referral Link</div>
+        <div class="referral-link-row">
+          <div class="referral-link-input" id="refLink">loadleader.com/ref/PILOT-7X29K</div>
+          <button class="copy-btn" onclick="copyRef()">Copy Link</button>
+        </div>
+        <div class="share-btns">
+          <button class="share-btn">📱 Text</button>
+          <button class="share-btn">📧 Email</button>
+          <button class="share-btn">👥 Facebook</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="referral-right">
+      <div class="progress-card">
+        <div class="progress-title">Your Referral Progress</div>
+        <div class="progress-sub">3 of 5 free loads earned</div>
+
+        <div class="load-slots">
+          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
+          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
+          <div class="slot earned"><div class="slot-icon">🎁</div><div class="slot-label">Free Load</div><div class="slot-tag">Earned</div></div>
+          <div class="slot pending"><div class="slot-icon">🔒</div><div class="slot-label">Free Load</div><div class="slot-tag pending-tag">2 more referrals</div></div>
+          <div class="slot pending"><div class="slot-icon">🔒</div><div class="slot-label">Free Load</div><div class="slot-tag pending-tag">2 more referrals</div></div>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:60%"></div></div>
+          <div class="progress-numbers"><span>3 referrals</span><span style="color:var(--yellow)">5 max</span></div>
+        </div>
+
+        <div class="referral-list">
+          <div class="ref-list-title">Recent Referrals</div>
+          <div class="ref-item"><div class="ref-avatar">JT</div><div class="ref-info"><div class="ref-name">Jake T.</div><div class="ref-date">Joined Apr 14 · Texas</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
+          <div class="ref-item"><div class="ref-avatar">ML</div><div class="ref-info"><div class="ref-name">Maria L.</div><div class="ref-date">Joined Apr 9 · Oklahoma</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
+          <div class="ref-item"><div class="ref-avatar">DP</div><div class="ref-info"><div class="ref-name">Dave P.</div><div class="ref-date">Joined Mar 28 · Colorado</div></div><span class="ref-badge earned-badge">+1 Free Load</span></div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="load-grid" id="loadGrid"></div>
-  <div class="pagination" id="pagination"></div>
-</div>
+</section>
 
-<!-- APPLY MODAL -->
-<div class="modal-overlay" id="applyModal">
-  <div class="modal"><div id="applyModalContent"></div></div>
-</div>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">LoadLeader</div>
+  <div class="footer-links"><a href="#">About</a><a href="#">Pricing</a><a href="#">Safety</a><a href="#">Support</a><a href="#">Terms</a></div>
+  <div class="footer-copy">© 2026 LoadLeader. All rights reserved.</div>
+</footer>
 
-<!-- POST MODAL -->
-<div id="postModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;">Post a <span style="color:var(--yellow)">Load</span></div>
-      <button onclick="document.getElementById('postModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:.9rem;">
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Origin</label><input type="text" placeholder="City, State" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Destination</label><input type="text" placeholder="City, State" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Width</label><input type="text" placeholder='16&apos;0"' style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Height</label><input type="text" placeholder='14&apos;6"' style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Pilots Needed</label><select style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Pay Per Pilot</label><input type="text" placeholder="$0.00" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      </div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Move Date</label><input type="date" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;color-scheme:dark;"></div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Notes</label><textarea placeholder="Special instructions, permits, entry details..." style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;min-height:80px;resize:vertical;"></textarea></div>
-      <button style="background:var(--yellow);color:var(--black);border:none;padding:.85rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;">Post Load to Board</button>
-    </div>
-  </div>
-</div>
-
-<!-- CHAT -->
+<!-- AI CHAT WIDGET -->
 <div class="chat-bubble">
   <div class="chat-win" id="chatWin">
     <div class="chat-head">
-      <div class="chat-head-left"><div class="chat-avatar">🚩</div><div><div class="chat-name">LoadLeader AI</div><div class="chat-status">● Online</div></div></div>
+      <div class="chat-head-left">
+        <div class="chat-avatar">🚩</div>
+        <div><div class="chat-name">LoadLeader AI</div><div class="chat-status">● Online now</div></div>
+      </div>
       <button class="chat-close" onclick="toggleChat()">✕</button>
     </div>
-    <div class="chat-msgs" id="chatMsgs"><div class="msg bot">Hey! Ask me anything about loads on the board.</div></div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="msg bot">Hey! 👋 I'm your LoadLeader AI. I can help you find loads, check permit requirements, estimate pay, or answer any pilot car questions. What do you need?</div>
+    </div>
     <div class="chips" id="chips">
-      <span class="chip" onclick="useChip(this)">Highest paying loads</span>
-      <span class="chip" onclick="useChip(this)">Loads near Ohio</span>
-      <span class="chip" onclick="useChip(this)">Urgent jobs today</span>
+      <span class="chip" onclick="useChip(this)">Find loads near Texas</span>
+      <span class="chip" onclick="useChip(this)">What permits do I need?</span>
+      <span class="chip" onclick="useChip(this)">Estimate my pay</span>
+      <span class="chip" onclick="useChip(this)">Wide load requirements</span>
     </div>
     <div class="chat-foot">
-      <input id="chatInput" type="text" placeholder="Ask about loads..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <input id="chatInput" type="text" placeholder="Ask about loads, permits, pay..." onkeydown="if(event.key==='Enter')sendChat()" />
       <button class="chat-send" id="sendBtn" onclick="sendChat()">➤</button>
     </div>
   </div>
-  <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">🚩</button>
+  <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">
+    🚩
+    <span class="notif" id="notif">1</span>
+  </button>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
-  authDomain: "load-leader.firebaseapp.com",
-  projectId: "load-leader",
-  storageBucket: "load-leader.firebasestorage.app",
-  messagingSenderId: "411492756195",
-  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+<script>
+// Shared Claude API call
+// ── CONFIG: replace with your Render URL after deploying backend ──
 const API_URL = 'https://load-leader.onrender.com/api/ai';
 
-let currentUser = null;
-let userProfile = null;
-let appliedLoads = new Set();
-let savedLoads = new Set();
-
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-  if (user) {
-    try {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      userProfile = userDoc.exists() ? userDoc.data() : {};
-      const firstName = userProfile.firstName || user.displayName?.split(' ')[0] || 'Pilot';
-      const initials = (firstName[0] + (userProfile.lastName?.[0] || '')).toUpperCase();
-      document.getElementById('navRight').innerHTML = `
-        <a href="dashboard.html" class="user-chip">
-          <div class="user-av">${initials}</div>
-          <span class="user-n">${firstName}</span>
-        </a>
-        <a href="dashboard.html" class="btn-sm btn-yellow">Dashboard</a>`;
-      const appsSnap = await getDocs(query(collection(db,'applications'),where('pilotId','==',user.uid)));
-      appsSnap.forEach(d => appliedLoads.add(d.data().loadId));
-      const savedSnap = await getDocs(query(collection(db,'savedLoads'),where('pilotId','==',user.uid)));
-      savedSnap.forEach(d => savedLoads.add(d.data().loadId));
-    } catch(e) { console.error(e); }
-  }
-  renderLoads();
-});
-
-const LOADS = [
-  {id:"LL-00481",from:"Houston",fromSt:"TX",to:"Oklahoma City",toSt:"OK",type:"Wide Load",width:"16'0\"",height:"14'0\"",miles:450,pilots:2,pay:620,date:"Apr 21",status:"new",carrier:"Lone Star Hauling"},
-  {id:"LL-00479",from:"Denver",fromSt:"CO",to:"Salt Lake City",toSt:"UT",type:"Oversize",width:"14'0\"",height:"15'0\"",miles:525,pilots:1,pay:740,date:"Apr 19",status:"urgent",carrier:"Rocky Mtn Transport"},
-  {id:"LL-00477",from:"Atlanta",fromSt:"GA",to:"Charlotte",toSt:"NC",type:"Combination",width:"18'0\"",height:"13'0\"",miles:245,pilots:3,pay:390,date:"Apr 23",status:"open",carrier:"Southeast Freight"},
-  {id:"LL-00475",from:"Phoenix",fromSt:"AZ",to:"Albuquerque",toSt:"NM",type:"Tall Load",width:"15'0\"",height:"16'0\"",miles:470,pilots:2,pay:580,date:"Apr 25",status:"new",carrier:"Sun State Transport"},
-  {id:"LL-00472",from:"Chicago",fromSt:"IL",to:"Indianapolis",toSt:"IN",type:"Oversize",width:"13'0\"",height:"14'0\"",miles:182,pilots:1,pay:310,date:"Apr 22",status:"open",carrier:"Midwest Heavy Haul"},
-  {id:"LL-00470",from:"Seattle",fromSt:"WA",to:"Portland",toSt:"OR",type:"Wide Load",width:"20'0\"",height:"15'0\"",miles:175,pilots:4,pay:480,date:"Apr 19",status:"urgent",carrier:"Pacific NW Loads"},
-  {id:"LL-00468",from:"North Canton",fromSt:"OH",to:"Convoy",toSt:"OH",type:"Wide Load",width:"14'0\"",height:"14'6\"",miles:190,pilots:2,pay:550,date:"Apr 21",status:"new",carrier:"Stephan Trucking"},
-  {id:"LL-00466",from:"Dallas",fromSt:"TX",to:"Memphis",toSt:"TN",type:"Overweight",width:"12'0\"",height:"13'6\"",miles:480,pilots:1,pay:510,date:"Apr 24",status:"open",carrier:"Texas Heavy LLC"},
-  {id:"LL-00464",from:"Nashville",fromSt:"TN",to:"Louisville",toSt:"KY",type:"Oversize",width:"15'6\"",height:"14'0\"",miles:175,pilots:2,pay:420,date:"Apr 20",status:"new",carrier:"Music City Movers"},
-  {id:"LL-00462",from:"Kansas City",fromSt:"MO",to:"Wichita",toSt:"KS",type:"Wide Load",width:"17'0\"",height:"13'0\"",miles:200,pilots:2,pay:490,date:"Apr 22",status:"urgent",carrier:"Heartland Transport"},
-  {id:"LL-00460",from:"Minneapolis",fromSt:"MN",to:"Milwaukee",toSt:"WI",type:"Combination",width:"16'6\"",height:"15'6\"",miles:345,pilots:3,pay:650,date:"Apr 26",status:"new",carrier:"North Star Freight"},
-  {id:"LL-00458",from:"Sacramento",fromSt:"CA",to:"Las Vegas",toSt:"NV",type:"Tall Load",width:"14'0\"",height:"17'0\"",miles:590,pilots:2,pay:720,date:"Apr 23",status:"open",carrier:"West Coast Heavy"},
-];
-
-let activeTags = new Set();
-let currentPage = 1;
-const PER_PAGE = 12;
-
-function getFiltered() {
-  let loads = [...LOADS];
-  const origin = document.getElementById('fOrigin').value.toLowerCase();
-  const dest = document.getElementById('fDest').value.toLowerCase();
-  const type = document.getElementById('fType').value;
-  const pilots = document.getElementById('fPilots').value;
-  const sort = document.getElementById('sortBy').value;
-  if (origin) loads = loads.filter(l => l.from.toLowerCase().includes(origin)||l.fromSt.toLowerCase().includes(origin));
-  if (dest) loads = loads.filter(l => l.to.toLowerCase().includes(dest)||l.toSt.toLowerCase().includes(dest));
-  if (type) loads = loads.filter(l => l.type===type);
-  if (pilots) loads = loads.filter(l => pilots==='4'?l.pilots>=4:l.pilots===parseInt(pilots));
-  if (activeTags.has('urgent')) loads = loads.filter(l => l.status==='urgent');
-  if (activeTags.has('new')) loads = loads.filter(l => l.status==='new');
-  if (activeTags.has('high-pay')) loads = loads.filter(l => l.pay>=500);
-  if (sort==='pay-high') loads.sort((a,b)=>b.pay-a.pay);
-  else if (sort==='pay-low') loads.sort((a,b)=>a.pay-b.pay);
-  else if (sort==='distance') loads.sort((a,b)=>b.miles-a.miles);
-  return loads;
+async function claude(system, messages) {
+  const allMessages = [
+    { role: "user", content: "System instructions: " + system + "\n\nNow here is my request:\n" + messages[0].content }
+  ];
+  const r = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: allMessages, max_tokens: 1000 })
+  });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error);
+  return d.text;
 }
 
-function renderLoads() {
-  const filtered = getFiltered();
-  const total = filtered.length;
-  const page = filtered.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE);
-  document.getElementById('resultCount').innerHTML = `<strong>${total}</strong> load${total!==1?'s':''} found`;
-  const grid = document.getElementById('loadGrid');
-  if (!page.length) { grid.innerHTML='<div class="no-results">No loads match your filters.</div>'; return; }
-  grid.innerHTML = page.map((l,i) => `
-    <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
-      <div class="card-top">
-        <div class="load-id">${l.id}</div>
-        <div class="badges">
-          ${appliedLoads.has(l.id)
-            ? '<span class="badge badge-applied">Applied ✓</span>'
-            : `<span class="badge badge-${l.status==='new'?'new':l.status==='urgent'?'urgent':'open'}">${l.status==='new'?'New':l.status==='urgent'?'Urgent':'Open'}</span>`
-          }
-        </div>
-      </div>
-      <div class="route">
-        <div><span class="route-city">${l.from}</span><span class="route-st">${l.fromSt}</span></div>
-        <span class="route-arrow">→</span>
-        <div><span class="route-city">${l.to}</span><span class="route-st">${l.toSt}</span></div>
-      </div>
-      <div class="card-grid">
-        <div><div class="cg-label">Width</div><div class="cg-val">${l.width}</div></div>
-        <div><div class="cg-label">Height</div><div class="cg-val">${l.height}</div></div>
-        <div><div class="cg-label">Miles</div><div class="cg-val">${l.miles} mi</div></div>
-        <div><div class="cg-label">Pilots</div><div class="cg-val">${l.pilots} needed</div></div>
-        <div><div class="cg-label">Type</div><div class="cg-val">${l.type}</div></div>
-        <div><div class="cg-label">Date</div><div class="cg-val">${l.date}</div></div>
-      </div>
-      <div class="card-bottom">
-        <div><div class="pay-label">Per Pilot</div><div class="pay-amount">$${l.pay.toLocaleString()}</div></div>
-        <div class="card-actions">
-          <button class="save-btn ${savedLoads.has(l.id)?'saved':''}" onclick="toggleSave('${l.id}',this)" title="Save">${savedLoads.has(l.id)?'♥':'♡'}</button>
-          ${appliedLoads.has(l.id)
-            ? `<button class="apply-btn applied" disabled>Applied ✓</button>`
-            : `<button class="apply-btn" onclick="openApplyModal('${l.id}')">Apply Now</button>`
-          }
-        </div>
-      </div>
-    </div>`).join('');
-  renderPagination(total);
+// ── AI SMART SEARCH ──
+async function runAISearch() {
+  const q = document.getElementById("aiInput").value.trim();
+  if (!q) return;
+  const btn = document.getElementById("aiSearchBtn");
+  const box = document.getElementById("aiResult");
+  const txt = document.getElementById("aiResultText");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Searching...';
+  box.classList.add("show");
+  txt.innerHTML = '<span class="spinner"></span><em>Analyzing your request...</em>';
+
+  const loads = [
+    {id:"LL-00481",from:"Houston TX",to:"Oklahoma City OK",w:"16ft",h:"14ft",mi:450,pilots:2,pay:620,date:"Apr 21"},
+    {id:"LL-00479",from:"Denver CO",to:"Salt Lake City UT",w:"14ft",h:"15ft",mi:525,pilots:1,pay:740,date:"Apr 19"},
+    {id:"LL-00477",from:"Atlanta GA",to:"Charlotte NC",w:"18ft",h:"13ft",mi:245,pilots:3,pay:390,date:"Apr 23"},
+    {id:"LL-00475",from:"Phoenix AZ",to:"Albuquerque NM",w:"15ft",h:"16ft",mi:470,pilots:2,pay:580,date:"Apr 25"},
+    {id:"LL-00472",from:"Chicago IL",to:"Indianapolis IN",w:"13ft",h:"14ft",mi:182,pilots:1,pay:310,date:"Apr 22"},
+    {id:"LL-00470",from:"Seattle WA",to:"Portland OR",w:"20ft",h:"15ft",mi:175,pilots:4,pay:480,date:"Apr 19"}
+  ];
+
+  try {
+    const reply = await claude(
+      `You are a load board search assistant for LoadLeader, a pilot car escort platform. Available loads: ${JSON.stringify(loads)}. Analyze the user's search and identify the best matching loads, explain why they match, and give a brief recommendation. Keep it to 3-5 sentences in plain text, no markdown.`,
+      [{role:"user",content:q}]
+    );
+    txt.innerHTML = reply;
+  } catch(e) {
+    txt.innerHTML = "⚠️ AI search unavailable right now. Browse the loads above or try again shortly.";
+  }
+  btn.disabled = false;
+  btn.innerHTML = '🔍 Search with AI';
 }
 
-function renderPagination(total) {
-  const pages = Math.ceil(total/PER_PAGE);
-  if (pages<=1) { document.getElementById('pagination').innerHTML=''; return; }
-  let html='';
-  if (currentPage>1) html+=`<button class="page-btn" onclick="goPage(${currentPage-1})">← Prev</button>`;
-  for (let i=1;i<=pages;i++) {
-    if (i===1||i===pages||Math.abs(i-currentPage)<=1) html+=`<button class="page-btn ${i===currentPage?'on':''}" onclick="goPage(${i})">${i}</button>`;
-    else if (Math.abs(i-currentPage)===2) html+=`<span style="color:#333;padding:0 .25rem">…</span>`;
-  }
-  if (currentPage<pages) html+=`<button class="page-btn" onclick="goPage(${currentPage+1})">Next →</button>`;
-  document.getElementById('pagination').innerHTML=html;
+// ── AI LOAD PARSER ──
+async function parseLoad() {
+  const raw = document.getElementById("parserInput").value.trim();
+  if (!raw) return;
+  const btn = document.getElementById("parserBtn");
+  const out = document.getElementById("parserOut");
+  const post = document.getElementById("postBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Parsing...';
+  out.innerHTML = '<span class="spinner"></span><em style="color:#555">Reading load details...</em>';
+  out.classList.remove("ready");
+  post.classList.remove("show");
+
+  try {
+    const reply = await claude(
+      `You are an expert at parsing real-world oversize load dispatch messages sent by trucking companies. These messages are often informal, multi-stop, and contain addresses, GPS links, driver names, phone numbers, dates, and equipment details in no particular order.
+
+Extract structured data and return ONLY valid JSON with these fields:
+{
+  "carrier": "",
+  "origin": "",
+  "destination": "",
+  "stops": "",
+  "equipment": "",
+  "width": "",
+  "height": "",
+  "weight": "",
+  "startDate": "",
+  "startTime": "",
+  "deliveryDate": "",
+  "pilotsNeeded": "",
+  "payPerPilot": "",
+  "driver": "",
+  "contact": "",
+  "truckNumber": "",
+  "notes": ""
 }
 
-window.goPage=(p)=>{currentPage=p;renderLoads();window.scrollTo({top:0,behavior:'smooth'});};
-window.filterLoads=()=>{currentPage=1;renderLoads();};
-window.resetFilters=()=>{
-  ['fOrigin','fDest'].forEach(id=>document.getElementById(id).value='');
-  ['fType','fPilots'].forEach(id=>document.getElementById(id).selectedIndex=0);
-  document.getElementById('sortBy').selectedIndex=0;
-  activeTags.clear();
-  document.querySelectorAll('.filter-tag').forEach(t=>t.classList.remove('on'));
-  filterLoads();
-};
-window.toggleTag=(el,tag)=>{activeTags.has(tag)?activeTags.delete(tag):activeTags.add(tag);el.classList.toggle('on');filterLoads();};
-window.setView=(v)=>{document.getElementById('loadGrid').classList.toggle('list-view',v!=='grid');document.getElementById('gridBtn').classList.toggle('on',v==='grid');document.getElementById('listBtn').classList.toggle('on',v!=='grid');};
+Rules:
+- "origin" = first pickup address including city and state
+- "destination" = final delivery address including city and state
+- "stops" = any intermediate stops between origin and destination, comma separated
+- "equipment" = the name/model of the machine or load being hauled
+- "width" and "height" = dimensions found anywhere in the text (e.g. 14' Wide, 14'6 Tall)
+- "weight" = any weight or scale ticket number found (e.g. 23.0552 likely refers to scale weight in tons)
+- "startDate" and "deliveryDate" = dates in readable format
+- "driver" = driver name if present
+- "contact" = phone number if present
+- "truckNumber" = truck or unit number if present
+- "notes" = anything unusual like UNLOAD & RELOAD, special entry instructions, permit info
+- Use "N/A" for missing fields
+- No markdown, no extra text, return only the JSON object`,
+      [{role:"user",content:raw}]
+    );
+    const cleanReply = reply.replace(/```json|```/g,"").trim();
+    out.innerHTML = '<span style="color:#888;font-size:.75rem">Raw AI response (debug): ' + cleanReply.substring(0,400) + '</span>';
+    const parsed = JSON.parse(cleanReply);
+    const fields = [
+      ["Carrier",parsed.carrier],["Driver",parsed.driver],["Truck #",parsed.truckNumber],
+      ["Contact",parsed.contact],["Equipment",parsed.equipment],
+      ["Width",parsed.width],["Height",parsed.height],["Weight",parsed.weight],
+      ["Origin",parsed.origin],["Intermediate Stops",parsed.stops],["Destination",parsed.destination],
+      ["Start Date",parsed.startDate],["Start Time",parsed.startTime],["Delivery Date",parsed.deliveryDate],
+      ["Pilots Needed",parsed.pilotsNeeded],["Pay Per Pilot",parsed.payPerPilot],["Notes",parsed.notes]
+    ].filter(([,v]) => v && v !== "N/A");
 
-window.toggleSave=async(loadId,btn)=>{
-  if (!currentUser){openApplyModal(loadId);return;}
-  if (savedLoads.has(loadId)){savedLoads.delete(loadId);btn.textContent='♡';btn.classList.remove('saved');}
-  else{savedLoads.add(loadId);btn.textContent='♥';btn.classList.add('saved');
-    try{await addDoc(collection(db,'savedLoads'),{pilotId:currentUser.uid,loadId,savedAt:serverTimestamp()});}catch(e){console.error(e);}
+    if (fields.length === 0) {
+      out.innerHTML = '<span style="color:#fbbf24">⚠️ AI responded but found no fields. Raw reply: ' + reply.substring(0,300) + '</span>';
+    } else {
+      out.innerHTML = fields.map(([l,v]) =>
+        `<div class="pf"><div class="pf-label">${l}</div><div class="pf-val">${v}</div></div>`
+      ).join("");
+      out.classList.add("ready");
+      post.classList.add("show");
+    }
+  } catch(e) {
+    const msg = e.message || String(e);
+    out.innerHTML = '<span style="color:#ff6b6b;font-size:.8rem;line-height:1.6;word-break:break-all;">⚠️ Error: ' + msg + '</span>';
   }
-};
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Parse with AI';
+}
 
-window.openApplyModal=(loadId)=>{
-  const load=LOADS.find(l=>l.id===loadId);
-  if(!load)return;
-  const overlay=document.getElementById('applyModal');
-  const content=document.getElementById('applyModalContent');
-  overlay.classList.add('open');
+function confirmPost() {
+  const btn = document.getElementById("postBtn");
+  btn.textContent = "✓ Posted to Board!";
+  btn.style.background = "#5ec87a";
+  setTimeout(() => { btn.textContent = "✓ Post This Load to Board"; btn.style.background = ""; }, 2500);
+}
 
-  if (!currentUser) {
-    content.innerHTML=`
-      <div class="modal-head"><div class="modal-title">Apply for <span>${load.id}</span></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
-      <div class="modal-body">
-        <div class="login-prompt">
-          <div class="login-prompt-icon">🚩</div>
-          <div class="login-prompt-title">Sign in to Apply</div>
-          <div class="login-prompt-desc">Create a free LoadLeader account to apply for loads, track applications, and get paid.</div>
-          <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-            <a href="login.html?tab=signup" class="success-btn" style="background:var(--yellow);color:var(--black);">Create Free Account</a>
-            <a href="login.html" class="success-btn" style="background:transparent;border:1px solid #2a2a2a;color:var(--white);">Log In</a>
-          </div>
-        </div>
-      </div>`;
-    return;
+// ── AI CHAT ──
+let history = [];
+let isOpen = false;
+
+function toggleChat() {
+  isOpen = !isOpen;
+  document.getElementById("chatWin").classList.toggle("open", isOpen);
+  document.getElementById("chatToggle").innerHTML = isOpen ? '<span style="font-size:1.2rem">✕</span>' : '🚩';
+  document.getElementById("notif").style.display = "none";
+  if (isOpen) document.getElementById("chatInput").focus();
+}
+
+function useChip(el) {
+  document.getElementById("chatInput").value = el.textContent;
+  document.getElementById("chips").style.display = "none";
+  sendChat();
+}
+
+function addMsg(text, role) {
+  const el = document.createElement("div");
+  el.className = `msg ${role}`;
+  el.textContent = text;
+  const msgs = document.getElementById("chatMsgs");
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+async function sendChat() {
+  const inp = document.getElementById("chatInput");
+  const send = document.getElementById("sendBtn");
+  const text = inp.value.trim();
+  if (!text) return;
+  addMsg(text, "user");
+  inp.value = "";
+  send.disabled = true;
+  history.push({role:"user", content:text});
+  const thinking = addMsg("Thinking...", "bot thinking");
+
+  try {
+    const reply = await claude(
+      `You are LoadLeader AI, a friendly assistant for a pilot car escort load board. Help with: finding loads, oversize permit requirements by state, pay rates, route planning, equipment requirements (flags/lights/signs/CB), safety, and platform usage. Be concise (2-4 sentences). Use industry terms. Current board: 3,200+ loads, 8,400+ pilots, 48 states.`,
+      history
+    );
+    history.push({role:"assistant", content:reply});
+    thinking.textContent = reply;
+    thinking.classList.remove("thinking");
+  } catch(e) {
+    thinking.textContent = "Sorry, having trouble connecting. Try again in a moment.";
+    thinking.classList.remove("thinking");
   }
+  send.disabled = false;
+  document.getElementById("chatMsgs").scrollTop = 9999;
+}
 
-  const firstName=userProfile?.firstName||currentUser.displayName?.split(' ')[0]||'Pilot';
-  const lastName=userProfile?.lastName||'';
-  const initials=(firstName[0]+(lastName[0]||'')).toUpperCase();
+document.getElementById("aiInput").addEventListener("keydown", e => { if(e.key==="Enter") runAISearch(); });
 
-  content.innerHTML=`
-    <div class="modal-head">
-      <div>
-        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.3rem;">Apply for Load</div>
-        <div class="modal-title">${load.from} <span>→</span> ${load.to}</div>
-      </div>
-      <button class="modal-close" onclick="closeApplyModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-load-summary">
-        <div class="mls-route">
-          <div><span style="font-weight:600">${load.from}</span><span style="color:var(--muted);font-size:.82rem;margin-left:.15rem">${load.fromSt}</span></div>
-          <span class="mls-arr">→</span>
-          <div><span style="font-weight:600">${load.to}</span><span style="color:var(--muted);font-size:.82rem;margin-left:.15rem">${load.toSt}</span></div>
-        </div>
-        <div class="mls-details">
-          <div class="mls-item">Width<strong>${load.width}</strong></div>
-          <div class="mls-item">Height<strong>${load.height}</strong></div>
-          <div class="mls-item">Miles<strong>${load.miles} mi</strong></div>
-          <div class="mls-item">Date<strong>${load.date}</strong></div>
-          <div class="mls-item">Carrier<strong>${load.carrier}</strong></div>
-        </div>
-        <div class="mls-pay">$${load.pay.toLocaleString()} <span style="font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--muted);font-weight:400;letter-spacing:0">per pilot</span></div>
-      </div>
-      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.6rem;font-weight:600;">Your Profile — Carrier will see this</div>
-      <div class="pilot-preview">
-        <div class="pp-avatar">${initials}</div>
-        <div>
-          <div class="pp-name">${firstName} ${lastName}</div>
-          <div style="color:var(--yellow);font-size:.8rem;">★★★★★ <span style="color:var(--muted)">4.9 · 38 jobs</span></div>
-          <div class="pp-meta">${userProfile?.state||'Location not set'} · Pilot Car Driver</div>
-          <div class="pp-badges">
-            <span class="pp-badge">✓ Certified</span>
-            <span class="pp-badge">✓ Insured</span>
-            <span class="pp-badge">✓ CDL</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-form-group">
-        <label class="modal-label">Availability</label>
-        <div class="avail-row">
-          <div><label class="modal-label" style="font-size:.62rem">From</label><input type="date" id="availFrom" class="modal-input" style="color-scheme:dark"></div>
-          <div><label class="modal-label" style="font-size:.62rem">Until</label><input type="date" id="availTo" class="modal-input" style="color-scheme:dark"></div>
-        </div>
-      </div>
-      <div class="modal-form-group">
-        <label class="modal-label">Message to Carrier <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type..."></textarea>
-      </div>
-      <div class="check-row">
-        <input type="checkbox" id="confirmAvail" checked>
-        <label for="confirmAvail">I confirm I am available on <strong>${load.date}</strong> and meet all requirements for this load</label>
-      </div>
-      <div id="applyMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
-      <button class="modal-submit" id="applySubmitBtn" onclick="submitApplication('${load.id}')">🚩 Submit Application</button>
-      <div class="modal-note">📞 Your phone number is only shared with the carrier if they accept you.</div>
-    </div>`;
-};
-
-window.closeApplyModal=()=>document.getElementById('applyModal').classList.remove('open');
-
-window.submitApplication=async(loadId)=>{
-  const load=LOADS.find(l=>l.id===loadId);
-  const btn=document.getElementById('applySubmitBtn');
-  const msgBox=document.getElementById('applyMsgBox');
-  if(!document.getElementById('confirmAvail').checked){
-    msgBox.style.cssText='display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);';
-    msgBox.textContent='Please confirm your availability to continue.';return;
-  }
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting...';
-  try{
-    const firstName=userProfile?.firstName||currentUser.displayName?.split(' ')[0]||'Pilot';
-    const lastName=userProfile?.lastName||'';
-    await addDoc(collection(db,'applications'),{
-      loadId,
-      pilotId:currentUser.uid,
-      pilotName:`${firstName} ${lastName}`.trim(),
-      pilotEmail:currentUser.email,
-      pilotPhone:userProfile?.phone||'',
-      pilotRating:4.9,
-      pilotJobs:38,
-      pilotState:userProfile?.state||'',
-      message:document.getElementById('applyMessage').value.trim(),
-      availFrom:document.getElementById('availFrom').value,
-      availTo:document.getElementById('availTo').value,
-      status:'pending',
-      carrier:load.carrier,
-      loadRoute:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
-      loadPay:load.pay,
-      loadDate:load.date,
-      appliedAt:serverTimestamp()
-    });
-
-    // Email notification
-    try{
-      await fetch('https://load-leader.onrender.com/api/notify',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          type:'application',
-          pilotName:`${firstName} ${lastName}`.trim(),
-          pilotEmail:currentUser.email,
-          loadId,carrier:load.carrier,
-          route:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
-          pay:load.pay,date:load.date,
-          message:document.getElementById('applyMessage').value.trim()
-        })
-      });
-    }catch(e){console.log('Email notify:',e);}
-
-    appliedLoads.add(loadId);
-    document.getElementById('applyModalContent').innerHTML=`
-      <div class="modal-head"><div></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
-      <div class="modal-body">
-        <div class="success-state">
-          <div class="success-icon">🎉</div>
-          <div class="success-title">Application <span>Submitted!</span></div>
-          <div class="success-desc">Your application for <strong>${load.from} → ${load.to}</strong> has been sent to <strong>${load.carrier}</strong>.<br><br>If accepted, you'll receive an email notification and their phone number will appear in your dashboard.</div>
-          <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--green);line-height:1.8;text-align:left;">
-            ✅ Application saved to your dashboard<br>
-            📧 ${load.carrier} has been notified by email<br>
-            🔔 You'll be notified when they respond
-          </div>
-          <div class="success-actions">
-            <a href="dashboard.html" class="success-btn" style="background:var(--yellow);color:var(--black);">View My Applications</a>
-            <button class="success-btn" style="background:transparent;border:1px solid #2a2a2a;color:var(--white);" onclick="closeApplyModal()">Browse More Loads</button>
-          </div>
-        </div>
-      </div>`;
-    renderLoads();
-  }catch(e){
-    btn.disabled=false;btn.innerHTML='🚩 Submit Application';
-    msgBox.style.cssText='display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);';
-    msgBox.textContent='Could not submit. Please try again.';
-  }
-};
-
-document.getElementById('applyModal').addEventListener('click',function(e){if(e.target===this)closeApplyModal();});
-document.getElementById('postModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
-
-window.runAISearch=async()=>{
-  const q=document.getElementById('aiInput').value.trim();if(!q)return;
-  const btn=document.getElementById('aiBtn');const box=document.getElementById('aiResult');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Thinking...';
-  box.classList.add('show');box.innerHTML='<span class="spinner spinner-white"></span><em>Analyzing loads...</em>';
-  try{
-    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:`System: Load board AI for LoadLeader. Available loads: ${JSON.stringify(LOADS.slice(0,8))}. Answer in 2-3 sentences, plain text.\n\nSearch: ${q}`}],max_tokens:300})});
-    const d=await r.json();box.innerHTML='⚡ '+(d.text||'Try the filters above.');
-  }catch(e){box.innerHTML='⚠️ AI search unavailable. Use filters above.';}
-  btn.disabled=false;btn.innerHTML='Search';
-};
-
-let chatHistory=[];let chatOpen=false;
-window.toggleChat=()=>{chatOpen=!chatOpen;document.getElementById('chatWin').classList.toggle('open',chatOpen);document.getElementById('chatToggle').innerHTML=chatOpen?'<span style="font-size:1rem">✕</span>':'🚩';if(chatOpen)document.getElementById('chatInput').focus();};
-window.useChip=(el)=>{document.getElementById('chatInput').value=el.textContent;document.getElementById('chips').style.display='none';sendChat();};
-function addMsg(text,role){const el=document.createElement('div');el.className=`msg ${role}`;el.textContent=text;const msgs=document.getElementById('chatMsgs');msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
-window.sendChat=async()=>{
-  const inp=document.getElementById('chatInput');const send=document.getElementById('sendBtn');
-  const text=inp.value.trim();if(!text)return;
-  addMsg(text,'user');inp.value='';send.disabled=true;
-  chatHistory.push({role:'user',content:text});
-  const thinking=addMsg('Thinking...','bot thinking');
-  try{
-    const msgs=chatHistory.map((m,i)=>i===0?{...m,content:`System: LoadLeader load board AI. Help pilots find loads. Be concise.\n\n${m.content}`}:m);
-    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,max_tokens:300})});
-    const d=await r.json();const reply=d.text||'Sorry, try again.';
-    chatHistory.push({role:'assistant',content:reply});
-    thinking.textContent=reply;thinking.classList.remove('thinking');
-  }catch(e){thinking.textContent='Sorry, having trouble connecting.';thinking.classList.remove('thinking');}
-  send.disabled=false;
-};
-document.getElementById('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAISearch();});
+function copyRef() {
+  const btn = document.querySelector(".copy-btn");
+  navigator.clipboard.writeText("loadleader.com/ref/PILOT-7X29K").catch(()=>{});
+  btn.textContent = "✓ Copied!";
+  btn.classList.add("copied");
+  setTimeout(()=>{ btn.textContent = "Copy Link"; btn.classList.remove("copied"); }, 2000);
+}
 </script>
 </body>
 </html>
