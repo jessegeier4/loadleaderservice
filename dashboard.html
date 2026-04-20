@@ -279,7 +279,7 @@ select option{background:var(--mid);}
       <div class="welcome-text">
         <div class="welcome-sup">🚩 Pilot Dashboard</div>
         <div class="welcome-name">Welcome Back, <span id="welcomeName">Pilot</span></div>
-        <div class="welcome-sub" id="welcomeSub">You have 2 active jobs and 1 pending application</div>
+        <div class="welcome-sub" id="welcomeSub">Welcome to LoadLeader — browse the board to find your first load</div>
       </div>
       <div class="welcome-actions">
         <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
@@ -290,23 +290,23 @@ select option{background:var(--mid);}
     <div class="stats-row">
       <div class="stat-card yellow">
         <div class="sc-label">Active Jobs</div>
-        <div class="sc-val">2</div>
-        <div class="sc-sub">In progress right now</div>
+        <div class="sc-val" id="statActiveJobs">0</div>
+        <div class="sc-sub" id="statActiveJobsSub">No active jobs yet</div>
       </div>
       <div class="stat-card green">
         <div class="sc-label">Earnings (2026)</div>
-        <div class="sc-val">$14,260</div>
-        <div class="sc-sub">↑ 23% vs last year</div>
+        <div class="sc-val" id="statEarnings">$0</div>
+        <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
       </div>
       <div class="stat-card blue">
         <div class="sc-label">Jobs Completed</div>
-        <div class="sc-val">38</div>
-        <div class="sc-sub">Since joining LoadLeader</div>
+        <div class="sc-val" id="statJobs">0</div>
+        <div class="sc-sub" id="statJobsSub">Since joining LoadLeader</div>
       </div>
       <div class="stat-card orange">
         <div class="sc-label">Rating</div>
-        <div class="sc-val">4.9</div>
-        <div class="sc-sub">Based on 36 reviews</div>
+        <div class="sc-val" id="statRating">—</div>
+        <div class="sc-sub" id="statRatingSub">Complete jobs to earn rating</div>
       </div>
     </div>
 
@@ -315,44 +315,11 @@ select option{background:var(--mid);}
       <div class="sec-title">Active <span>Jobs</span></div>
       <a href="#" class="sec-link" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);return false;">View all →</a>
     </div>
-    <div class="job-list" style="margin-bottom:2rem;">
-      <div class="job-card active-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Denver</span><span class="job-st">CO</span></div><span class="job-arr">→</span><div><span class="job-city">Salt Lake City</span><span class="job-st">UT</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00479</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 19</strong></div>
-            <div class="job-meta-item">Miles <strong>525 mi</strong></div>
-            <div class="job-meta-item">Width <strong>14'0"</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$740</div></div>
-          <span class="badge badge-active">In Progress</span>
-          <div class="job-actions">
-            <button class="job-btn">View Details</button>
-            <button class="job-btn primary">Confirm Delivery</button>
-          </div>
-        </div>
-      </div>
-      <div class="job-card pending-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Phoenix</span><span class="job-st">AZ</span></div><span class="job-arr">→</span><div><span class="job-city">Albuquerque</span><span class="job-st">NM</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00475</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 25</strong></div>
-            <div class="job-meta-item">Miles <strong>470 mi</strong></div>
-            <div class="job-meta-item">Width <strong>15'0"</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$580</div></div>
-          <span class="badge badge-applied">Applied</span>
-          <div class="job-actions">
-            <button class="job-btn">View Details</button>
-            <button class="job-btn">Withdraw</button>
-          </div>
-        </div>
+    <div class="job-list" id="overviewJobs" style="margin-bottom:2rem;">
+      <div class="empty-state">
+        <div class="empty-icon">🚛</div>
+        <div class="empty-text">No active jobs yet</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;">Browse Load Board →</a>
       </div>
     </div>
 
@@ -361,13 +328,11 @@ select option{background:var(--mid);}
       <div class="sec-title">Upcoming <span>Payout</span></div>
       <a href="#" class="sec-link" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[2]);return false;">View earnings →</a>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-      <div>
-        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.3rem;">In Escrow — Releasing Apr 22</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--blue);letter-spacing:1px;">$740.00</div>
-        <div style="font-size:.75rem;color:var(--muted);">Denver CO → Salt Lake City UT · LL-00479</div>
+    <div id="overviewPayout" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;">
+      <div class="empty-state" style="padding:1.5rem 1rem;">
+        <div class="empty-icon">💰</div>
+        <div class="empty-text">No pending payouts yet — complete a job to get paid</div>
       </div>
-      <button class="btn btn-o" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[2])">View Wallet →</button>
     </div>
   </div>
 
@@ -386,82 +351,10 @@ select option{background:var(--mid);}
     </div>
 
     <div class="job-list" id="jobsList">
-      <div class="job-card active-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Denver</span><span class="job-st">CO</span></div><span class="job-arr">→</span><div><span class="job-city">Salt Lake City</span><span class="job-st">UT</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00479</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 19</strong></div>
-            <div class="job-meta-item">Miles <strong>525 mi</strong></div>
-            <div class="job-meta-item">Type <strong>Oversize</strong></div>
-            <div class="job-meta-item">Carrier <strong>Rocky Mtn Hauling</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$740</div></div>
-          <span class="badge badge-active">In Progress</span>
-          <div class="job-actions">
-            <button class="job-btn">Contact Carrier</button>
-            <button class="job-btn primary">Confirm Delivery</button>
-          </div>
-        </div>
-      </div>
-      <div class="job-card pending-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Phoenix</span><span class="job-st">AZ</span></div><span class="job-arr">→</span><div><span class="job-city">Albuquerque</span><span class="job-st">NM</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00475</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 25</strong></div>
-            <div class="job-meta-item">Miles <strong>470 mi</strong></div>
-            <div class="job-meta-item">Type <strong>Tall Load</strong></div>
-            <div class="job-meta-item">Carrier <strong>Sun State Transport</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$580</div></div>
-          <span class="badge badge-applied">Applied</span>
-          <div class="job-actions">
-            <button class="job-btn">View Load</button>
-            <button class="job-btn">Withdraw</button>
-          </div>
-        </div>
-      </div>
-      <div class="job-card completed-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Atlanta</span><span class="job-st">GA</span></div><span class="job-arr">→</span><div><span class="job-city">Charlotte</span><span class="job-st">NC</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00455</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 12</strong></div>
-            <div class="job-meta-item">Miles <strong>245 mi</strong></div>
-            <div class="job-meta-item">Type <strong>Combination</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Paid Out</div><div class="job-pay" style="color:var(--green)">$390</div></div>
-          <span class="badge badge-completed">Completed</span>
-          <div class="job-actions">
-            <button class="job-btn">View Receipt</button>
-            <button class="job-btn">Leave Review</button>
-          </div>
-        </div>
-      </div>
-      <div class="job-card completed-job">
-        <div class="job-left">
-          <div class="job-route"><div><span class="job-city">Seattle</span><span class="job-st">WA</span></div><span class="job-arr">→</span><div><span class="job-city">Portland</span><span class="job-st">OR</span></div></div>
-          <div class="job-meta">
-            <div class="job-meta-item">Load ID <strong>LL-00441</strong></div>
-            <div class="job-meta-item">Date <strong>Apr 5</strong></div>
-            <div class="job-meta-item">Miles <strong>175 mi</strong></div>
-            <div class="job-meta-item">Type <strong>Wide Load</strong></div>
-          </div>
-        </div>
-        <div class="job-right">
-          <div><div class="job-pay-label">Paid Out</div><div class="job-pay" style="color:var(--green)">$480</div></div>
-          <span class="badge badge-completed">Completed</span>
-          <div class="job-actions">
-            <button class="job-btn">View Receipt</button>
-          </div>
-        </div>
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No applications yet — apply to a load to get started</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">Find Loads →</a>
       </div>
     </div>
   </div>
@@ -475,8 +368,8 @@ select option{background:var(--mid);}
     <div class="earnings-grid">
       <div class="earnings-card">
         <div class="ec-title">Total Earned (2026)</div>
-        <div class="ec-amount">$14,260</div>
-        <div class="ec-sub">Across 38 completed jobs</div>
+        <div class="ec-amount" id="totalEarned">$0</div>
+        <div class="ec-sub" id="totalEarnedSub">Complete jobs to start earning</div>
         <div style="margin-top:1rem;display:flex;gap:.5rem;">
           <button class="job-btn">📄 2025 1099-K</button>
           <button class="job-btn">📊 Export Report</button>
@@ -484,28 +377,22 @@ select option{background:var(--mid);}
       </div>
       <div class="payout-card">
         <div class="ec-title" style="color:rgba(74,222,128,.5)">Available to Withdraw</div>
-        <div class="payout-amount">$1,840.00</div>
-        <div class="ec-sub" style="color:#555">Ready in your LoadLeader wallet</div>
-        <div class="bank-row">🏦 Chase Bank ···· 4821 <span style="margin-left:auto;color:var(--green);font-size:.72rem;">Connected</span></div>
-        <button class="withdraw-btn">💸 Withdraw to Bank Account</button>
+        <div class="payout-amount" id="availableBalance">$0.00</div>
+        <div class="ec-sub" style="color:#555">Your LoadLeader wallet balance</div>
+        <div class="bank-row">🏦 <span id="bankInfo">No bank account connected yet</span></div>
+        <button class="withdraw-btn" onclick="alert('Connect a bank account in your profile to enable withdrawals.')">💸 Withdraw to Bank Account</button>
       </div>
     </div>
 
     <!-- TX TABLE -->
     <div class="sec-head"><div class="sec-title">Transaction <span>History</span></div></div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-      <table class="tx-table">
-        <thead>
-          <tr><th>Date</th><th>Description</th><th>Job</th><th>Status</th><th style="text-align:right">Amount</th></tr>
-        </thead>
-        <tbody>
-          <tr><td style="color:var(--muted)">Apr 18</td><td>Escrow hold · Denver → SLC</td><td style="color:#444;font-size:.72rem;">LL-00479</td><td><span class="dot" style="background:var(--blue)"></span>Holding</td><td class="tx-hold" style="text-align:right">$740</td></tr>
-          <tr><td style="color:var(--muted)">Apr 16</td><td>Payout · Atlanta → Charlotte</td><td style="color:#444;font-size:.72rem;">LL-00455</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$390</td></tr>
-          <tr><td style="color:var(--muted)">Apr 7</td><td>Withdrawal to Chase ···· 4821</td><td style="color:#444;font-size:.72rem;">—</td><td><span class="dot" style="background:var(--green)"></span>Deposited</td><td style="text-align:right;color:var(--red)">-$2,400</td></tr>
-          <tr><td style="color:var(--muted)">Apr 5</td><td>Payout · Seattle → Portland</td><td style="color:#444;font-size:.72rem;">LL-00441</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$480</td></tr>
-          <tr><td style="color:var(--muted)">Mar 28</td><td>Payout · Chicago → Indianapolis</td><td style="color:#444;font-size:.72rem;">LL-00421</td><td><span class="dot" style="background:var(--green)"></span>Paid</td><td class="tx-cr" style="text-align:right">+$310</td></tr>
-        </tbody>
-      </table>
+      <div id="txTable">
+        <div class="empty-state" style="padding:2rem;">
+          <div class="empty-icon">💳</div>
+          <div class="empty-text">No transactions yet — your payment history will appear here after completing jobs</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -515,57 +402,11 @@ select option{background:var(--mid);}
       <div class="sec-title">Saved <span>Loads</span></div>
       <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">Browse Board</a>
     </div>
-    <div class="saved-grid">
-      <div class="saved-card">
-        <div class="sc-top"><div class="sc-id">LL-00481</div><button class="unsave-btn" title="Remove">♥</button></div>
-        <div class="sc-route"><div><span class="sc-city">Houston</span><span class="sc-st">TX</span></div><span class="sc-arr">→</span><div><span class="sc-city">Oklahoma City</span><span class="sc-st">OK</span></div></div>
-        <div class="sc-details">
-          <div><div class="sc-det-label">Width</div><div class="sc-det-val">16'0"</div></div>
-          <div><div class="sc-det-label">Height</div><div class="sc-det-val">14'0"</div></div>
-          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">450 mi</div></div>
-          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 21</div></div>
-        </div>
-        <div class="sc-footer">
-          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$620</div></div>
-          <div style="display:flex;gap:.4rem;">
-            <button class="job-btn">View</button>
-            <button class="job-btn primary">Apply</button>
-          </div>
-        </div>
-      </div>
-      <div class="saved-card">
-        <div class="sc-top"><div class="sc-id">LL-00460</div><button class="unsave-btn" title="Remove">♥</button></div>
-        <div class="sc-route"><div><span class="sc-city">Minneapolis</span><span class="sc-st">MN</span></div><span class="sc-arr">→</span><div><span class="sc-city">Milwaukee</span><span class="sc-st">WI</span></div></div>
-        <div class="sc-details">
-          <div><div class="sc-det-label">Width</div><div class="sc-det-val">16'6"</div></div>
-          <div><div class="sc-det-label">Height</div><div class="sc-det-val">15'6"</div></div>
-          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">345 mi</div></div>
-          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 26</div></div>
-        </div>
-        <div class="sc-footer">
-          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$650</div></div>
-          <div style="display:flex;gap:.4rem;">
-            <button class="job-btn">View</button>
-            <button class="job-btn primary">Apply</button>
-          </div>
-        </div>
-      </div>
-      <div class="saved-card">
-        <div class="sc-top"><div class="sc-id">LL-00450</div><button class="unsave-btn" title="Remove">♥</button></div>
-        <div class="sc-route"><div><span class="sc-city">Billings</span><span class="sc-st">MT</span></div><span class="sc-arr">→</span><div><span class="sc-city">Boise</span><span class="sc-st">ID</span></div></div>
-        <div class="sc-details">
-          <div><div class="sc-det-label">Width</div><div class="sc-det-val">18'6"</div></div>
-          <div><div class="sc-det-label">Height</div><div class="sc-det-val">16'0"</div></div>
-          <div><div class="sc-det-label">Miles</div><div class="sc-det-val">620 mi</div></div>
-          <div><div class="sc-det-label">Date</div><div class="sc-det-val">Apr 28</div></div>
-        </div>
-        <div class="sc-footer">
-          <div><div class="sc-pay-label">Per Pilot</div><div class="sc-pay">$810</div></div>
-          <div style="display:flex;gap:.4rem;">
-            <button class="job-btn">View</button>
-            <button class="job-btn primary">Apply</button>
-          </div>
-        </div>
+    <div class="saved-grid" id="savedGrid">
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-icon">♡</div>
+        <div class="empty-text">No saved loads yet — tap the heart icon on any load to save it here</div>
+        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">Browse Loads →</a>
       </div>
     </div>
   </div>
@@ -583,14 +424,14 @@ select option{background:var(--mid);}
           <div class="profile-avatar" id="profileAvatar">--</div>
           <div class="profile-name" id="profileName">Your Name</div>
           <div class="profile-type">🚩 Pilot Car Driver</div>
-          <div class="rating-row">
-            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-            <span class="rating-num">4.9</span>
+          <div class="rating-row" id="ratingRow">
+            <span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span>
+            <span class="rating-num" id="ratingNum">No rating yet</span>
           </div>
           <div class="profile-stats">
-            <div><div class="ps-val">38</div><div class="ps-label">Jobs</div></div>
-            <div><div class="ps-val">48</div><div class="ps-label">States</div></div>
-            <div><div class="ps-val">100%</div><div class="ps-label">On Time</div></div>
+            <div><div class="ps-val" id="profileJobs">0</div><div class="ps-label">Jobs</div></div>
+            <div><div class="ps-val" id="profileStates">—</div><div class="ps-label">States</div></div>
+            <div><div class="ps-val" id="profileOnTime">—</div><div class="ps-label">On Time</div></div>
           </div>
           <button class="edit-profile-btn">📷 Change Photo</button>
         </div>
@@ -761,6 +602,54 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('pfCoverage').value = data.coverage || '';
     document.getElementById('pfEquipment').value = data.equipment || '';
     document.getElementById('pfBio').value = data.bio || '';
+
+    // Load real applications from Firestore
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const appsSnap = await getDocs(query(collection(db, 'applications'), where('pilotId', '==', user.uid)));
+    const apps = [];
+    appsSnap.forEach(d => apps.push(d.data()));
+
+    const activeJobs = apps.filter(a => a.status === 'accepted');
+    const pendingApps = apps.filter(a => a.status === 'pending');
+    const completedJobs = apps.filter(a => a.status === 'completed');
+
+    // Update stats with real data
+    document.getElementById('statActiveJobs').textContent = activeJobs.length;
+    document.getElementById('statActiveJobsSub').textContent = activeJobs.length > 0 ? 'In progress right now' : 'No active jobs yet';
+    document.getElementById('statJobs').textContent = completedJobs.length;
+    document.getElementById('statJobsSub').textContent = completedJobs.length > 0 ? 'Since joining LoadLeader' : 'Complete jobs to build history';
+    document.getElementById('profileJobs').textContent = completedJobs.length;
+
+    // Update welcome message
+    if (activeJobs.length > 0 || pendingApps.length > 0) {
+      document.getElementById('welcomeSub').textContent =
+        `${activeJobs.length} active job${activeJobs.length !== 1 ? 's' : ''} · ${pendingApps.length} pending application${pendingApps.length !== 1 ? 's' : ''}`;
+    }
+
+    // Show real jobs in overview
+    if (apps.length > 0) {
+      const jobList = document.getElementById('overviewJobs');
+      jobList.innerHTML = apps.slice(0, 3).map(a => `
+        <div class="job-card ${a.status === 'accepted' ? 'active-job' : a.status === 'completed' ? 'completed-job' : 'pending-job'}">
+          <div class="job-left">
+            <div class="job-route"><div><span class="job-city">${a.loadRoute?.split('→')[0]?.trim() || 'Origin'}</span></div><span class="job-arr">→</span><div><span class="job-city">${a.loadRoute?.split('→')[1]?.trim() || 'Destination'}</span></div></div>
+            <div class="job-meta">
+              <div class="job-meta-item">Date <strong>${a.loadDate || '—'}</strong></div>
+              <div class="job-meta-item">Carrier <strong>${a.carrier || '—'}</strong></div>
+            </div>
+          </div>
+          <div class="job-right">
+            <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
+            <span class="badge ${a.status === 'accepted' ? 'badge-active' : a.status === 'completed' ? 'badge-completed' : 'badge-applied'}">${a.status === 'accepted' ? 'Accepted' : a.status === 'completed' ? 'Completed' : 'Applied'}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // Show real saved loads
+    const savedSnap = await getDocs(query(collection(db, 'savedLoads'), where('pilotId', '==', user.uid)));
+    if (!savedSnap.empty) {
+      document.getElementById('savedGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">♥</div><div class="empty-text">You have ' + savedSnap.size + ' saved load' + (savedSnap.size !== 1 ? 's' : '') + '</div><a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">View on Board →</a></div>';
+    }
 
   } catch(e) {
     console.error('Error loading profile:', e);
