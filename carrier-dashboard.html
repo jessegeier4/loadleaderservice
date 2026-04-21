@@ -582,32 +582,33 @@ async function loadApplications() {
       }
     } catch(e) { console.error('Load fetch error:', e); }
   } catch(e) {
-    renderDemoApplications();
+    console.error('Error loading applications:', e);
+    renderApplications([]);
+    renderOverviewApplicants([]);
   }
 }
 
-function renderDemoApplications() {
-  const demo = [
-    { id:'demo1', pilotName:'Mike Reynolds', pilotEmail:'mike@email.com', pilotPhone:'555-334-9021', pilotRating:4.9, pilotJobs:43, pilotState:'Texas', message:"I've run this exact route many times. Very familiar with the road conditions and permit requirements.", availFrom:'2026-04-20', availTo:'2026-04-22', status:'pending', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-    { id:'demo2', pilotName:'Sara Lively', pilotEmail:'sara@email.com', pilotPhone:'555-778-4456', pilotRating:4.8, pilotJobs:28, pilotState:'Oklahoma', message:'Available and ready. Have all required equipment.', availFrom:'2026-04-21', availTo:'2026-04-21', status:'pending', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-    { id:'demo3', pilotName:'Ryan Teague', pilotEmail:'ryan@email.com', pilotPhone:'931-241-3838', pilotRating:5.0, pilotJobs:67, pilotState:'Ohio', message:'Top rated pilot, 5 star rating, 67 jobs completed. Available immediately.', availFrom:'2026-04-19', availTo:'2026-04-22', status:'pending', loadId:'LL-00479', loadRoute:'Denver CO → Salt Lake City UT', loadPay:740, loadDate:'Apr 19', carrier:'Demo Carrier' },
-    { id:'demo4', pilotName:'Jake Torres', pilotEmail:'jake@email.com', pilotPhone:'555-210-4832', pilotRating:4.7, pilotJobs:15, pilotState:'Colorado', message:'', availFrom:'2026-04-19', availTo:'2026-04-20', status:'accepted', loadId:'LL-00479', loadRoute:'Denver CO → Salt Lake City UT', loadPay:740, loadDate:'Apr 19', carrier:'Demo Carrier' },
-    { id:'demo5', pilotName:'Dave Patterson', pilotEmail:'dave@email.com', pilotPhone:'555-442-7731', pilotRating:4.6, pilotJobs:22, pilotState:'Texas', message:'Experienced with oversize loads across TX and OK.', availFrom:'2026-04-21', availTo:'2026-04-21', status:'declined', loadId:'LL-00481', loadRoute:'Houston TX → Oklahoma City OK', loadPay:620, loadDate:'Apr 21', carrier:'Demo Carrier' },
-  ];
-  allApplications = demo;
-  renderApplications(demo);
-  renderOverviewApplicants(demo.slice(0, 3));
-}
+// No demo data — real data only
 
 function renderOverviewApplicants(apps) {
   const container = document.getElementById('overviewApplicants');
-  if (!apps.length) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No applications yet. Post a load to start receiving pilots.</div></div>'; return; }
+  if (!apps || !apps.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No applications yet — post a load to start receiving pilot applications.</div></div>';
+    return;
+  }
   container.innerHTML = `<div class="applicant-grid">${apps.map(a => buildAppCard(a)).join('')}</div>`;
 }
 
 function renderApplications(apps) {
   const grid = document.getElementById('applicantGrid');
-  if (!apps.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No applications yet.</div></div>'; return; }
+  if (!apps || !apps.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="empty-icon">👥</div>
+      <div class="empty-text">No applications yet — pilots will appear here when they apply to your loads.</div>
+      <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
+    </div>`;
+    return;
+  }
   grid.innerHTML = apps.map(a => buildAppCard(a)).join('');
 }
 
