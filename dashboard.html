@@ -1259,20 +1259,41 @@ async function loadNotifications(userId) {
     panel.innerHTML = `
       <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications <span style="color:var(--red);font-size:.65rem;">${unread.length > 0 ? unread.length + ' new' : ''}</span></div>
       ${notifs.slice(0, 5).map(n => `
-        <div style="padding:.65rem 0;border-bottom:1px solid #1a1a1a;cursor:pointer;" onclick="markNotifRead('${n.id}')">
-          <div style="font-size:.82rem;font-weight:${n.read ? '400' : '600'};color:${n.read ? '#888' : 'var(--white)'};">${n.message}</div>
-          <div style="font-size:.68rem;color:#444;margin-top:.2rem;">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleDateString() : ''}</div>
+        <div style="padding:.65rem 0;border-bottom:1px solid #1a1a1a;cursor:pointer;display:flex;align-items:flex-start;gap:.5rem;" onclick="markNotifRead('${n.id}','${n.type || ''}','${n.loadId || ''}')">
+          <div style="font-size:.85rem;flex-shrink:0;">${n.type === 'permits_ready' ? '📄' : n.type === 'new_message' ? '💬' : n.type === 'fleet_load' ? '⭐' : n.type === 'invoice' ? '💰' : '🔔'}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:.82rem;font-weight:${n.read ? '400' : '600'};color:${n.read ? '#888' : 'var(--white)'};">${n.message}</div>
+            <div style="font-size:.68rem;color:#444;margin-top:.15rem;">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleDateString() : ''} · Tap to view</div>
+          </div>
+          ${!n.read ? '<div style="width:7px;height:7px;background:var(--yellow);border-radius:50%;flex-shrink:0;margin-top:.35rem;"></div>' : ''}
         </div>`).join('')}
       <div style="font-size:.7rem;color:#555;text-align:center;margin-top:.75rem;cursor:pointer;" onclick="clearAllNotifs('${userId}')">Clear all</div>`;
   } catch(e) { console.log('Load notifications:', e); }
 }
 
-window.markNotifRead = async (notifId) => {
+window.markNotifRead = async (notifId, type, loadId) => {
   try {
     const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await updateDoc(doc(db, 'notifications', notifId), { read: true });
+    // Close panel
+    document.getElementById('notifPanel').style.display = 'none';
+    // Route based on notification type
+    if (type === 'permits_ready') {
+      showPanel('jobs', document.querySelectorAll('.nav-tab')[1]);
+      if (loadId) setTimeout(() => viewPermits(loadId), 400);
+    } else if (type === 'application_accepted') {
+      showPanel('jobs', document.querySelectorAll('.nav-tab')[1]);
+    } else if (type === 'new_message') {
+      showPanel('messages', document.querySelectorAll('.nav-tab')[2]);
+    } else if (type === 'fleet_load') {
+      window.location.href = 'loadboard.html';
+    } else if (type === 'follow') {
+      showPanel('following', document.querySelectorAll('.nav-tab')[3]);
+    } else if (type === 'invoice') {
+      showPanel('earnings', document.querySelectorAll('.nav-tab')[4]);
+    }
     loadNotifications(auth.currentUser?.uid);
-  } catch(e) {}
+  } catch(e) { console.error(e); }
 };
 
 window.clearAllNotifs = async (userId) => {

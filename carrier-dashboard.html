@@ -266,7 +266,7 @@ if ('serviceWorker' in navigator) {
   <div class="nav-right">
     <div onclick="toggleCarrierNotif()" id="cNotifBtn" style="width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;">
       🔔
-      <div id="cNotifPanel" style="display:none;position:absolute;top:44px;right:0;width:290px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.8);">
+      <div id="cNotifPanel" style="display:none;position:fixed;top:60px;right:1rem;width:calc(100vw - 2rem);max-width:300px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);max-height:80vh;overflow-y:auto;">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
         <div id="cNotifList" style="text-align:center;padding:1.5rem 0;">
           <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
