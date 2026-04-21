@@ -1209,9 +1209,9 @@ window.viewPermits = async (loadId) => {
             <span style="font-size:1.25rem;">📄</span>
             <div style="flex:1;">
               <div style="font-size:.875rem;font-weight:500;">${p.fileName}</div>
-              <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${(p.fileSize/1024).toFixed(0)}KB · ${new Date(p.uploadedAt?.toMillis?.() || Date.now()).toLocaleDateString()}</div>
+              <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${p.fileSize ? (p.fileSize/1024).toFixed(0) + 'KB' : ''}</div>
             </div>
-            <a href="${p.fileData}" download="${p.fileName}" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Download</a>
+            ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" rel="noopener" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Open</a>` : p.fileData ? `<a href="${p.fileData}" download="${p.fileName}" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Download</a>` : '<span style="font-size:.75rem;color:var(--muted);">Contact carrier</span>'}
           </div>`).join('')}
         <button onclick="closeApplyModal()" style="width:100%;background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.75rem;border-radius:7px;font-family:sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;margin-top:.75rem;">Close</button>
       </div>`;
@@ -1498,7 +1498,7 @@ function buildJobCard(a) {
         <div class="job-actions">
           ${isAccepted ? `
             <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 View Permits</button>
-            <button class="job-btn" onclick="checkWeather('${a.loadId || ''}','${origin}')">🌤 Weather</button>
+            <button class="job-btn" onclick="checkWeather(this)" data-id="${a.loadId || ''}" data-loc="${origin}">🌤 Weather</button>
             <button class="job-btn primary" onclick="confirmDelivery('${a.loadId || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `<button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>` : ''}
@@ -1508,19 +1508,25 @@ function buildJobCard(a) {
 }
 
 // ── WEATHER ALERTS ──
-window.checkWeather = async (loadId, location) => {
+window.checkWeather = async (btn) => {
+  const loadId = btn.dataset.id;
+  const location = btn.dataset.loc;
   const weatherDiv = document.getElementById('weather-' + loadId);
   if (!weatherDiv) return;
   weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Loading weather...</span>';
 
   try {
-    // Geocode the location — strip state code if present (e.g. "North Canton OH" -> "North Canton")
-    const city = location.replace(/\s+[A-Z]{2}$/, '').split(',')[0].trim();
-    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+    // Strip state code — "North Canton OH" -> "North Canton"
+    const city = (location || '').replace(/\s+[A-Z]{2}$/, '').split(',')[0].trim();
+    if (!city) {
+      weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">No location on file</span>';
+      return;
+    }
+    const geoRes = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=en&format=json');
     const geoData = await geoRes.json();
 
     if (!geoData.results?.length) {
-      weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Weather unavailable for this location</span>';
+      weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Weather unavailable for ' + city + '</span>';
       return;
     }
 
@@ -2272,6 +2278,26 @@ window.submitDelivery = async () => {
       deliveryLat: latitude,
       deliveryLng: longitude
     });
+
+    // Clean up permits from Storage to save space
+    try {
+      const { collection: col, query: q, where: w, getDocs: gd, deleteDoc: dd, doc: fd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const { getStorage, ref, deleteObject } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+      const storage = getStorage();
+      const permitSnap = await gd(q(col(db, 'permits'), w('loadId', '==', applicationId)));
+      permitSnap.forEach(async pd => {
+        const p = pd.data();
+        // Delete from Storage if it has a storage path
+        if (p.downloadURL) {
+          try {
+            const fileRef = ref(storage, p.downloadURL);
+            await deleteObject(fileRef);
+          } catch(e) { /* file may already be gone */ }
+        }
+        // Delete Firestore record
+        await dd(fd(db, 'permits', pd.id));
+      });
+    } catch(e) { console.log('Permit cleanup:', e); }
 
     // Generate invoice number
     const invoiceNum = 'LL-INV-' + Date.now().toString().slice(-6);

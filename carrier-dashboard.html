@@ -2131,36 +2131,45 @@ window.uploadPermits = async () => {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Uploading...';
 
+  // Check file sizes — 5MB limit per file
+  const oversized = pendingPermitFiles.filter(f => f.size > 5 * 1024 * 1024);
+  if (oversized.length) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;';
+    msg.textContent = oversized.map(f => f.name).join(', ') + ' exceeds 5MB. Please compress at smallpdf.com first.';
+    btn.innerHTML = '📤 Upload Permits';
+    btn.disabled = false;
+    return;
+  }
+
   try {
     const { collection, addDoc, serverTimestamp, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { getStorage, ref, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+    const storage = getStorage();
 
     for (const file of pendingPermitFiles) {
-      // Convert file to base64 for Firestore storage (for small files)
-      const base64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.readAsDataURL(file);
-      });
+      // Upload to Firebase Storage — no size limit issues
+      const storageRef = ref(storage, `permits/${currentPermitLoadId}/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
       await addDoc(collection(db, 'permits'), {
         loadId: currentPermitLoadId,
         carrierId: currentUser.uid,
         fileName: file.name,
         fileType: file.type,
-        fileData: base64,
+        downloadURL,
         fileSize: file.size,
         uploadedAt: serverTimestamp()
       });
     }
 
-    // Update load to show permits are ready
     await updateDoc(doc(db, 'loads', currentPermitLoadId), {
       permitsUploaded: true,
       permitsCount: pendingPermitFiles.length
     });
 
     msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;';
-    msg.textContent = `✓ ${pendingPermitFiles.length} permit${pendingPermitFiles.length !== 1 ? 's' : ''} uploaded! Accepted pilots can now view them.`;
+    msg.textContent = `✓ ${pendingPermitFiles.length} permit${pendingPermitFiles.length !== 1 ? 's' : ''} uploaded!`;
     btn.innerHTML = '📤 Upload Permits';
     btn.disabled = false;
     pendingPermitFiles = [];
@@ -2170,7 +2179,7 @@ window.uploadPermits = async () => {
   } catch(e) {
     console.error('Permit upload error:', e);
     msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;';
-    msg.textContent = 'Upload failed. Files may be too large — try PDFs under 500KB.';
+    msg.textContent = 'Upload failed: ' + e.message;
     btn.innerHTML = '📤 Upload Permits';
     btn.disabled = false;
   }
