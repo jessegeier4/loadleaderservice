@@ -422,7 +422,6 @@ async function fetchLoads() {
     const snap = await getDocs(query(
       collection(db, 'loads'),
       where('status', '==', 'active'),
-      orderBy('postedAt', 'desc'),
       limit(100)
     ));
     if (snap.empty) {
