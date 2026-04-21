@@ -425,7 +425,7 @@ if (_params.get('tab') === 'signup') {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
@@ -458,7 +458,22 @@ async function handleLogin() {
     await setPersistence(auth, persistence);
     await signInWithEmailAndPassword(auth, email, pw);
     showMsg('loginMsg', '✓ Logged in! Redirecting...', 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+    // Check account type and redirect accordingly
+    setTimeout(async () => {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        const data = userDoc.exists() ? userDoc.data() : {};
+        window.location.href = data.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
+      } catch(e) {
+        try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const data = userDoc.exists() ? userDoc.data() : {};
+      window.location.href = data.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
+    } catch(e) {
+      window.location.href = 'dashboard.html';
+    }
+      }
+    }, 1000);
   } catch(e) {
     setLoading('loginBtn', false, 'Log In to LoadLeader');
     const errors = {
@@ -555,7 +570,13 @@ async function socialAuth(providerName) {
       accountType: selectedType,
       createdAt: serverTimestamp()
     }, { merge: true });
-    window.location.href = 'dashboard.html';
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const data = userDoc.exists() ? userDoc.data() : {};
+      window.location.href = data.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
+    } catch(e) {
+      window.location.href = 'dashboard.html';
+    }
   } catch(e) {
     btn.innerHTML = orig;
     btn.disabled = false;

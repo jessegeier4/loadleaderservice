@@ -240,11 +240,11 @@ if ('serviceWorker' in navigator) {
     <div><div class="page-title">Pilot Car <span>Load Board</span></div></div>
     <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
       <div class="live-badge"><span class="live-dot"></span>Live Updates</div>
-      <button class="btn-sm btn-yellow" onclick="document.getElementById('postModal').style.display='flex'">+ Post a Load</button>
+      <button class="btn-sm btn-yellow" onclick="handlePostLoad()">+ Post a Load</button>
     </div>
   </div>
   <div id="boardNotice" style="display:none;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:.75rem 1.25rem;margin-bottom:1rem;font-size:.82rem;color:#aaa;">
-    📋 Sample loads shown — be the first to <a href="carrier-dashboard.html" style="color:var(--yellow)">post a real load</a> on LoadLeader!
+    📋 Sample loads shown — carriers can <a href="carrier-dashboard.html" style="color:var(--yellow)">post a real load</a> on LoadLeader!
   </div>
   <div class="stats-bar">
     <div class="stat-item"><span class="stat-n" id="statLoads">—</span><span class="stat-l">Active Loads</span></div>
@@ -752,6 +752,34 @@ window.submitApplication=async(loadId)=>{
 
 document.getElementById('applyModal').addEventListener('click',function(e){if(e.target===this)closeApplyModal();});
 document.getElementById('postModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+
+window.handlePostLoad = () => {
+  if (!currentUser) {
+    window.location.href = 'login.html?tab=signup';
+    return;
+  }
+  if (userProfile?.accountType === 'carrier') {
+    window.location.href = 'carrier-dashboard.html';
+  } else {
+    // Show message that only carriers can post loads
+    const modal = document.getElementById('applyModal');
+    const content = document.getElementById('applyModalContent');
+    modal.classList.add('open');
+    content.innerHTML = `
+      <div class="modal-head"><div></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
+      <div class="modal-body">
+        <div class="login-prompt">
+          <div class="login-prompt-icon">🚛</div>
+          <div class="login-prompt-title">Carriers Only</div>
+          <div class="login-prompt-desc">Only carrier accounts can post loads. You're logged in as a pilot.<br><br>To post loads create a separate carrier account.</div>
+          <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+            <a href="login.html?tab=signup" class="success-btn" style="background:var(--yellow);color:var(--black);">Create Carrier Account</a>
+            <button class="success-btn" style="background:transparent;border:1px solid #2a2a2a;color:var(--white);" onclick="closeApplyModal()">Close</button>
+          </div>
+        </div>
+      </div>`;
+  }
+};
 
 window.runAISearch=async()=>{
   const q=document.getElementById('aiInput').value.trim();if(!q)return;
