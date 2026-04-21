@@ -398,7 +398,10 @@ async function fetchLoads() {
       collection(db, 'loads'),
       limit(100)
     ));
+    console.log('Total docs from Firestore:', snap.size);
+    snap.docs.forEach(d => console.log('Load:', d.id, 'status:', d.data().status));
     const activeDocs = snap.docs.filter(d => d.data().status === 'active' || d.data().status === 'Active' || !d.data().status);
+    console.log('Active loads:', activeDocs.length);
     if (snap.empty || activeDocs.length === 0) {
       LOADS = [];
       document.getElementById('boardNotice').style.display = 'block';
@@ -419,7 +422,7 @@ async function fetchLoads() {
           pilots: data.pilots || 1,
           pay: data.pay || 0,
           date: data.date || '',
-          status: data.status || 'open',
+          status: data.status === 'active' ? 'open' : (data.status || 'open'),
           carrier: data.carrierName || 'Carrier',
           equipment: data.equipment || '',
           notes: data.notes || ''
