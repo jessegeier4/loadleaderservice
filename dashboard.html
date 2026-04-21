@@ -1049,6 +1049,7 @@ onAuthStateChanged(auth, async (user) => {
   try {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const data = userDoc.exists() ? userDoc.data() : {};
+    window._userProfile = data;
     const firstName = data.firstName || user.displayName?.split(' ')[0] || 'Pilot';
     const lastName = data.lastName || '';
     const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
@@ -1274,26 +1275,35 @@ function renderInvoiceCreator(tier) {
   if (!wrap) return;
 
   if (tier === 'free' || !tier) {
-    badge.innerHTML = '';
+    badge.innerHTML = '<span style="font-size:.68rem;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,.25);color:var(--red);padding:.2rem .65rem;border-radius:100px;font-weight:700;">🔒 Pro Feature</span>';
     wrap.innerHTML = `
-      <div class="tier-gate">
-        <div style="font-size:2rem;margin-bottom:.75rem;">📄</div>
-        <div style="font-weight:700;font-size:1rem;margin-bottom:.5rem;">Invoice Creator</div>
-        <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;">
-          Create professional invoices for your loads.<br>
-          Available on <strong style="color:var(--yellow)">Pro</strong> and <strong style="color:var(--yellow)">Elite</strong> plans.
-        </div>
-        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-          <div style="background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.2);border-radius:8px;padding:.85rem 1.25rem;text-align:left;min-width:160px;">
-            <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--yellow);font-weight:700;margin-bottom:.4rem;">Pro</div>
-            <div style="font-size:.82rem;color:#aaa;">Manual invoice creator<br>Download as PDF</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden;">
+        <!-- Blurred preview of the form -->
+        <div style="filter:blur(3px);pointer-events:none;opacity:.4;">
+          <div class="inv-form">
+            <div class="inv-section-title">Invoice Details</div>
+            <div class="inv-grid">
+              <div><label class="inv-label">Invoice #</label><input class="inv-input" value="LL-001234" disabled></div>
+              <div><label class="inv-label">Date</label><input class="inv-input" value="April 21, 2026" disabled></div>
+              <div><label class="inv-label">Pick Up</label><input class="inv-input" value="North Canton, OH" disabled></div>
+              <div><label class="inv-label">Delivery</label><input class="inv-input" value="Columbus, OH" disabled></div>
+              <div><label class="inv-label">Company</label><input class="inv-input" value="Stephan Trucking" disabled></div>
+              <div><label class="inv-label">Driver</label><input class="inv-input" value="Your Name" disabled></div>
+              <div><label class="inv-label">Truck #</label><input class="inv-input" value="T-1042" disabled></div>
+              <div><label class="inv-label">Trailer #</label><input class="inv-input" value="TR-2281" disabled></div>
+            </div>
           </div>
-          <div style="background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,0.35);border-radius:8px;padding:.85rem 1.25rem;text-align:left;min-width:160px;">
-            <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--yellow);font-weight:700;margin-bottom:.4rem;">Elite ⭐</div>
-            <div style="font-size:.82rem;color:#aaa;">Auto-generates on delivery<br>Emailed to both parties</div>
-          </div>
         </div>
-        <a href="pricing.html" style="display:inline-block;margin-top:1.25rem;background:var(--yellow);color:var(--black);padding:.6rem 1.5rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700;">View Plans →</a>
+        <!-- Lock overlay -->
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,.7);border-radius:10px;border:1px solid rgba(245,196,0,.2);">
+          <div style="font-size:2rem;margin-bottom:.75rem;">🔒</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:.4rem;">Invoice Creator</div>
+          <div style="font-size:.82rem;color:#aaa;text-align:center;line-height:1.6;margin-bottom:1.25rem;max-width:280px;">
+            Create and download professional invoices for every load.<br>
+            <span style="color:var(--yellow);">Upgrade to Pro to unlock.</span>
+          </div>
+          <a href="pricing.html" style="background:var(--yellow);color:var(--black);padding:.65rem 1.75rem;border-radius:6px;text-decoration:none;font-size:.875rem;font-weight:700;">Upgrade to Pro →</a>
+        </div>
       </div>`;
     return;
   }
@@ -1501,8 +1511,8 @@ window.checkWeather = async (loadId, location) => {
   weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Loading weather...</span>';
 
   try {
-    // Geocode the location using Open-Meteo geocoding (free)
-    const city = location.split(',')[0].trim();
+    // Geocode the location — strip state code if present (e.g. "North Canton OH" -> "North Canton")
+    const city = location.replace(/\s+[A-Z]{2}$/, '').split(',')[0].trim();
     const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
     const geoData = await geoRes.json();
 
@@ -2033,19 +2043,21 @@ window.startNewConversation = async () => {
   try {
     const { collection, addDoc, getDocs, query, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const user = auth.currentUser;
-    const myName = userProfile ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() : 'User';
+    const profile = window._userProfile || {};
+    const myName = `${profile.firstName || user.displayName || 'User'} ${profile.lastName || ''}`.trim();
+    const recipient = selectedRecipient;
 
     // Check if conversation already exists
     const existing = await getDocs(query(collection(db, 'conversations'), where('participants', 'array-contains', user.uid)));
     let convId = null;
     existing.forEach(d => {
-      if (d.data().participants.includes(selectedRecipient.id)) convId = d.id;
+      if (d.data().participants.includes(recipient.id)) convId = d.id;
     });
 
     if (!convId) {
       const conv = await addDoc(collection(db, 'conversations'), {
-        participants: [user.uid, selectedRecipient.id],
-        participantNames: { [user.uid]: myName, [selectedRecipient.id]: selectedRecipient.name },
+        participants: [user.uid, recipient.id],
+        participantNames: { [user.uid]: myName, [recipient.id]: recipient.name },
         lastMessage: text,
         lastMessageAt: serverTimestamp(),
         createdAt: serverTimestamp()
@@ -2066,7 +2078,7 @@ window.startNewConversation = async () => {
     selectedRecipient = null;
     showPanel('messages', document.querySelectorAll('.nav-tab')[2]);
     await loadConversations();
-    openConversation(convId, selectedRecipient?.id, selectedRecipient?.name || 'User');
+    openConversation(convId, recipient.id, recipient.name || 'User');
   } catch(e) { console.error('Start conversation:', e); }
 };
 
@@ -2248,7 +2260,7 @@ window.submitDelivery = async () => {
     const { latitude, longitude } = position.coords;
     const { doc, updateDoc, addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const user = auth.currentUser;
-    const myName = userProfile ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() : 'Pilot';
+    const myName = `${window._userProfile?.firstName || ''} ${window._userProfile?.lastName || ''}`.trim() || 'Pilot';
 
     // Mark application as completed
     await updateDoc(doc(db, 'applications', applicationId), {
@@ -2399,8 +2411,9 @@ window.filterJobsTab = (type, btn) => {
       </div>`;
     return;
   }
-  // Normal filter
-  const filtered = (window._allJobs || []).filter(a => type === 'all' || a.status === type);
+  // Normal filter — 'active' maps to 'accepted' in Firestore
+  const statusMatch = type === 'active' ? 'accepted' : type;
+  const filtered = (window._allJobs || []).filter(a => type === 'all' || a.status === statusMatch);
   if (!filtered.length) {
     jobsList.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No ' + type + ' jobs</div></div>';
     return;
