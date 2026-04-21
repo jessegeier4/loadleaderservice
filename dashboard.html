@@ -1023,7 +1023,7 @@ const db = getFirestore(app);
 // Auth state check — redirect to login if not signed in
 onAuthStateChanged(auth, async (user) => {
   // Demo mode — show dashboard even without login for preview
-  const isDemo = window.location.search.includes('demo') || !window.location.hostname.includes('netlify');
+  const isDemo = window.location.search.includes('demo');
 
   if (!user && !isDemo) {
     window.location.href = 'login.html';
