@@ -148,6 +148,11 @@ select option{background:var(--mid);}
   .social-btns{grid-template-columns:1fr;}
 }
 </style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+</script>
 </head>
 <body>
 

@@ -208,6 +208,11 @@ textarea.modal-input{min-height:90px;resize:vertical;line-height:1.5;}
   .avail-row{grid-template-columns:1fr;}
 }
 </style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+</script>
 </head>
 <body>
 
@@ -419,17 +424,18 @@ async function fetchLoads() {
   const grid = document.getElementById('loadGrid');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);"><span class="spinner spinner-white"></span> Loading board...</div>';
   try {
+    // Fetch all loads — filter status client side to avoid index issues
     const snap = await getDocs(query(
       collection(db, 'loads'),
-      where('status', '==', 'active'),
       limit(100)
     ));
-    if (snap.empty) {
+    const activeDocs = snap.docs.filter(d => d.data().status === 'active' || d.data().status === 'Active' || !d.data().status);
+    if (snap.empty || activeDocs.length === 0) {
       // No real loads yet — show samples with a notice
       LOADS = SAMPLE_LOADS;
       document.getElementById('boardNotice').style.display = 'block';
     } else {
-      LOADS = snap.docs.map(d => {
+      LOADS = activeDocs.map(d => {
         const data = d.data();
         return {
           id: d.id,

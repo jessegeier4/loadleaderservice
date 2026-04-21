@@ -228,6 +228,11 @@ select option{background:var(--mid);}
 .success-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:var(--black);padding:.75rem 1.5rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;display:none;z-index:999;animation:fadeUp .3s ease;}
 .success-toast.show{display:block;}
 </style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+</script>
 </head>
 <body>
 

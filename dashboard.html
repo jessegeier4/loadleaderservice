@@ -244,6 +244,11 @@ select option{background:var(--mid);}
 .mn-label{font-size:.6rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
 @media(max-width:600px){.mobile-nav{display:block;}.dash-wrap{padding-bottom:5rem;}}
 </style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+</script>
 </head>
 <body>
 

@@ -1,33 +1,54 @@
-const CACHE_NAME = 'loadleader-v4';
+const CACHE_NAME = 'loadleader-v5';
 
-// On install — skip waiting immediately
+// Only cache static assets — NEVER cache HTML pages
+const CACHEABLE = [
+  '/icon-192.png',
+  '/icon-512.png',
+  '/favicon.ico',
+  '/favicon-32x32.png',
+  '/manifest.json'
+];
+
 self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(CACHEABLE))
+  );
   self.skipWaiting();
 });
 
-// On activate — delete ALL caches and take control
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => 
-      Promise.all(keys.map(key => {
-        console.log('LoadLeader SW: Clearing cache', key);
-        return caches.delete(key);
-      }))
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch — ALWAYS network first, never serve from cache
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  if (event.request.url.includes('firebaseapp.com')) return;
-  if (event.request.url.includes('googleapis.com')) return;
-  if (event.request.url.includes('onrender.com')) return;
-  if (event.request.url.includes('gstatic.com')) return;
+  const url = new URL(event.request.url);
 
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
+  // Never intercept: HTML pages, Firebase, API calls, fonts
+  if (event.request.method !== 'GET') return;
+  if (url.pathname.endsWith('.html') || url.pathname === '/') return;
+  if (url.hostname.includes('firebase') || url.hostname.includes('google')) return;
+  if (url.hostname.includes('onrender.com')) return;
+  if (url.hostname.includes('fonts.g')) return;
+
+  // For icons and images — cache first
+  if (CACHEABLE.some(c => url.pathname === c)) {
+    event.respondWith(
+      caches.match(event.request).then(cached => 
+        cached || fetch(event.request).then(res => {
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, res.clone()));
+          return res;
+        })
+      )
+    );
+    return;
+  }
+
+  // Everything else — network only, no caching
+  event.respondWith(fetch(event.request));
 });
 
 // Push notifications
