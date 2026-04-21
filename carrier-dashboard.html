@@ -2088,7 +2088,8 @@ window.openPermitUpload = async (loadId, route) => {
           return `<div style="display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;">
             <span style="font-size:1rem;">📄</span>
             <div style="flex:1;font-size:.82rem;">${p.fileName}</div>
-            <span style="font-size:.68rem;color:var(--green);">✓ Uploaded</span>
+            ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" style="font-size:.72rem;color:var(--yellow);text-decoration:none;">View</a>` : ''}
+            <button onclick="deletePermit('${d.id}','${p.downloadURL || ''}')" style="background:transparent;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;">✕</button>
           </div>`;
         }).join('') + '<div style="height:.5rem;"></div>';
     }
@@ -2122,6 +2123,23 @@ window.removePendingPermit = (index) => {
       <button onclick="removePendingPermit(${i})" style="background:none;border:none;color:#555;cursor:pointer;font-size:.9rem;">✕</button>
     </div>`).join('');
   document.getElementById('permitUploadBtn').style.display = pendingPermitFiles.length > 0 ? 'block' : 'none';
+};
+
+window.deletePermit = async (permitId, downloadURL) => {
+  if (!confirm('Delete this permit?')) return;
+  try {
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    // Delete from Storage
+    if (downloadURL) {
+      try {
+        const { getStorage, ref, deleteObject } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+        await deleteObject(ref(getStorage(), downloadURL));
+      } catch(e) { /* already gone */ }
+    }
+    await deleteDoc(doc(db, 'permits', permitId));
+    showToast('Permit deleted');
+    await openPermitUpload(currentPermitLoadId, document.getElementById('permitLoadTitle').textContent);
+  } catch(e) { showToast('Could not delete permit.'); }
 };
 
 window.uploadPermits = async () => {
