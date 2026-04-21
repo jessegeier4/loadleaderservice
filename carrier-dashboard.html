@@ -1666,8 +1666,7 @@ window.handleBulkUpload = async (input) => {
   if (!file) return;
   document.getElementById('bulkFileName').textContent = file.name;
   const text = await file.text();
-  const lines = text.trim().split('
-');
+  const lines = text.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
   const loads = lines.slice(1).filter(l => l.trim()).map(line => {
     const vals = line.split(',').map(v => v.trim().replace(/"/g,''));
