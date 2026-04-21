@@ -501,29 +501,29 @@ onAuthStateChanged(auth, async (user) => {
 async function loadApplications() {
   try {
     // Load apps for this carrier
-    const appsSnap = await getDocs(query(collection(db, 'applications'), orderBy('appliedAt', 'desc')));
+    const appsSnap = await getDocs(query(collection(db, 'applications')));
     allApplications = [];
     appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
 
     const pending = allApplications.filter(a => a.status === 'pending').length;
     const accepted = allApplications.filter(a => a.status === 'accepted').length;
 
-    document.getElementById('newAppsCount').textContent = pending;
-    document.getElementById('appCount').textContent = pending;
+    const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    safeSet('newAppsCount', pending);
+    safeSet('appCount', pending);
+    safeSet('cStatHired', accepted);
+    safeSet('profilePilotsHired', accepted);
     const dot = document.getElementById('appTabDot');
     if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
-    document.getElementById('cStatHired').textContent = accepted;
-    document.getElementById('profilePilotsHired').textContent = accepted;
 
     // Load carrier's own loads
     try {
       const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
       const loadCount = loadsSnap.size;
       const activeLoads = loadsSnap.docs.filter(d => d.data().status === 'active').length;
-      document.getElementById('cStatLoads').textContent = activeLoads;
-      document.getElementById('profileLoadsPosted').textContent = loadCount;
-      const sub = `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`;
-      document.getElementById('carrierWelcomeSub').textContent = sub;
+      safeSet('cStatLoads', activeLoads);
+      safeSet('profileLoadsPosted', loadCount);
+      safeSet('carrierWelcomeSub', `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`);
     } catch(e) { console.error(e); }
 
     if (allApplications.length === 0) {
@@ -536,7 +536,7 @@ async function loadApplications() {
 
     // Render real loads in My Loads panel
     try {
-      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid), orderBy('postedAt', 'desc')));
+      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
       if (!loadsSnap.empty) {
         const loadsList = document.getElementById('myLoadsList');
         const overviewLoads = document.getElementById('overviewLoads');
