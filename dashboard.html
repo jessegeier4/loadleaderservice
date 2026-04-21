@@ -1214,12 +1214,12 @@ window.viewPermits = async (loadId) => {
     const permitBody = document.getElementById('permitViewBody');
     permitBody.innerHTML = permits.map(p => `
       <div style="display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:var(--mid);border-radius:8px;margin-bottom:.5rem;">
-        <span style="font-size:1.25rem;">📄</span>
-        <div style="flex:1;">
-          <div style="font-size:.875rem;font-weight:500;">${p.fileName}</div>
+        <span style="font-size:1.25rem;flex-shrink:0;">📄</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.fileName}</div>
           <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${p.fileSize ? (p.fileSize/1024).toFixed(0) + 'KB' : ''}</div>
         </div>
-        ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" rel="noopener" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Open</a>` : '<span style="font-size:.75rem;color:var(--muted);">Contact carrier</span>'}
+        ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" rel="noopener" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;flex-shrink:0;white-space:nowrap;">Open</a>` : '<span style="font-size:.75rem;color:var(--muted);flex-shrink:0;">Contact carrier</span>'}
       </div>`).join('');
     permitModal.style.display = 'flex';
   } catch(e) {
@@ -1250,20 +1250,19 @@ async function loadNotifications(userId) {
       notifBtn.appendChild(badge);
     }
 
-    // Update notification panel
+    // Update notification panel if there are notifications
     const panel = document.getElementById('notifPanel');
-    if (!panel) return;
-    if (!notifs.length) return;
+    if (!panel || !notifs.length) return;
 
     notifs.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
     panel.innerHTML = `
-      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications <span style="color:var(--red);font-size:.65rem;">${unread.length > 0 ? unread.length + ' new' : ''}</span></div>
       ${notifs.slice(0, 5).map(n => `
         <div style="padding:.65rem 0;border-bottom:1px solid #1a1a1a;cursor:pointer;" onclick="markNotifRead('${n.id}')">
-          <div style="font-size:.82rem;font-weight:${n.read ? '400' : '600'};color:${n.read ? '#666' : 'var(--white)'};">${n.message}</div>
+          <div style="font-size:.82rem;font-weight:${n.read ? '400' : '600'};color:${n.read ? '#888' : 'var(--white)'};">${n.message}</div>
           <div style="font-size:.68rem;color:#444;margin-top:.2rem;">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleDateString() : ''}</div>
         </div>`).join('')}
-      <div style="font-size:.7rem;color:#333;text-align:center;margin-top:.75rem;cursor:pointer;" onclick="clearAllNotifs('${userId}')">Clear all</div>`;
+      <div style="font-size:.7rem;color:#555;text-align:center;margin-top:.75rem;cursor:pointer;" onclick="clearAllNotifs('${userId}')">Clear all</div>`;
   } catch(e) { console.log('Load notifications:', e); }
 }
 
