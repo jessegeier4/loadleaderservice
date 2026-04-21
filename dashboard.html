@@ -1119,6 +1119,9 @@ onAuthStateChanged(auth, async (user) => {
     const tier = data.tier || 'free';
     renderInvoiceCreator(tier);
 
+    // Load in-app notifications
+    loadNotifications(user.uid);
+
     // Load notification preferences
     const prefs = data.notificationPrefs || {};
     ['notif_accepted','notif_declined','notif_message','notif_fleet','notif_invoice'].forEach(id => {
@@ -1215,7 +1218,70 @@ window.viewPermits = async (loadId) => {
           </div>`).join('')}
         <button onclick="closeApplyModal()" style="width:100%;background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.75rem;border-radius:7px;font-family:sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;margin-top:.75rem;">Close</button>
       </div>`;
-  } catch(e) { console.error('View permits:', e); alert('Could not load permits. Try again.'); }
+  } catch(e) {
+    console.error('View permits error:', e);
+    if (e.code === 'permission-denied') {
+      alert('Permission denied. Please make sure you are logged in.');
+    } else {
+      alert('Could not load permits: ' + e.message);
+    }
+  }
+};
+
+// ── IN-APP NOTIFICATIONS ──
+async function loadNotifications(userId) {
+  try {
+    const { collection, query, where, getDocs, orderBy, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'notifications'), where('userId', '==', userId)));
+    const notifs = [];
+    snap.forEach(d => notifs.push({ id: d.id, ...d.data() }));
+    const unread = notifs.filter(n => !n.read);
+
+    // Update bell badge
+    const notifBtn = document.getElementById('notifBtn');
+    if (notifBtn && unread.length > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--red);border-radius:50%;font-size:.58rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;';
+      badge.textContent = unread.length > 9 ? '9+' : unread.length;
+      notifBtn.appendChild(badge);
+    }
+
+    // Update notification panel
+    const panel = document.getElementById('notifPanel');
+    if (!panel) return;
+    if (!notifs.length) return;
+
+    notifs.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+    panel.innerHTML = `
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
+      ${notifs.slice(0, 5).map(n => `
+        <div style="padding:.65rem 0;border-bottom:1px solid #1a1a1a;cursor:pointer;" onclick="markNotifRead('${n.id}')">
+          <div style="font-size:.82rem;font-weight:${n.read ? '400' : '600'};color:${n.read ? '#666' : 'var(--white)'};">${n.message}</div>
+          <div style="font-size:.68rem;color:#444;margin-top:.2rem;">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleDateString() : ''}</div>
+        </div>`).join('')}
+      <div style="font-size:.7rem;color:#333;text-align:center;margin-top:.75rem;cursor:pointer;" onclick="clearAllNotifs('${userId}')">Clear all</div>`;
+  } catch(e) { console.log('Load notifications:', e); }
+}
+
+window.markNotifRead = async (notifId) => {
+  try {
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'notifications', notifId), { read: true });
+    loadNotifications(auth.currentUser?.uid);
+  } catch(e) {}
+};
+
+window.clearAllNotifs = async (userId) => {
+  try {
+    const { collection, query, where, getDocs, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'notifications'), where('userId', '==', userId)));
+    snap.forEach(async d => await deleteDoc(doc(db, 'notifications', d.id)));
+    const panel = document.getElementById('notifPanel');
+    if (panel) panel.innerHTML = '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div><div style="text-align:center;padding:1.5rem 0;font-size:.82rem;color:var(--muted);">All caught up!</div>';
+    const notifBtn = document.getElementById('notifBtn');
+    const badge = notifBtn?.querySelector('div[style*="background:var(--red)"]');
+    if (badge) badge.remove();
+  } catch(e) {}
 };
 
 // ── AVAILABILITY CALENDAR ──
