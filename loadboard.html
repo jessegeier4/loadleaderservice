@@ -244,7 +244,7 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
   <div id="boardNotice" style="display:none;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:.75rem 1.25rem;margin-bottom:1rem;font-size:.82rem;color:#aaa;">
-    📋 Sample loads shown — carriers can <a href="carrier-dashboard.html" style="color:var(--yellow)">post a real load</a> on LoadLeader!
+    📋 No loads posted yet — be the first to <a href="carrier-dashboard.html" style="color:var(--yellow)">post a load</a>!
   </div>
   <div class="stats-bar">
     <div class="stat-item"><span class="stat-n" id="statLoads">—</span><span class="stat-l">Active Loads</span></div>
@@ -403,21 +403,8 @@ onAuthStateChanged(auth, async (user) => {
   await fetchLoads();
 });
 
-// ── SAMPLE LOADS shown when Firestore has no real loads yet ──
-const SAMPLE_LOADS = [
-  {id:"LL-00481",from:"Houston",fromSt:"TX",to:"Oklahoma City",toSt:"OK",type:"Wide Load",width:"16'0\"",height:"14'0\"",miles:450,pilots:2,pay:620,date:"Apr 21",status:"new",carrier:"Lone Star Hauling"},
-  {id:"LL-00479",from:"Denver",fromSt:"CO",to:"Salt Lake City",toSt:"UT",type:"Oversize",width:"14'0\"",height:"15'0\"",miles:525,pilots:1,pay:740,date:"Apr 19",status:"urgent",carrier:"Rocky Mtn Transport"},
-  {id:"LL-00477",from:"Atlanta",fromSt:"GA",to:"Charlotte",toSt:"NC",type:"Combination",width:"18'0\"",height:"13'0\"",miles:245,pilots:3,pay:390,date:"Apr 23",status:"open",carrier:"Southeast Freight"},
-  {id:"LL-00475",from:"Phoenix",fromSt:"AZ",to:"Albuquerque",toSt:"NM",type:"Tall Load",width:"15'0\"",height:"16'0\"",miles:470,pilots:2,pay:580,date:"Apr 25",status:"new",carrier:"Sun State Transport"},
-  {id:"LL-00472",from:"Chicago",fromSt:"IL",to:"Indianapolis",toSt:"IN",type:"Oversize",width:"13'0\"",height:"14'0\"",miles:182,pilots:1,pay:310,date:"Apr 22",status:"open",carrier:"Midwest Heavy Haul"},
-  {id:"LL-00470",from:"Seattle",fromSt:"WA",to:"Portland",toSt:"OR",type:"Wide Load",width:"20'0\"",height:"15'0\"",miles:175,pilots:4,pay:480,date:"Apr 19",status:"urgent",carrier:"Pacific NW Loads"},
-  {id:"LL-00468",from:"North Canton",fromSt:"OH",to:"Convoy",toSt:"OH",type:"Wide Load",width:"14'0\"",height:"14'6\"",miles:190,pilots:2,pay:550,date:"Apr 21",status:"new",carrier:"Stephan Trucking"},
-  {id:"LL-00466",from:"Dallas",fromSt:"TX",to:"Memphis",toSt:"TN",type:"Overweight",width:"12'0\"",height:"13'6\"",miles:480,pilots:1,pay:510,date:"Apr 24",status:"open",carrier:"Texas Heavy LLC"},
-  {id:"LL-00464",from:"Nashville",fromSt:"TN",to:"Louisville",toSt:"KY",type:"Oversize",width:"15'6\"",height:"14'0\"",miles:175,pilots:2,pay:420,date:"Apr 20",status:"new",carrier:"Music City Movers"},
-  {id:"LL-00462",from:"Kansas City",fromSt:"MO",to:"Wichita",toSt:"KS",type:"Wide Load",width:"17'0\"",height:"13'0\"",miles:200,pilots:2,pay:490,date:"Apr 22",status:"urgent",carrier:"Heartland Transport"},
-  {id:"LL-00460",from:"Minneapolis",fromSt:"MN",to:"Milwaukee",toSt:"WI",type:"Combination",width:"16'6\"",height:"15'6\"",miles:345,pilots:3,pay:650,date:"Apr 26",status:"new",carrier:"North Star Freight"},
-  {id:"LL-00458",from:"Sacramento",fromSt:"CA",to:"Las Vegas",toSt:"NV",type:"Tall Load",width:"14'0\"",height:"17'0\"",miles:590,pilots:2,pay:720,date:"Apr 23",status:"open",carrier:"West Coast Heavy"},
-];
+// No sample loads — real data only
+const SAMPLE_LOADS = [];
 
 let LOADS = [];
 let activeTags = new Set();
@@ -436,8 +423,7 @@ async function fetchLoads() {
     ));
     const activeDocs = snap.docs.filter(d => d.data().status === 'active' || d.data().status === 'Active' || !d.data().status);
     if (snap.empty || activeDocs.length === 0) {
-      // No real loads yet — show samples with a notice
-      LOADS = SAMPLE_LOADS;
+      LOADS = [];
       document.getElementById('boardNotice').style.display = 'block';
     } else {
       LOADS = activeDocs.map(d => {
@@ -512,7 +498,9 @@ function renderLoads() {
   const page = filtered.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE);
   document.getElementById('resultCount').innerHTML = `<strong>${total}</strong> load${total!==1?'s':''} found`;
   const grid = document.getElementById('loadGrid');
-  if (!page.length) { grid.innerHTML='<div class="no-results">No loads match your filters.</div>'; return; }
+  if (!page.length) { grid.innerHTML=LOADS.length === 0 
+    ? '<div class="no-results" style="padding:4rem 2rem;"><div style="font-size:2rem;margin-bottom:.75rem;opacity:.3">🚛</div><div style="color:var(--muted);font-size:.875rem;margin-bottom:1rem;">No loads posted yet.</div><a href="carrier-dashboard.html" style="background:var(--yellow);color:var(--black);padding:.6rem 1.25rem;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:700;">Post the First Load →</a></div>'
+    : '<div class="no-results">No loads match your filters.</div>'; return; }
   grid.innerHTML = page.map((l,i) => `
     <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
       <div class="card-top">
