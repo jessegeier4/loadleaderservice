@@ -2086,10 +2086,10 @@ window.openPermitUpload = async (loadId, route) => {
         snap.docs.map(d => {
           const p = d.data();
           return `<div style="display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;">
-            <span style="font-size:1rem;">📄</span>
-            <div style="flex:1;font-size:.82rem;">${p.fileName}</div>
-            ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" style="font-size:.72rem;color:var(--yellow);text-decoration:none;">View</a>` : ''}
-            <button onclick="deletePermit('${d.id}','${p.downloadURL || ''}')" style="background:transparent;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;">✕</button>
+            <span style="font-size:1rem;flex-shrink:0;">📄</span>
+            <div style="flex:1;min-width:0;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.fileName}</div>
+            ${p.downloadURL ? `<a href="${p.downloadURL}" target="_blank" style="font-size:.72rem;color:var(--yellow);text-decoration:none;flex-shrink:0;">View</a>` : ''}
+            <button onclick="deletePermit('${d.id}','${p.downloadURL || ''}')" style="background:transparent;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;flex-shrink:0;">✕</button>
           </div>`;
         }).join('') + '<div style="height:.5rem;"></div>';
     }

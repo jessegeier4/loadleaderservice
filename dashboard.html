@@ -312,7 +312,7 @@ if ('serviceWorker' in navigator) {
     <div id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;"
       onclick="(function(e){e.stopPropagation();var p=document.getElementById('notifPanel');p.style.display=p.style.display==='none'?'block':'none';})(event)">
       🔔
-      <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);">
+      <div id="notifPanel" style="display:none;position:fixed;top:60px;right:1rem;width:calc(100vw - 2rem);max-width:300px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);max-height:80vh;overflow-y:auto;">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
         <div style="text-align:center;padding:1.5rem 0;">
           <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
@@ -1235,8 +1235,9 @@ window.viewPermits = async (loadId) => {
 // ── IN-APP NOTIFICATIONS ──
 async function loadNotifications(userId) {
   try {
-    const { collection, query, where, getDocs, orderBy, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDocs(query(collection(db, 'notifications'), where('userId', '==', userId)));
+    console.log('Notifications found:', snap.size);
     const notifs = [];
     snap.forEach(d => notifs.push({ id: d.id, ...d.data() }));
     const unread = notifs.filter(n => !n.read);
