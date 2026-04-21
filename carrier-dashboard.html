@@ -307,31 +307,10 @@ select option{background:var(--mid);}
       <button class="btn btn-o" style="font-size:.78rem;padding:.4rem .9rem;" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])">View All →</button>
     </div>
     <div class="load-list" id="overviewLoads">
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left">
-            <div class="load-id">LL-00481</div>
-            <div class="load-route"><div><span class="lr-city">Houston</span><span class="lr-st">TX</span></div><span class="lr-arr">→</span><div><span class="lr-city">Oklahoma City</span><span class="lr-st">OK</span></div></div>
-          </div>
-          <div class="load-row-right"><span class="badge badge-active">Active</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>16'0"</strong></div>
-          <div class="lm-item">Miles<strong>450 mi</strong></div>
-          <div class="lm-item">Pilots Needed<strong>2</strong></div>
-          <div class="lm-item">Move Date<strong>Apr 21</strong></div>
-          <div class="lm-item">Pay Per Pilot<strong style="color:var(--yellow)">$620</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count">
-            <div class="applicant-avatars"><div class="app-av">MR</div><div class="app-av">SL</div><div class="app-av">JD</div><div class="app-av more">+2</div></div>
-            <span><strong>5</strong> applicants</span>
-          </div>
-          <div class="load-actions">
-            <button class="load-btn" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
-            <button class="load-btn">Edit Load</button>
-          </div>
-        </div>
+      <div class="empty-state">
+        <div class="empty-icon">🚛</div>
+        <div class="empty-text">No loads posted yet</div>
+        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post Your First Load</button>
       </div>
     </div>
   </div>
@@ -348,55 +327,11 @@ select option{background:var(--mid);}
       <span class="ft" onclick="filterLoadStatus('filled',this)">Filled</span>
       <span class="ft" onclick="filterLoadStatus('draft',this)">Draft</span>
     </div>
-    <div class="load-list">
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00481</div><div class="load-route"><div><span class="lr-city">Houston</span><span class="lr-st">TX</span></div><span class="lr-arr">→</span><div><span class="lr-city">Oklahoma City</span><span class="lr-st">OK</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-active">Active</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>16'0"</strong></div><div class="lm-item">Height<strong>14'0"</strong></div>
-          <div class="lm-item">Miles<strong>450 mi</strong></div><div class="lm-item">Pilots<strong>2 needed / 0 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 21</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$620 each</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count"><div class="applicant-avatars"><div class="app-av">MR</div><div class="app-av">SL</div><div class="app-av more">+3</div></div><span><strong>5</strong> applicants waiting</span></div>
-          <div class="load-actions">
-            <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button>
-            <button class="load-btn">Edit</button>
-            <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);">Close</button>
-          </div>
-        </div>
-      </div>
-      <div class="load-row active-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00479</div><div class="load-route"><div><span class="lr-city">Denver</span><span class="lr-st">CO</span></div><span class="lr-arr">→</span><div><span class="lr-city">Salt Lake City</span><span class="lr-st">UT</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-active">Urgent</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>14'0"</strong></div><div class="lm-item">Height<strong>15'0"</strong></div>
-          <div class="lm-item">Miles<strong>525 mi</strong></div><div class="lm-item">Pilots<strong>1 needed / 0 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 19</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$740</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count"><div class="applicant-avatars"><div class="app-av">RT</div></div><span><strong>1</strong> applicant waiting</span></div>
-          <div class="load-actions"><button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button><button class="load-btn">Edit</button></div>
-        </div>
-      </div>
-      <div class="load-row filled-load">
-        <div class="load-row-top">
-          <div class="load-row-left"><div class="load-id">LL-00468</div><div class="load-route"><div><span class="lr-city">North Canton</span><span class="lr-st">OH</span></div><span class="lr-arr">→</span><div><span class="lr-city">Convoy</span><span class="lr-st">OH</span></div></div></div>
-          <div class="load-row-right"><span class="badge badge-filled">Filled</span></div>
-        </div>
-        <div class="load-meta">
-          <div class="lm-item">Width<strong>14'0"</strong></div><div class="lm-item">Height<strong>14'6"</strong></div>
-          <div class="lm-item">Miles<strong>190 mi</strong></div><div class="lm-item">Pilots<strong>2 / 2 filled</strong></div>
-          <div class="lm-item">Date<strong>Apr 21</strong></div><div class="lm-item">Pay<strong style="color:var(--yellow)">$550 each</strong></div>
-        </div>
-        <div class="load-row-footer">
-          <div class="applicant-count" style="color:var(--green);">✓ All pilots confirmed</div>
-          <div class="load-actions"><button class="load-btn">View Details</button><button class="load-btn">Contact Pilots</button></div>
-        </div>
+    <div class="load-list" id="myLoadsList">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No loads posted yet — post your first load to start receiving pilot applications</div>
+        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
       </div>
     </div>
   </div>
@@ -405,15 +340,13 @@ select option{background:var(--mid);}
   <div class="panel" id="panel-applicants">
     <div class="sec-head" style="margin-bottom:1rem;">
       <div class="sec-title">Pilot <span>Applications</span></div>
-      <div style="font-size:.8rem;color:var(--muted);"><span id="appCount" style="color:var(--white);font-weight:600;">5</span> pending review</div>
+      <div style="font-size:.8rem;color:var(--muted);"><span id="appCount" style="color:var(--white);font-weight:600;">0</span> pending review</div>
     </div>
 
     <div style="background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
       <div style="font-size:.75rem;color:var(--muted);">Filtering for load:</div>
       <select id="loadFilter" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.35rem .75rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;cursor:pointer;">
         <option value="all">All Loads</option>
-        <option value="LL-00481">LL-00481 · Houston → OKC</option>
-        <option value="LL-00479">LL-00479 · Denver → SLC</option>
       </select>
       <div class="filter-tabs" style="margin-bottom:0;">
         <span class="ft on" onclick="filterApps('all',this)">All</span>
@@ -594,11 +527,60 @@ async function loadApplications() {
     } catch(e) { console.error(e); }
 
     if (allApplications.length === 0) {
-      renderDemoApplications();
+      renderApplications([]);
+      renderOverviewApplicants([]);
     } else {
       renderApplications(allApplications);
       renderOverviewApplicants(allApplications.slice(0, 3));
     }
+
+    // Render real loads in My Loads panel
+    try {
+      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid), orderBy('postedAt', 'desc')));
+      if (!loadsSnap.empty) {
+        const loadsList = document.getElementById('myLoadsList');
+        const overviewLoads = document.getElementById('overviewLoads');
+        const loadsHtml = loadsSnap.docs.map(d => {
+          const l = d.data();
+          return `<div class="load-row active-load">
+            <div class="load-row-top">
+              <div class="load-row-left">
+                <div class="load-id">${d.id.slice(0,8).toUpperCase()}</div>
+                <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
+              </div>
+              <div class="load-row-right"><span class="badge badge-active">Active</span></div>
+            </div>
+            <div class="load-meta">
+              <div class="lm-item">Width<strong>${l.width||'—'}</strong></div>
+              <div class="lm-item">Height<strong>${l.height||'—'}</strong></div>
+              <div class="lm-item">Pilots<strong>${l.pilots} needed</strong></div>
+              <div class="lm-item">Date<strong>${l.date||'—'}</strong></div>
+              <div class="lm-item">Pay<strong style="color:var(--yellow)">$${l.pay} each</strong></div>
+            </div>
+            <div class="load-row-footer">
+              <div class="applicant-count"><span>Posted to board</span></div>
+              <div class="load-actions">
+                <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+        if (loadsList) loadsList.innerHTML = loadsHtml;
+        if (overviewLoads) overviewLoads.innerHTML = loadsSnap.docs.length > 0 ? loadsHtml : overviewLoads.innerHTML;
+
+        // Update load filter dropdown with real loads
+        const loadFilter = document.getElementById('loadFilter');
+        if (loadFilter) {
+          loadsSnap.docs.forEach(d => {
+            const l = d.data();
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = `${l.from} ${l.fromSt} → ${l.to} ${l.toSt}`;
+            loadFilter.appendChild(opt);
+          });
+        }
+      }
+    } catch(e) { console.error('Load fetch error:', e); }
   } catch(e) {
     renderDemoApplications();
   }
