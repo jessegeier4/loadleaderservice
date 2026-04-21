@@ -240,7 +240,7 @@ if ('serviceWorker' in navigator) {
     <div><div class="page-title">Pilot Car <span>Load Board</span></div></div>
     <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
       <div class="live-badge"><span class="live-dot"></span>Live Updates</div>
-      <button class="btn-sm btn-yellow" onclick="handlePostLoad()">+ Post a Load</button>
+
     </div>
   </div>
   <div id="boardNotice" style="display:none;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:.75rem 1.25rem;margin-bottom:1rem;font-size:.82rem;color:#aaa;">
@@ -310,30 +310,7 @@ if ('serviceWorker' in navigator) {
   <div class="modal"><div id="applyModalContent"></div></div>
 </div>
 
-<!-- POST MODAL -->
-<div id="postModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;">Post a <span style="color:var(--yellow)">Load</span></div>
-      <button onclick="document.getElementById('postModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:.9rem;">
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Origin</label><input type="text" placeholder="City, State" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Destination</label><input type="text" placeholder="City, State" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Width</label><input type="text" placeholder='16&apos;0"' style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Height</label><input type="text" placeholder='14&apos;6"' style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Pilots Needed</label><select style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Pay Per Pilot</label><input type="text" placeholder="$0.00" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;"></div>
-      </div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Move Date</label><input type="date" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;color-scheme:dark;"></div>
-      <div><label style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.4rem;">Notes</label><textarea placeholder="Special instructions, permits, entry details..." style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;min-height:80px;resize:vertical;"></textarea></div>
-      <button style="background:var(--yellow);color:var(--black);border:none;padding:.85rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;">Post Load to Board</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- CHAT -->
 <div class="chat-bubble">
@@ -739,35 +716,7 @@ window.submitApplication=async(loadId)=>{
 };
 
 document.getElementById('applyModal').addEventListener('click',function(e){if(e.target===this)closeApplyModal();});
-document.getElementById('postModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 
-window.handlePostLoad = () => {
-  if (!currentUser) {
-    window.location.href = 'login.html?tab=signup';
-    return;
-  }
-  if (userProfile?.accountType === 'carrier') {
-    window.location.href = 'carrier-dashboard.html';
-  } else {
-    // Show message that only carriers can post loads
-    const modal = document.getElementById('applyModal');
-    const content = document.getElementById('applyModalContent');
-    modal.classList.add('open');
-    content.innerHTML = `
-      <div class="modal-head"><div></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
-      <div class="modal-body">
-        <div class="login-prompt">
-          <div class="login-prompt-icon">🚛</div>
-          <div class="login-prompt-title">Carriers Only</div>
-          <div class="login-prompt-desc">Only carrier accounts can post loads. You're logged in as a pilot.<br><br>To post loads create a separate carrier account.</div>
-          <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-            <a href="login.html?tab=signup" class="success-btn" style="background:var(--yellow);color:var(--black);">Create Carrier Account</a>
-            <button class="success-btn" style="background:transparent;border:1px solid #2a2a2a;color:var(--white);" onclick="closeApplyModal()">Close</button>
-          </div>
-        </div>
-      </div>`;
-  }
-};
 
 window.runAISearch=async()=>{
   const q=document.getElementById('aiInput').value.trim();if(!q)return;
