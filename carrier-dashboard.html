@@ -561,6 +561,7 @@ async function loadApplications() {
               <div class="applicant-count"><span>Posted to board</span></div>
               <div class="load-actions">
                 <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+                <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${d.id}')">Delete</button>
               </div>
             </div>
           </div>`;
@@ -785,6 +786,19 @@ document.addEventListener('click', (e) => {
   const panel = document.getElementById('cNotifPanel');
   if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
 });
+
+window.deleteLoad = async (loadId) => {
+  if (!confirm('Are you sure you want to delete this load? This cannot be undone.')) return;
+  try {
+    const { doc: fsDoc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(fsDoc(db, 'loads', loadId));
+    showToast('✓ Load deleted successfully');
+    await loadApplications(); // refresh
+  } catch(e) {
+    console.error(e);
+    showToast('Could not delete load. Try again.');
+  }
+};
 
 window.showPanel = (name, el) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
