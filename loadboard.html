@@ -394,10 +394,7 @@ async function fetchLoads() {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);"><span class="spinner spinner-white"></span> Loading board...</div>';
   try {
     // Fetch all loads — filter status client side to avoid index issues
-    const snap = await getDocs(query(
-      collection(db, 'loads'),
-      limit(100)
-    ));
+    const snap = await getDocs(collection(db, 'loads'));
     console.log('Total docs from Firestore:', snap.size);
     snap.docs.forEach(d => console.log('Load:', d.id, 'status:', d.data().status));
     const activeDocs = snap.docs.filter(d => d.data().status === 'active' || d.data().status === 'Active' || !d.data().status);
