@@ -1,4 +1,4 @@
-const CACHE_NAME = 'loadleader-v1';
+const CACHE_NAME = 'loadleader-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -16,75 +16,57 @@ const STATIC_ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('LoadLeader SW: Caching static assets');
       return cache.addAll(STATIC_ASSETS);
     })
   );
   self.skipWaiting();
 });
 
-// Activate — clean up old caches
+// Activate — clean up ALL old caches immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames
-          .filter(name => name !== CACHE_NAME)
-          .map(name => {
-            console.log('LoadLeader SW: Deleting old cache', name);
-            return caches.delete(name);
-          })
+        cacheNames.map(name => {
+          console.log('LoadLeader SW: Deleting cache', name);
+          return caches.delete(name);
+        })
       );
     })
   );
   self.clients.claim();
 });
 
-// Fetch — serve from cache, fall back to network
+// Fetch — NETWORK FIRST, fall back to cache
+// This ensures users always get the latest files
 self.addEventListener('fetch', event => {
-  // Skip non-GET requests and Firebase/API calls
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('firebaseapp.com')) return;
   if (event.request.url.includes('googleapis.com')) return;
   if (event.request.url.includes('onrender.com')) return;
   if (event.request.url.includes('gstatic.com')) return;
+  if (event.request.url.includes('fonts.googleapis.com')) return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) {
-        // Return cached version and update cache in background
-        fetch(event.request).then(response => {
-          if (response && response.status === 200) {
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, response.clone());
-            });
-          }
-        }).catch(() => {});
-        return cached;
-      }
-
-      // Not in cache — fetch from network
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+    fetch(event.request)
+      .then(response => {
+        // Update cache with fresh response
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
-        // Cache the new response
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseClone);
-        });
         return response;
-      }).catch(() => {
-        // Offline fallback — return index.html for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        // Only use cache when offline
+        return caches.match(event.request).then(cached => {
+          return cached || caches.match('/index.html');
+        });
+      })
   );
 });
 
-// Push notifications (ready for future use)
+// Push notifications
 self.addEventListener('push', event => {
   if (!event.data) return;
   const data = event.data.json();
@@ -104,7 +86,6 @@ self.addEventListener('push', event => {
   );
 });
 
-// Notification click
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   if (event.action === 'dismiss') return;
