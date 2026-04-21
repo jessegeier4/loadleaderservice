@@ -149,8 +149,13 @@ select option{background:var(--mid);}
 }
 </style>
 <script>
+// Remove any service workers completely
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
+  });
+  // Clear all caches
+  caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
 }
 </script>
 </head>
