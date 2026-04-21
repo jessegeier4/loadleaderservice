@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoadLeader – Pilot Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -39,7 +41,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .user-name{font-size:.82rem;font-weight:500;}
 .notif-btn{width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;transition:background .2s;}
 .notif-btn:hover{background:#2a2a2a;}
-.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--black);}
+/* notif-dot removed */
 .logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
 
@@ -166,7 +168,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .sc-pay-label{font-size:.62rem;color:var(--muted);}
 
 /* PROFILE */
-.profile-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;}
+.profile-grid{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start;}
 @media(max-width:900px){.profile-grid{grid-template-columns:1fr;}}
 .profile-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.75rem;text-align:center;}
 .profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--black);margin:0 auto 1rem;letter-spacing:1px;}
@@ -200,14 +202,16 @@ select option{background:var(--mid);}
 
 /* CERTS */
 .cert-list{display:flex;flex-direction:column;gap:.6rem;}
-.cert-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--mid);border-radius:7px;border:1px solid #2a2a2a;}
+.cert-item{display:flex;flex-direction:column;padding:.9rem 1rem;background:var(--mid);border-radius:8px;border:1px solid #2a2a2a;transition:border-color .2s;}
+.cert-item:hover{border-color:#333;}
+.cert-item-top{display:flex;align-items:center;gap:.75rem;width:100%;}
 .cert-icon{font-size:1.1rem;flex-shrink:0;}
-.cert-name{font-size:.85rem;font-weight:500;flex:1;}
-.cert-status{font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:100px;}
+.cert-name{font-size:.85rem;font-weight:500;flex:1;min-width:0;}
+.cert-status{font-size:.65rem;font-weight:700;padding:.15rem .55rem;border-radius:100px;white-space:nowrap;flex-shrink:0;}
 .cert-valid{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
 .cert-expired{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
 .cert-missing{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
-.cert-exp{font-size:.7rem;color:var(--muted);margin-left:auto;margin-right:.5rem;}
+.cert-exp{font-size:.68rem;color:var(--muted);margin-top:.25rem;margin-left:1.85rem;}
 .add-cert-btn{width:100%;background:transparent;border:1px dashed #2a2a2a;color:var(--muted);padding:.65rem;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;margin-top:.6rem;}
 .add-cert-btn:hover{border-color:var(--yellow);color:var(--yellow);}
 
@@ -260,7 +264,18 @@ select option{background:var(--mid);}
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    <div id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;"
+      onclick="(function(e){e.stopPropagation();var p=document.getElementById('notifPanel');p.style.display=p.style.display==='none'?'block':'none';})(event)">
+      🔔
+      <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
+        <div style="text-align:center;padding:1.5rem 0;">
+          <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
+          <div style="font-size:.82rem;color:#888;line-height:1.6;">No notifications yet.<br>Apply to loads to get started.</div>
+        </div>
+        <div style="font-size:.72rem;color:#333;text-align:center;margin-top:.5rem;">Load alerts coming soon</div>
+      </div>
+    </div>
     <div class="user-chip">
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
@@ -380,7 +395,12 @@ select option{background:var(--mid);}
         <div class="payout-amount" id="availableBalance">$0.00</div>
         <div class="ec-sub" style="color:#555">Your LoadLeader wallet balance</div>
         <div class="bank-row">🏦 <span id="bankInfo">No bank account connected yet</span></div>
-        <button class="withdraw-btn" onclick="alert('Connect a bank account in your profile to enable withdrawals.')">💸 Withdraw to Bank Account</button>
+        <button class="withdraw-btn" onclick="showWithdrawInfo()">💸 Withdraw to Bank Account</button>
+        <div id="withdrawInfo" style="display:none;margin-top:.75rem;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);border-radius:6px;padding:.85rem;font-size:.8rem;color:#aaa;line-height:1.6;">
+          💳 Bank account connection is coming soon with our Stripe integration.<br>
+          For now coordinate payment directly with your carrier.<br>
+          <span style="color:var(--blue)">Email support@loadleaderservice.com to request early access.</span>
+        </div>
       </div>
     </div>
 
@@ -433,7 +453,11 @@ select option{background:var(--mid);}
             <div><div class="ps-val" id="profileStates">—</div><div class="ps-label">States</div></div>
             <div><div class="ps-val" id="profileOnTime">—</div><div class="ps-label">On Time</div></div>
           </div>
-          <button class="edit-profile-btn">📷 Change Photo</button>
+          <div id="avatarUploadArea">
+            <button class="edit-profile-btn" onclick="document.getElementById('avatarInput').click()">📷 Change Photo</button>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+            <div id="avatarMsg" style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.3rem;display:none;"></div>
+          </div>
         </div>
 
         <!-- Certifications -->
@@ -444,11 +468,13 @@ select option{background:var(--mid);}
 
             <!-- Pilot Car Cert -->
             <div class="cert-item" id="cert-pilot">
-              <span class="cert-icon">📋</span>
-              <span class="cert-name">Pilot Car Certification</span>
-              <span class="cert-exp" id="exp-pilot">No expiry added</span>
-              <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
-              <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+              <div class="cert-item-top">
+                <span class="cert-icon">📋</span>
+                <span class="cert-name">Pilot Car Certification</span>
+                <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-pilot" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-pilot">
                 <div class="cert-drop" id="drop-pilot">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
@@ -467,11 +493,13 @@ select option{background:var(--mid);}
 
             <!-- Driver License -->
             <div class="cert-item" id="cert-license">
-              <span class="cert-icon">🚗</span>
-              <span class="cert-name">Driver's License (CDL)</span>
-              <span class="cert-exp" id="exp-license">No expiry added</span>
-              <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
-              <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
+              <div class="cert-item-top">
+                <span class="cert-icon">🚗</span>
+                <span class="cert-name">Driver's License (CDL)</span>
+                <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-license" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-license">
                 <div class="cert-drop" id="drop-license">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
@@ -490,11 +518,13 @@ select option{background:var(--mid);}
 
             <!-- Insurance -->
             <div class="cert-item" id="cert-insurance">
-              <span class="cert-icon">🛡️</span>
-              <span class="cert-name">Liability Insurance</span>
-              <span class="cert-exp" id="exp-insurance">No expiry added</span>
-              <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
-              <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
+              <div class="cert-item-top">
+                <span class="cert-icon">🛡️</span>
+                <span class="cert-name">Liability Insurance</span>
+                <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-insurance" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-insurance">
                 <div class="cert-drop" id="drop-insurance">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
@@ -513,11 +543,13 @@ select option{background:var(--mid);}
 
             <!-- OSHA -->
             <div class="cert-item" id="cert-osha">
-              <span class="cert-icon">🔰</span>
-              <span class="cert-name">OSHA Safety Training</span>
-              <span class="cert-exp" id="exp-osha">No expiry added</span>
-              <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
-              <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
+              <div class="cert-item-top">
+                <span class="cert-icon">🔰</span>
+                <span class="cert-name">OSHA Safety Training</span>
+                <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
+                <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
+              </div>
+              <span class="cert-exp" id="exp-osha" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-osha">
                 <div class="cert-drop" id="drop-osha">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
@@ -598,10 +630,11 @@ select option{background:var(--mid);}
 
         <div class="form-section">
           <div class="fs-title">Change Password</div>
-          <div class="form-group"><label>Current Password</label><input type="password" placeholder="••••••••"></div>
-          <div class="form-group"><label>New Password</label><input type="password" placeholder="••••••••"></div>
-          <div class="form-group"><label>Confirm New Password</label><input type="password" placeholder="••••••••"></div>
-          <button class="save-btn">Update Password</button>
+          <div class="form-group"><label>Current Password</label><input type="password" id="pwCurrent" placeholder="••••••••"></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="pwNew" placeholder="Min 8 characters"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="pwConfirm" placeholder="Re-enter new password"></div>
+          <div id="pwMsg" style="display:none;padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;"></div>
+          <button class="save-btn" onclick="changePassword()">Update Password</button>
         </div>
       </div>
     </div>
@@ -619,6 +652,15 @@ select option{background:var(--mid);}
     <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">👤</span><span class="mn-label">Profile</span></button>
   </div>
 </div>
+
+<script>
+// Close notif panel when clicking outside
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('notifBtn');
+  var panel = document.getElementById('notifPanel');
+  if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
+});
+</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -952,6 +994,83 @@ async function loadSavedCerts(data) {
     }
   });
 }
+
+// Notification panel toggle moved to regular script
+
+// Avatar upload (preview only for now — Firebase Storage needed for persistence)
+window.handleAvatarUpload = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    const msg = document.getElementById('avatarMsg');
+    msg.textContent = 'File too large — max 2MB';
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const av = document.getElementById('profileAvatar');
+    av.style.backgroundImage = `url(${e.target.result})`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+    av.textContent = '';
+    const navAv = document.getElementById('navAvatar');
+    if (navAv) { navAv.style.backgroundImage = `url(${e.target.result})`; navAv.style.backgroundSize = 'cover'; navAv.textContent = ''; }
+    const msg = document.getElementById('avatarMsg');
+    msg.textContent = '✓ Photo updated (session only — full upload coming soon)';
+    msg.style.display = 'block';
+    msg.style.color = 'var(--muted)';
+  };
+  reader.readAsDataURL(file);
+};
+
+// Change password
+window.changePassword = async () => {
+  const current = document.getElementById('pwCurrent').value;
+  const newPw = document.getElementById('pwNew').value;
+  const confirm = document.getElementById('pwConfirm').value;
+  const msg = document.getElementById('pwMsg');
+
+  if (!current || !newPw || !confirm) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'Please fill in all password fields.'; return;
+  }
+  if (newPw.length < 8) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'New password must be at least 8 characters.'; return;
+  }
+  if (newPw !== confirm) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = 'New passwords do not match.'; return;
+  }
+  const btn = document.querySelector('#panel-profile .form-section:last-child .save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Updating...';
+  try {
+    const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, current);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPw);
+    msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = '✓ Password updated successfully!';
+    document.getElementById('pwCurrent').value = '';
+    document.getElementById('pwNew').value = '';
+    document.getElementById('pwConfirm').value = '';
+  } catch(e) {
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = e.code === 'auth/wrong-password' ? 'Current password is incorrect.' : 'Could not update password. Try again.';
+  }
+  btn.disabled = false;
+  btn.innerHTML = 'Update Password';
+};
+
+// Withdraw info toggle
+window.showWithdrawInfo = () => {
+  const el = document.getElementById('withdrawInfo');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+};
 
 window.showPanel = (name, el) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));

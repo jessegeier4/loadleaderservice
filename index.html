@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoadLeader – The Future of Pilot Car Escorts</title>
 <meta name="description" content="LoadLeader is modernizing the oversize load industry. Connect certified pilot car escorts with carriers moving America's biggest freight.">
@@ -217,8 +219,8 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
       <a href="loadboard.html" class="cta-secondary">Browse Live Loads →</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-num">3,200+</div><div class="hs-label">Active Loads</div></div>
-      <div><div class="hs-num">8,400+</div><div class="hs-label">Certified Pilots</div></div>
+      <div><div class="hs-num" id="heroLoads">—</div><div class="hs-label">Active Loads</div></div>
+      <div><div class="hs-num" id="heroPilots">—</div><div class="hs-label">Registered Pilots</div></div>
       <div><div class="hs-num">48</div><div class="hs-label">States Covered</div></div>
       <div><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
     </div>
@@ -319,7 +321,7 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
         <div class="fw-title">Find More Work.<br>Earn More Money.</div>
         <p class="fw-desc">Stop waiting for the phone to ring. LoadLeader puts thousands of loads in front of you — filtered to your routes, your availability, and your pay requirements.</p>
         <div class="fw-features">
-          <div class="fw-feat">✓ Browse 3,200+ active loads across 48 states</div>
+          <div class="fw-feat">✓ Browse live loads across 48 states</div>
           <div class="fw-feat">✓ Apply with one tap — no phone tag</div>
           <div class="fw-feat">✓ AI matches you to loads that fit your route</div>
           <div class="fw-feat">✓ Track all applications and earnings in one place</div>
@@ -445,6 +447,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Load real stats from Firestore
+async function loadSiteStats() {
+  try {
+    const { collection, getCountFromServer, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const loadsSnap = await getCountFromServer(query(collection(db, 'loads'), where('status','==','active')));
+    const usersSnap = await getCountFromServer(collection(db, 'users'));
+    const loadCount = loadsSnap.data().count;
+    const userCount = usersSnap.data().count;
+    const heroLoads = document.getElementById('heroLoads');
+    const heroPilots = document.getElementById('heroPilots');
+    if (heroLoads) heroLoads.textContent = loadCount > 0 ? loadCount + '+' : 'Growing';
+    if (heroPilots) heroPilots.textContent = userCount > 0 ? userCount + '+' : 'Join Now';
+  } catch(e) {
+    const heroLoads = document.getElementById('heroLoads');
+    const heroPilots = document.getElementById('heroPilots');
+    if (heroLoads) heroLoads.textContent = 'Live';
+    if (heroPilots) heroPilots.textContent = 'Join Now';
+  }
+}
+loadSiteStats();
 
 onAuthStateChanged(auth, async (user) => {
   const navRight = document.querySelector('.nav-right');
