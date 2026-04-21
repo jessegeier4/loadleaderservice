@@ -365,12 +365,13 @@ onAuthStateChanged(auth, async (user) => {
       userProfile = userDoc.exists() ? userDoc.data() : {};
       const firstName = userProfile.firstName || user.displayName?.split(' ')[0] || 'Pilot';
       const initials = (firstName[0] + (userProfile.lastName?.[0] || '')).toUpperCase();
+      const dashUrl = userProfile.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
       document.getElementById('navRight').innerHTML = `
-        <a href="dashboard.html" class="user-chip">
+        <a href="${dashUrl}" class="user-chip">
           <div class="user-av">${initials}</div>
           <span class="user-n">${firstName}</span>
         </a>
-        <a href="dashboard.html" class="btn-sm btn-yellow">Dashboard</a>`;
+        <a href="${dashUrl}" class="btn-sm btn-yellow">Dashboard</a>`;
       const appsSnap = await getDocs(query(collection(db,'applications'),where('pilotId','==',user.uid)));
       appsSnap.forEach(d => appliedLoads.add(d.data().loadId));
       const savedSnap = await getDocs(query(collection(db,'savedLoads'),where('pilotId','==',user.uid)));
