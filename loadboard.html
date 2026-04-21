@@ -366,8 +366,9 @@ onAuthStateChanged(auth, async (user) => {
       const firstName = userProfile.firstName || user.displayName?.split(' ')[0] || 'Pilot';
       const initials = (firstName[0] + (userProfile.lastName?.[0] || '')).toUpperCase();
       const dashUrl = userProfile.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
+      const profileUrl = dashUrl + '#profile';
       document.getElementById('navRight').innerHTML = `
-        <a href="${dashUrl}" class="user-chip">
+        <a href="${profileUrl}" class="user-chip">
           <div class="user-av">${initials}</div>
           <span class="user-n">${firstName}</span>
         </a>

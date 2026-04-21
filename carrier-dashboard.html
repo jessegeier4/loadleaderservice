@@ -880,6 +880,9 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = 'login.html'; return; }
   currentUser = user;
   document.getElementById('loadingScreen').style.display = 'none';
+  if (window.location.hash === '#profile') {
+    setTimeout(() => showPanel('profile', document.querySelector('.nav-tab:last-of-type')), 300);
+  }
 
   try {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
