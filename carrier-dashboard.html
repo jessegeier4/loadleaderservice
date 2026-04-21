@@ -15,7 +15,7 @@
   --red:#f87171; --red-bg:rgba(248,113,113,0.08); --blue:#60a5fa; --orange:#fb923c;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body{background:var(--black);color:var(--white);font-family:sans-serif;min-height:100vh;}
 
 /* LOADING */
 #loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
@@ -31,7 +31,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .logo span{color:var(--white);}
 .carrier-badge{background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:var(--blue);font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-left:.5rem;}
 .nav-center{display:flex;gap:.25rem;background:var(--mid);padding:.3rem;border-radius:8px;}
-.nav-tab{padding:.38rem .9rem;border-radius:5px;font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;position:relative;}
+.nav-tab{padding:.38rem .9rem;border-radius:5px;font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:sans-serif;white-space:nowrap;position:relative;}
 .nav-tab.active{background:var(--yellow);color:var(--black);font-weight:700;}
 .nav-tab:hover:not(.active){color:var(--white);}
 .nav-tab .tab-notif{position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;}
@@ -39,7 +39,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .user-chip{display:flex;align-items:center;gap:.6rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;cursor:pointer;text-decoration:none;color:var(--white);}
 .user-av{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;}
 .user-name{font-size:.82rem;font-weight:500;}
-.logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
 
 /* DASH WRAP */
@@ -60,7 +60,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .welcome-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
 
 /* BTNS */
-.btn{border:none;padding:.55rem 1.1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn{border:none;padding:.55rem 1.1rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
 .btn-y{background:var(--yellow);color:var(--black);}
 .btn-y:hover{background:var(--yellow-dim);}
 .btn-o{background:transparent;border:1px solid #2a2a2a;color:var(--white);}
@@ -125,7 +125,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .app-av:first-child{margin-left:0;}
 .app-av.more{background:var(--mid);color:var(--muted);font-size:.55rem;}
 .load-actions{display:flex;gap:.4rem;}
-.load-btn{background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.38rem .8rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;}
+.load-btn{background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.38rem .8rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s;}
 .load-btn:hover{border-color:var(--yellow);color:var(--yellow);}
 .load-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);}
 .load-btn.primary:hover{background:var(--yellow-dim);}
@@ -156,7 +156,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .avail-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:.15rem;}
 .avail-val{color:var(--white);font-weight:500;}
 .ac-actions{display:flex;gap:.5rem;}
-.ac-btn{flex:1;padding:.6rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-align:center;}
+.ac-btn{flex:1;padding:.6rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-align:center;}
 .ac-btn.accept{background:var(--green);color:var(--black);}
 .ac-btn.accept:hover{background:#22c55e;}
 .ac-btn.decline{background:var(--red-bg);border:1px solid rgba(248,113,113,.25);color:var(--red);}
@@ -176,11 +176,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .form-group{margin-bottom:.85rem;}
 .form-group:last-child{margin-bottom:0;}
 label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
-input,select,textarea{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+input,select,textarea{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
 input:focus,select:focus,textarea:focus{border-color:var(--yellow);}
 input::placeholder,textarea::placeholder{color:#3a3a3a;}
 select option{background:var(--mid);}
-.post-btn{background:var(--yellow);color:var(--black);border:none;padding:.75rem 2rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem;}
+.post-btn{background:var(--yellow);color:var(--black);border:none;padding:.75rem 2rem;border-radius:6px;font-family:sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem;}
 .post-btn:hover{background:var(--yellow-dim);}
 .post-btn:disabled{opacity:.5;cursor:not-allowed;}
 
@@ -202,7 +202,7 @@ select option{background:var(--mid);}
 
 /* FILTER TABS */
 .filter-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1.25rem;}
-.ft{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);font-size:.75rem;padding:.35rem .85rem;border-radius:100px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.ft{background:var(--mid);border:1px solid #2a2a2a;color:var(--muted);font-size:.75rem;padding:.35rem .85rem;border-radius:100px;cursor:pointer;transition:all .2s;font-family:sans-serif;}
 .ft:hover,.ft.on{background:var(--yellow-bg);border-color:rgba(245,196,0,.3);color:var(--yellow);}
 
 /* MOBILE */
@@ -216,7 +216,7 @@ select option{background:var(--mid);}
 }
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 .8rem;z-index:100;}
 .mobile-nav-items{display:flex;justify-content:space-around;}
-.mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:6px;transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;}
+.mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:6px;transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:sans-serif;}
 .mn-item.active{color:var(--yellow);}
 .mn-icon{font-size:1.1rem;}
 .mn-label{font-size:.6rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
@@ -225,7 +225,7 @@ select option{background:var(--mid);}
 /* UTILS */
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.success-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:var(--black);padding:.75rem 1.5rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;display:none;z-index:999;animation:fadeUp .3s ease;}
+.success-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:var(--black);padding:.75rem 1.5rem;border-radius:8px;font-family:sans-serif;font-size:.875rem;font-weight:600;display:none;z-index:999;animation:fadeUp .3s ease;}
 .success-toast.show{display:block;}
 </style>
 <script>
@@ -323,6 +323,12 @@ if ('serviceWorker' in navigator) {
         <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post Your First Load</button>
       </div>
     </div>
+
+    <!-- Multi-Load Summary -->
+    <div id="multiLoadSummary" style="display:none;margin-top:1.5rem;">
+      <div class="sec-head"><div class="sec-title" style="font-size:1rem;">Active Load <span>Status</span></div></div>
+      <div id="multiLoadList"></div>
+    </div>
   </div>
 
   <!-- MY LOADS -->
@@ -353,9 +359,30 @@ if ('serviceWorker' in navigator) {
       <div style="font-size:.8rem;color:var(--muted);"><span id="appCount" style="color:var(--white);font-weight:600;">0</span> pending review</div>
     </div>
 
+    <!-- Filters -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">
+      <select id="appFilterStatus" onchange="filterApplications()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.4rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;outline:none;">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="accepted">Accepted</option>
+        <option value="declined">Declined</option>
+      </select>
+      <select id="appFilterLoad" onchange="filterApplications()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.4rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;outline:none;">
+        <option value="all">All Loads</option>
+      </select>
+      <input type="text" id="appFilterSearch" placeholder="Search pilot name..." oninput="filterApplications()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.4rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;outline:none;min-width:160px;">
+      <select id="appFilterState" onchange="filterApplications()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.4rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;outline:none;">
+        <option value="">Any state</option>
+        <option>Ohio</option><option>Texas</option><option>California</option><option>Florida</option>
+        <option>Georgia</option><option>Indiana</option><option>Kentucky</option><option>Michigan</option>
+        <option>Missouri</option><option>North Carolina</option><option>Oklahoma</option>
+        <option>Pennsylvania</option><option>Tennessee</option><option>Virginia</option>
+      </select>
+    </div>
+
     <div style="background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
       <div style="font-size:.75rem;color:var(--muted);">Filtering for load:</div>
-      <select id="loadFilter" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.35rem .75rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;cursor:pointer;">
+      <select id="loadFilter" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.35rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;outline:none;cursor:pointer;">
         <option value="all">All Loads</option>
       </select>
       <div class="filter-tabs" style="margin-bottom:0;">
@@ -404,6 +431,66 @@ if ('serviceWorker' in navigator) {
       </div>
       <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
 
+      <!-- DOT Permit Checker -->
+      <div style="background:rgba(251,146,60,0.04);border:1px solid rgba(251,146,60,0.18);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem;">
+        <div style="font-weight:600;font-size:.875rem;margin-bottom:.35rem;">🗺️ DOT Permit Checker</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;">Enter your load dimensions to see what oversize permits may be required.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end;">
+          <div>
+            <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Width</label>
+            <input type="text" id="dotWidth" placeholder="e.g. 14'0&quot;" style="width:100%;background:#111;border:1px solid #2a2a2a;color:var(--white);padding:.45rem .65rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Height</label>
+            <input type="text" id="dotHeight" placeholder="e.g. 15'0&quot;" style="width:100%;background:#111;border:1px solid #2a2a2a;color:var(--white);padding:.45rem .65rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Weight (lbs)</label>
+            <input type="text" id="dotWeight" placeholder="e.g. 85000" style="width:100%;background:#111;border:1px solid #2a2a2a;color:var(--white);padding:.45rem .65rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+          </div>
+          <button onclick="checkDOTPermits()" style="background:var(--orange);color:#000;border:none;padding:.45rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Check</button>
+        </div>
+        <div id="dotResult" style="display:none;margin-top:.85rem;"></div>
+      </div>
+
+      <!-- Bulk Load Upload -->
+      <div style="background:rgba(96,165,250,0.04);border:1px solid rgba(96,165,250,0.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem;">
+        <div style="font-weight:600;font-size:.875rem;margin-bottom:.35rem;">📤 Bulk Load Upload</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;">Upload a CSV file to post multiple loads at once. <a href="#" onclick="downloadBulkTemplate()" style="color:var(--yellow);">Download template →</a></div>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <input type="file" id="bulkCsvInput" accept=".csv" onchange="handleBulkUpload(this)" style="display:none">
+          <button onclick="document.getElementById('bulkCsvInput').click()" style="background:transparent;border:1px solid rgba(96,165,250,.3);color:var(--blue);padding:.5rem 1rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;">Choose CSV File</button>
+          <span id="bulkFileName" style="font-size:.78rem;color:var(--muted);">No file chosen</span>
+        </div>
+        <div id="bulkUploadResult" style="display:none;margin-top:.75rem;font-size:.78rem;"></div>
+      </div>
+
+      <!-- Fleet First Toggle -->
+      <div style="background:rgba(245,196,0,0.05);border:1px solid rgba(245,196,0,0.18);border-radius:8px;padding:1.1rem;margin-bottom:.75rem;">
+        <div style="display:flex;align-items:center;gap:.75rem;cursor:pointer;" onclick="toggleFleetFirst()">
+          <div id="fleetToggle" style="width:42px;height:22px;background:#2a2a2a;border-radius:100px;position:relative;transition:background .2s;flex-shrink:0;">
+            <div id="fleetToggleKnob" style="position:absolute;top:2px;left:2px;width:18px;height:18px;background:#666;border-radius:50%;transition:all .2s;"></div>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:.875rem;">⭐ Fleet First — 8 Hour Head Start</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem;">Send to your trusted fleet pilots first. Goes public after 8 hours.</div>
+          </div>
+        </div>
+        <div id="fleetFirstInfo" style="display:none;margin-top:.75rem;padding-top:.75rem;border-top:1px solid rgba(245,196,0,.12);font-size:.75rem;color:var(--yellow);">
+          ✓ Fleet pilots will be notified by email immediately · Load goes public in 8 hours
+        </div>
+      </div>
+      <input type="hidden" id="pFleetFirst" value="false">
+
+      <!-- Load Templates -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;">Templates:</div>
+        <div id="templateBtns" style="display:flex;gap:.4rem;flex-wrap:wrap;flex:1;">
+          <div style="font-size:.78rem;color:#444;">No templates saved yet</div>
+        </div>
+        <button onclick="saveAsTemplate()" style="background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.35rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;flex-shrink:0;">💾 Save as Template</button>
+      </div>
+
       <div id="postMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
       <button class="post-btn" id="postLoadBtn" onclick="submitLoad()">🚛 Post Load to Board</button>
     </div>
@@ -440,10 +527,319 @@ if ('serviceWorker' in navigator) {
           <div class="form-group"><label>About Your Company</label><textarea id="pfBio" rows="3" placeholder="Tell pilots about your company, the types of loads you haul, routes you run..."></textarea></div>
           <button class="post-btn" onclick="saveCarrierProfile()">Save Profile</button>
         </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-top:1rem;">
+          <div style="font-weight:600;font-size:.9rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">🔔 Notification Preferences</div>
+          <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1rem;">
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
+              <div>
+                <div style="font-size:.875rem;font-weight:500;">New pilot application</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">When a pilot applies to your load</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <input type="checkbox" id="cNotif_application" checked style="width:16px;height:16px;accent-color:var(--yellow);">
+                <span style="font-size:.78rem;color:#aaa;">Email</span>
+              </label>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
+              <div>
+                <div style="font-size:.875rem;font-weight:500;">Delivery confirmed</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">When pilot confirms delivery</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <input type="checkbox" id="cNotif_delivery" checked style="width:16px;height:16px;accent-color:var(--yellow);">
+                <span style="font-size:.78rem;color:#aaa;">Email</span>
+              </label>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
+              <div>
+                <div style="font-size:.875rem;font-weight:500;">New message</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">When a pilot sends you a message</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <input type="checkbox" id="cNotif_message" checked style="width:16px;height:16px;accent-color:var(--yellow);">
+                <span style="font-size:.78rem;color:#aaa;">Email</span>
+              </label>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;opacity:.5;">
+              <div>
+                <div style="font-size:.875rem;font-weight:500;">📱 SMS Text Notifications</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">Coming soon</div>
+              </div>
+              <span style="font-size:.72rem;background:#1a1a1a;border:1px solid #2a2a2a;color:#444;padding:.2rem .6rem;border-radius:100px;">Coming Soon</span>
+            </div>
+
+          </div>
+          <div id="cNotifSaveMsg" style="display:none;padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;"></div>
+          <button class="post-btn" onclick="saveCarrierNotifPrefs()">Save Notification Settings</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- MESSAGES PANEL -->
+  <div class="panel" id="panel-messages">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">💬 <span>Messages</span></div>
+      <button class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;" onclick="showCarrierNewMsgModal()">+ New Message</button>
+    </div>
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:500px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+        <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;">Conversations</div>
+        <div id="cConvList">
+          <div class="empty-state" style="padding:2rem 1rem;">
+            <div class="empty-icon">💬</div>
+            <div class="empty-text" style="font-size:.82rem;">No conversations yet</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;">
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;">
+          <div id="cChatAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--black);flex-shrink:0;">?</div>
+          <div>
+            <div id="cChatName" style="font-weight:600;font-size:.875rem;">Select a conversation</div>
+            <div id="cChatSub" style="font-size:.7rem;color:var(--muted);">or start a new one</div>
+          </div>
+        </div>
+        <div id="cChatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem;min-height:300px;">
+          <div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Select a conversation to start chatting</div>
+        </div>
+        <div style="padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;">
+          <input type="text" id="cMsgInput" placeholder="Type a message..." style="flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.6rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;" onkeydown="if(event.key==='Enter')sendCarrierMessage()">
+          <button onclick="sendCarrierMessage()" style="background:var(--yellow);color:var(--black);border:none;padding:.6rem 1.1rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROKER TOOLS PANEL -->
+  <div class="panel" id="panel-broker">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">💼 Broker <span>Tools</span></div>
+      <div style="font-size:.8rem;color:var(--muted);">Commission tracking, sub-contractors, client access</div>
+    </div>
+
+    <!-- Commission Tracker -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div style="font-weight:600;font-size:.9rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">💰 Commission Tracker</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem;">
+        <div style="background:var(--mid);border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;">Total Commission</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--yellow);" id="totalCommission">$0</div>
+        </div>
+        <div style="background:var(--mid);border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;">This Month</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--green);" id="monthCommission">$0</div>
+        </div>
+        <div style="background:var(--mid);border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;">Loads Brokered</div>
+          <div style="font-size:1.5rem;font-weight:700;" id="totalBrokered">0</div>
+        </div>
+      </div>
+
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Log a Commission</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.65rem;align-items:end;margin-bottom:.75rem;">
+        <div>
+          <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Load Route</label>
+          <input type="text" id="commRoute" placeholder="Origin → Destination" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Load Value ($)</label>
+          <input type="number" id="commLoadValue" placeholder="e.g. 5000" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:.25rem;">Commission (%)</label>
+          <input type="number" id="commRate" placeholder="e.g. 10" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        </div>
+        <button onclick="logCommission()" style="background:var(--yellow);color:var(--black);border:none;padding:.55rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;">Log</button>
+      </div>
+      <div id="commissionList" style="max-height:250px;overflow-y:auto;">
+        <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No commissions logged yet</div>
+      </div>
+    </div>
+
+    <!-- Sub-contractor Management -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div style="font-weight:600;font-size:.9rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);">🤝 Sub-contractor Management</div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Assign loads to carrier sub-contractors who then find their own pilots.</p>
+      <div style="display:flex;gap:.65rem;margin-bottom:.85rem;">
+        <input type="text" id="subName" placeholder="Sub-contractor company name" style="flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        <input type="email" id="subEmail" placeholder="Contact email" style="flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        <button onclick="addSubcontractor()" style="background:var(--yellow);color:var(--black);border:none;padding:.55rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">+ Add</button>
+      </div>
+      <div id="subList">
+        <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No sub-contractors added yet</div>
+      </div>
+    </div>
+
+    <!-- Client Portal Links -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;">
+      <div style="font-weight:600;font-size:.9rem;margin-bottom:.5rem;">🔗 Client Portal</div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Generate a read-only tracking link for your clients so they can see load status without calling you.</p>
+      <div style="display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:.75rem;">
+        <input type="text" id="clientName" placeholder="Client name" style="flex:1;min-width:150px;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .75rem;border-radius:5px;font-family:sans-serif;font-size:14px;outline:none;">
+        <button onclick="generateClientLink()" style="background:var(--yellow);color:var(--black);border:none;padding:.55rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;">Generate Link</button>
+      </div>
+      <div id="clientLinks">
+        <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No client links generated yet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PILOT SEARCH PANEL -->
+  <div class="panel" id="panel-pilotsearch">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">🔍 Find <span>Pilots</span></div>
+      <div style="font-size:.8rem;color:var(--muted);">Search for pilots by state, experience, or name</div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">State</label>
+          <select id="psState" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:sans-serif;font-size:.875rem;outline:none;">
+            <option value="">Any state</option>
+            <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+            <option>California</option><option>Colorado</option><option>Connecticut</option>
+            <option>Florida</option><option>Georgia</option><option>Idaho</option>
+            <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+            <option>Kentucky</option><option>Louisiana</option><option>Michigan</option><option>Minnesota</option>
+            <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+            <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+            <option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option>
+            <option>Tennessee</option><option>Texas</option><option>Utah</option>
+            <option>Virginia</option><option>Washington</option><option>Wisconsin</option><option>Wyoming</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Name / Keyword</label>
+          <input type="text" id="psSearch" placeholder="Search by name..." style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Min Rating</label>
+          <select id="psRating" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:sans-serif;font-size:.875rem;outline:none;">
+            <option value="">Any rating</option>
+            <option value="4">4+ stars</option>
+            <option value="4.5">4.5+ stars</option>
+            <option value="5">5 stars only</option>
+          </select>
+        </div>
+        <button onclick="searchPilots()" style="background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">Search</button>
+      </div>
+    </div>
+
+    <div id="pilotSearchResults">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">Search for pilots by state, name, or rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLEET PANEL -->
+  <div class="panel" id="panel-fleet">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title">⭐ My <span>Fleet</span></div>
+      <div style="font-size:.8rem;color:var(--muted);">Trusted pilots who get first dibs on your loads</div>
+    </div>
+    <div style="background:rgba(245,196,0,0.04);border:1px solid rgba(245,196,0,0.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.85rem;color:#aaa;line-height:1.7;">
+      🚩 <strong style="color:var(--white)">How Fleet First works:</strong> When you post a load with Fleet First enabled, your fleet pilots get an 8-hour head start before it goes public. They receive an email notification instantly.
+    </div>
+    <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <input type="text" id="fleetSearchInput" placeholder="Search pilot by name or email..." style="flex:1;min-width:200px;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;">
+      <button onclick="searchAndAddPilot()" style="background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;">+ Add to Fleet</button>
+    </div>
+    <div id="fleetList">
+      <div class="empty-state">
+        <div class="empty-icon">⭐</div>
+        <div class="empty-text">Your fleet is empty — add trusted pilots after working with them</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">You can also add pilots directly from the Applicants tab</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CARRIER NEW MESSAGE MODAL -->
+<div id="cNewMsgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#121212;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:460px;padding:1.75rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;">New <span style="color:var(--yellow)">Message</span></div>
+      <button onclick="document.getElementById('cNewMsgModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Search for a pilot</label>
+      <input type="text" id="cNewMsgSearch" placeholder="Enter pilot name or email..." style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;" oninput="searchCarrierUsers(this.value)">
+      <div id="cSearchResults" style="margin-top:.5rem;"></div>
+    </div>
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Message</label>
+      <textarea id="cNewMsgText" placeholder="Write your message..." style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;min-height:90px;resize:vertical;"></textarea>
+    </div>
+    <button onclick="startCarrierConversation()" style="width:100%;background:var(--yellow);color:var(--black);border:none;padding:.85rem;border-radius:7px;font-family:sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;">Send Message</button>
+  </div>
+</div>
+
+<!-- CARRIER REVIEW MODAL -->
+<div id="carrierReviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#121212;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:460px;padding:1.75rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;">Rate this <span style="color:var(--yellow)">Pilot</span></div>
+      <button onclick="document.getElementById('carrierReviewModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">Your review is <strong style="color:#aaa">anonymous</strong> — no name shown. Rate the pilot's performance.</p>
+    <div style="margin-bottom:1rem;">
+      <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.5rem;font-weight:600;">Rating</label>
+      <div style="display:flex;gap:.4rem;" id="carrierStarPicker">
+        <span style="font-size:1.5rem;cursor:pointer;color:#2a2a2a;transition:color .15s;" onclick="setCarrierRating(1)">★</span>
+        <span style="font-size:1.5rem;cursor:pointer;color:#2a2a2a;transition:color .15s;" onclick="setCarrierRating(2)">★</span>
+        <span style="font-size:1.5rem;cursor:pointer;color:#2a2a2a;transition:color .15s;" onclick="setCarrierRating(3)">★</span>
+        <span style="font-size:1.5rem;cursor:pointer;color:#2a2a2a;transition:color .15s;" onclick="setCarrierRating(4)">★</span>
+        <span style="font-size:1.5rem;cursor:pointer;color:#2a2a2a;transition:color .15s;" onclick="setCarrierRating(5)">★</span>
+      </div>
+    </div>
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Review <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <textarea id="carrierReviewText" placeholder="How was the pilot? On time, professional, communicated well..." style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;min-height:90px;resize:vertical;"></textarea>
+    </div>
+    <input type="hidden" id="carrierReviewTargetId">
+    <input type="hidden" id="carrierReviewLoadId">
+    <button onclick="submitCarrierReview()" style="width:100%;background:var(--yellow);color:var(--black);border:none;padding:.85rem;border-radius:7px;font-family:sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;">Submit Anonymous Review</button>
+  </div>
+</div>
+
+<!-- PERMIT UPLOAD MODAL -->
+<div id="permitModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#121212;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:500px;padding:1.75rem;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.25rem;">Upload Permits</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;" id="permitLoadTitle">Load Route</div>
+      </div>
+      <button onclick="document.getElementById('permitModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">Upload state permits for this load. Accepted pilots will be able to view and download them from their dashboard.</p>
+
+    <div id="existingPermits" style="margin-bottom:1.25rem;"></div>
+
+    <div style="border:1.5px dashed #2a2a2a;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;background:var(--mid);" onclick="document.getElementById('permitFileInput').click()" id="permitDropZone">
+      <input type="file" id="permitFileInput" accept=".pdf,image/*" multiple style="display:none" onchange="handlePermitFiles(this)">
+      <div style="font-size:1.5rem;margin-bottom:.5rem;">📄</div>
+      <div style="font-size:.875rem;font-weight:500;margin-bottom:.25rem;">Click to upload permits</div>
+      <div style="font-size:.75rem;color:var(--muted);">PDF or images · Multiple files supported</div>
+    </div>
+
+    <div id="permitFileList" style="margin-top:1rem;display:flex;flex-direction:column;gap:.5rem;"></div>
+
+    <div id="permitUploadMsg" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-top:.75rem;"></div>
+
+    <button id="permitUploadBtn" onclick="uploadPermits()" style="width:100%;background:var(--yellow);color:var(--black);border:none;padding:.85rem;border-radius:7px;font-family:sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:1rem;display:none;">📤 Upload Permits</button>
+  </div>
 </div>
 
 <!-- MOBILE NAV -->
@@ -511,6 +907,7 @@ onAuthStateChanged(auth, async (user) => {
 
     // Load real applications from Firestore
     await loadApplications();
+    await loadCarrierConversations();
   } catch(e) { console.error(e); }
 });
 
@@ -577,6 +974,7 @@ async function loadApplications() {
               <div class="applicant-count"><span>Posted to board</span></div>
               <div class="load-actions">
                 <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+                <button class="load-btn" onclick="openPermitUpload('${d.id}','${l.from} → ${l.to}')">📄 Permits</button>
                 <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${d.id}')">Delete</button>
               </div>
             </div>
@@ -645,14 +1043,14 @@ function buildAppCard(a) {
         <div class="pilot-av">${initials}</div>
         <div>
           <div class="pilot-name">${a.pilotName}</div>
-          <div class="pilot-rating">${stars} <span style="color:var(--muted)">${a.pilotRating} rating</span></div>
+          <div class="pilot-rating">${a.pilotRating > 0 ? stars + ' <span style="color:var(--muted)">' + a.pilotRating + ' rating</span>' : '<span style="color:var(--muted)">No ratings yet</span>'}</div>
           <div class="pilot-meta">${a.pilotState} · Pilot Car Driver</div>
           <div class="pilot-badges"><span class="pb">✓ Certified</span><span class="pb">✓ Insured</span><span class="pb">✓ CDL</span></div>
         </div>
       </div>
       <div class="pilot-stats">
-        <div class="ps-item"><div class="ps-val">${a.pilotJobs}</div><div class="ps-label">Jobs</div></div>
-        <div class="ps-item"><div class="ps-val">${a.pilotRating}</div><div class="ps-label">Rating</div></div>
+        <div class="ps-item"><div class="ps-val">${a.pilotJobs || 0}</div><div class="ps-label">Jobs</div></div>
+        <div class="ps-item"><div class="ps-val">${a.pilotRating > 0 ? a.pilotRating : '—'}</div><div class="ps-label">Rating</div></div>
         <div class="ps-item"><div class="ps-val">100%</div><div class="ps-label">On Time</div></div>
       </div>
       ${a.message ? `<div class="pilot-message">${a.message}</div>` : ''}
@@ -667,7 +1065,10 @@ function buildAppCard(a) {
       </div>
       <div class="ac-actions">
         ${isAccepted
-          ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button><button class="ac-btn decline" onclick="decisionApp('${a.id}','declined','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}')">Undo</button>`
+          ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button>
+             <button class="ac-btn" style="background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="openCarrierReview('${a.pilotId}','${a.loadId}')">⭐ Review</button>
+             <button class="ac-btn" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="addAcceptedToFleet('${a.pilotId}','${a.pilotName}','${a.pilotState}')">+ Fleet</button>
+             <button class="ac-btn" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);color:var(--blue);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="repeatHire('${a.pilotId}','${a.pilotName}','${a.pilotEmail}')">↩ Re-hire</button>`
           : isDeclined
           ? `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">Reconsider</button><button class="ac-btn declined-state" disabled>✗ Declined</button>`
           : `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">✓ Accept Pilot</button>
@@ -756,6 +1157,8 @@ window.submitLoad = async () => {
       date, time: document.getElementById('pTime').value,
       notes: document.getElementById('pNotes').value,
       status: 'active',
+      fleetFirst: document.getElementById('pFleetFirst')?.value === 'true',
+      fleetFirstExpiry: document.getElementById('pFleetFirst')?.value === 'true' ? new Date(Date.now() + 8*60*60*1000).toISOString() : null,
       postedAt: serverTimestamp()
     };
 
@@ -771,6 +1174,91 @@ window.submitLoad = async () => {
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');
+
+    // Check for pilots with matching load alerts and notify them
+    try {
+      const { collection: ac, getDocs: ag } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const usersSnap = await ag(ac(db, 'users'));
+      const alertEmails = [];
+      usersSnap.forEach(d => {
+        const u = d.data();
+        if (d.id === currentUser.uid) return;
+        if (u.accountType === 'carrier') return;
+        const ap = u.loadAlertPrefs;
+        if (!ap || !ap.enabled) return;
+        // Check pay threshold
+        if (ap.minPay && pay < ap.minPay) return;
+        // Check miles threshold
+        if (ap.maxMiles && miles && miles > ap.maxMiles) return;
+        // Check state match
+        if (ap.states && ap.states.length > 0) {
+          const originState = document.getElementById('pOriginState').value.toUpperCase().slice(0,2);
+          const destState = document.getElementById('pDestState').value.toUpperCase().slice(0,2);
+          const matches = ap.states.some(s => s === originState || s === destState);
+          if (!matches) return;
+        }
+        if (u.email) alertEmails.push(u.email);
+      });
+
+      if (alertEmails.length > 0) {
+        fetch('https://load-leader.onrender.com/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'load_alert',
+            alertEmails,
+            route: `${originCity} ${document.getElementById('pOriginState').value} → ${destCity} ${document.getElementById('pDestState').value}`,
+            pay,
+            miles: document.getElementById('pMiles').value || '—',
+            fromSt: document.getElementById('pOriginState').value,
+            toSt: document.getElementById('pDestState').value
+          })
+        }).catch(() => {});
+      }
+    } catch(e) { console.log('Load alert check:', e); }
+
+    // If Fleet First — notify fleet pilots
+    if (document.getElementById('pFleetFirst')?.value === 'true') {
+      try {
+        const { collection: col, query: q, where: w, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const fleetSnap = await gd(q(col(db, 'fleet'), w('carrierId', '==', currentUser.uid)));
+        const pilotEmails = [];
+        for (const fd of fleetSnap.docs) {
+          const pd = fd.data();
+          if (pd.pilotId) {
+            const { doc: fsDoc, getDoc: fsGet } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const pilotDoc = await fsGet(fsDoc(db, 'users', pd.pilotId));
+            if (pilotDoc.exists() && pilotDoc.data().email) {
+              pilotEmails.push(pilotDoc.data().email);
+            }
+          }
+        }
+        if (pilotEmails.length > 0) {
+          await fetch('https://load-leader.onrender.com/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'fleet_load',
+              pilotEmails,
+              carrierName: userProfile?.company || userProfile?.firstName || 'Your carrier',
+              route: `${originCity} ${document.getElementById('pOriginState').value} → ${destCity} ${document.getElementById('pDestState').value}`,
+              pay: pay,
+              date: date
+            })
+          });
+          showToast(`✓ Load posted + ${pilotEmails.length} fleet pilot${pilotEmails.length !== 1 ? 's' : ''} notified!`);
+        }
+      } catch(e) { console.log('Fleet notify error:', e); }
+
+      // Reset fleet first toggle
+      fleetFirstEnabled = false;
+      document.getElementById('pFleetFirst').value = 'false';
+      document.getElementById('fleetToggle').style.background = '#2a2a2a';
+      document.getElementById('fleetToggleKnob').style.transform = 'translateX(0)';
+      document.getElementById('fleetToggleKnob').style.background = '#666';
+      document.getElementById('fleetFirstInfo').style.display = 'none';
+    }
+
     setTimeout(() => showPanel('myloads', document.querySelectorAll('.nav-tab')[1]), 2000);
   } catch(e) {
     btn.disabled = false;
@@ -778,6 +1266,601 @@ window.submitLoad = async () => {
     msgBox.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;';
     msgBox.textContent = 'Could not post load. Try again.';
   }
+};
+
+// ── BROKER TOOLS ──
+let commissions = JSON.parse(localStorage.getItem('ll_commissions') || '[]');
+
+function renderCommissions() {
+  const list = document.getElementById('commissionList');
+  if (!list) return;
+  if (!commissions.length) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No commissions logged yet</div>';
+    return;
+  }
+  let total = 0, monthTotal = 0;
+  const now = new Date();
+  list.innerHTML = commissions.slice().reverse().map(c => {
+    total += c.amount;
+    const date = new Date(c.date);
+    if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) monthTotal += c.amount;
+    return `<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;background:var(--mid);border-radius:6px;margin-bottom:.35rem;">
+      <div style="flex:1;">
+        <div style="font-size:.82rem;font-weight:500;">${c.route}</div>
+        <div style="font-size:.7rem;color:var(--muted);">${c.date} · ${c.rate}% of $${c.loadValue.toLocaleString()}</div>
+      </div>
+      <div style="font-weight:700;color:var(--yellow);">$${c.amount.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  const totalEl = document.getElementById('totalCommission');
+  const monthEl = document.getElementById('monthCommission');
+  const countEl = document.getElementById('totalBrokered');
+  if (totalEl) totalEl.textContent = '$' + total.toFixed(2);
+  if (monthEl) monthEl.textContent = '$' + monthTotal.toFixed(2);
+  if (countEl) countEl.textContent = commissions.length;
+}
+
+window.logCommission = () => {
+  const route = document.getElementById('commRoute')?.value.trim();
+  const loadValue = parseFloat(document.getElementById('commLoadValue')?.value) || 0;
+  const rate = parseFloat(document.getElementById('commRate')?.value) || 0;
+  if (!route || !loadValue || !rate) { showToast('Please fill in all fields'); return; }
+  const amount = (loadValue * rate) / 100;
+  const entry = { route, loadValue, rate, amount, date: new Date().toLocaleDateString() };
+  commissions.push(entry);
+  localStorage.setItem('ll_commissions', JSON.stringify(commissions));
+  document.getElementById('commRoute').value = '';
+  document.getElementById('commLoadValue').value = '';
+  document.getElementById('commRate').value = '';
+  renderCommissions();
+  showToast('✓ Commission logged: $' + amount.toFixed(2));
+};
+
+let subcontractors = JSON.parse(localStorage.getItem('ll_subs') || '[]');
+
+function renderSubcontractors() {
+  const list = document.getElementById('subList');
+  if (!list) return;
+  if (!subcontractors.length) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No sub-contractors added yet</div>';
+    return;
+  }
+  list.innerHTML = subcontractors.map((s, i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:#fff;flex-shrink:0;">${s.name.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1;">
+        <div style="font-size:.85rem;font-weight:500;">${s.name}</div>
+        <div style="font-size:.72rem;color:var(--muted);">${s.email}</div>
+      </div>
+      <button onclick="messageSub('${s.email}')" style="background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.3rem .65rem;border-radius:5px;font-size:.72rem;cursor:pointer;font-family:sans-serif;">💬 Message</button>
+      <button onclick="removeSub(${i})" style="background:transparent;border:1px solid rgba(248,113,113,.2);color:var(--red);padding:.3rem .65rem;border-radius:5px;font-size:.72rem;cursor:pointer;font-family:sans-serif;">Remove</button>
+    </div>`).join('');
+}
+
+window.addSubcontractor = () => {
+  const name = document.getElementById('subName')?.value.trim();
+  const email = document.getElementById('subEmail')?.value.trim();
+  if (!name || !email) { showToast('Enter name and email'); return; }
+  subcontractors.push({ name, email });
+  localStorage.setItem('ll_subs', JSON.stringify(subcontractors));
+  document.getElementById('subName').value = '';
+  document.getElementById('subEmail').value = '';
+  renderSubcontractors();
+  showToast('✓ Sub-contractor added!');
+};
+
+window.removeSub = (index) => {
+  subcontractors.splice(index, 1);
+  localStorage.setItem('ll_subs', JSON.stringify(subcontractors));
+  renderSubcontractors();
+};
+
+window.messageSub = (email) => {
+  document.getElementById('cNewMsgSearch').value = email;
+  document.getElementById('cNewMsgModal').style.display = 'flex';
+  showPanel('messages', document.querySelectorAll('.nav-tab')[4]);
+};
+
+let clientLinks = JSON.parse(localStorage.getItem('ll_clients') || '[]');
+
+function renderClientLinks() {
+  const list = document.getElementById('clientLinks');
+  if (!list) return;
+  if (!clientLinks.length) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem;">No client links generated yet</div>';
+    return;
+  }
+  list.innerHTML = clientLinks.map((c, i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <div style="font-size:.85rem;font-weight:500;">${c.name}</div>
+        <div style="font-size:.7rem;color:var(--blue);margin-top:.15rem;word-break:break-all;">${c.link}</div>
+      </div>
+      <button onclick="navigator.clipboard.writeText('${c.link}').then(()=>showToast('Link copied!'))" style="background:transparent;border:1px solid rgba(96,165,250,.25);color:var(--blue);padding:.3rem .65rem;border-radius:5px;font-size:.72rem;cursor:pointer;font-family:sans-serif;white-space:nowrap;">📋 Copy</button>
+      <button onclick="removeClient(${i})" style="background:transparent;border:1px solid rgba(248,113,113,.2);color:var(--red);padding:.3rem .65rem;border-radius:5px;font-size:.72rem;cursor:pointer;font-family:sans-serif;">Remove</button>
+    </div>`).join('');
+}
+
+window.generateClientLink = () => {
+  const name = document.getElementById('clientName')?.value.trim();
+  if (!name) { showToast('Enter a client name'); return; }
+  const token = Math.random().toString(36).slice(2, 10);
+  const link = `https://loadleaderservice.com/loadboard.html?client=${token}&carrier=${currentUser?.uid}`;
+  clientLinks.push({ name, link, token, created: new Date().toLocaleDateString() });
+  localStorage.setItem('ll_clients', JSON.stringify(clientLinks));
+  document.getElementById('clientName').value = '';
+  renderClientLinks();
+  showToast('✓ Client link generated!');
+};
+
+window.removeClient = (index) => {
+  clientLinks.splice(index, 1);
+  localStorage.setItem('ll_clients', JSON.stringify(clientLinks));
+  renderClientLinks();
+};
+
+// Load broker data when panel opens
+const _origShowPanel = window.showPanel;
+window.showPanel = (name, el) => {
+  _origShowPanel(name, el);
+  if (name === 'broker') {
+    renderCommissions();
+    renderSubcontractors();
+    renderClientLinks();
+  }
+};
+
+// ── REPEAT HIRE ──
+window.repeatHire = async (pilotId, pilotName, pilotEmail) => {
+  showPanel('postload', document.querySelectorAll('.nav-tab')[5]);
+  showToast('Fill in the load details to re-hire ' + pilotName);
+  // Store pilot to auto-accept when load is posted
+  window._repeatHirePilot = { id: pilotId, name: pilotName, email: pilotEmail };
+};
+
+// ── LOAD STATUS TIMELINE ──
+function buildStatusTimeline(status, appCount, deliveredCount) {
+  const steps = [
+    { key: 'posted', label: 'Posted', icon: '📋' },
+    { key: 'applied', label: appCount + ' Applied', icon: '👥' },
+    { key: 'accepted', label: 'Pilot Accepted', icon: '✓' },
+    { key: 'delivered', label: deliveredCount > 0 ? 'Delivered' : 'In Transit', icon: deliveredCount > 0 ? '✅' : '🚛' }
+  ];
+  const activeIdx = status === 'active' ? (appCount > 0 ? 1 : 0) : (status === 'completed' ? 3 : 2);
+  return `<div style="display:flex;align-items:center;gap:0;margin-top:.75rem;overflow-x:auto;">
+    ${steps.map((s, i) => `
+      <div style="display:flex;align-items:center;flex:1;min-width:60px;">
+        <div style="text-align:center;flex-shrink:0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:${i <= activeIdx ? 'var(--yellow)' : '#1a1a1a'};border:1px solid ${i <= activeIdx ? 'var(--yellow)' : '#2a2a2a'};display:flex;align-items:center;justify-content:center;font-size:.7rem;margin:0 auto;">${i <= activeIdx ? s.icon : ''}</div>
+          <div style="font-size:.6rem;color:${i <= activeIdx ? 'var(--white)' : '#444'};margin-top:.2rem;white-space:nowrap;">${s.label}</div>
+        </div>
+        ${i < steps.length - 1 ? `<div style="flex:1;height:1px;background:${i < activeIdx ? 'var(--yellow)' : '#1a1a1a'};margin:0 .2rem;min-width:8px;"></div>` : ''}
+      </div>`).join('')}
+  </div>`;
+}
+
+// ── PILOT SEARCH ──
+window.searchPilots = async () => {
+  const state = document.getElementById('psState').value;
+  const search = document.getElementById('psSearch').value.trim().toLowerCase();
+  const minRating = parseFloat(document.getElementById('psRating').value) || 0;
+  const results = document.getElementById('pilotSearchResults');
+  results.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);">Searching...</div>';
+
+  try {
+    const { collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'users'));
+    let pilots = [];
+    snap.forEach(d => {
+      const u = d.data();
+      if (d.id === currentUser.uid) return;
+      if (u.accountType === 'carrier') return;
+      const name = `${u.firstName || ''} ${u.lastName || ''}`.trim().toLowerCase();
+      if (state && u.state !== state) return;
+      if (search && !name.includes(search) && !(u.coverage || '').toLowerCase().includes(search)) return;
+      pilots.push({ id: d.id, ...u, name: `${u.firstName || ''} ${u.lastName || ''}`.trim() });
+    });
+
+    // Sort by rating
+    pilots.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+    if (!pilots.length) {
+      results.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">No pilots found matching your search</div></div>';
+      return;
+    }
+
+    results.innerHTML = pilots.map(p => {
+      const initials = (p.name || 'P').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+      const stars = p.rating ? '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating)) : '☆☆☆☆☆';
+      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;flex-wrap:wrap;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--black);flex-shrink:0;">${initials}</div>
+        <div style="flex:1;min-width:150px;">
+          <div style="font-weight:600;font-size:.9rem;">${p.name || 'Pilot'}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${p.state || 'Location not set'} · ${p.experience || 'Experience not listed'}</div>
+          <div style="font-size:.78rem;color:var(--yellow);margin-top:.2rem;">${stars} <span style="color:var(--muted)">${p.rating ? p.rating + ' rating' : 'No ratings yet'}</span></div>
+          ${p.coverage ? `<div style="font-size:.72rem;color:#666;margin-top:.1rem;">Covers: ${p.coverage}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',document.querySelectorAll('.nav-tab')[3]);document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">💬 Message</button>
+          <button onclick="addAcceptedToFleet('${p.id}','${p.name || 'Pilot'}','${p.state || ''}')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">+ Fleet</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error('Pilot search:', e); results.innerHTML = '<div class="empty-state"><div class="empty-text">Search failed. Try again.</div></div>'; }
+};
+
+// ── LOAD TEMPLATES ──
+async function loadTemplates() {
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'loadTemplates'), where('carrierId', '==', currentUser.uid)));
+    const btns = document.getElementById('templateBtns');
+    if (!btns) return;
+    if (snap.empty) {
+      btns.innerHTML = '<div style="font-size:.78rem;color:#444;">No templates saved yet</div>';
+      return;
+    }
+    btns.innerHTML = '';
+    snap.forEach(d => {
+      const t = d.data();
+      const btn = document.createElement('button');
+      btn.style.cssText = 'background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);padding:.3rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;';
+      btn.innerHTML = `📋 ${t.name} <span onclick="event.stopPropagation();deleteTemplate('${d.id}')" style="color:#555;margin-left:.2rem;font-size:.8rem;">✕</span>`;
+      btn.onclick = () => loadTemplate(t);
+      btns.appendChild(btn);
+    });
+  } catch(e) { console.error('Load templates:', e); }
+}
+
+window.saveAsTemplate = async () => {
+  const name = prompt('Template name (e.g. "North Canton to Columbus"):');
+  if (!name) return;
+  try {
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await addDoc(collection(db, 'loadTemplates'), {
+      carrierId: currentUser.uid,
+      name: name.trim(),
+      originCity: document.getElementById('pOriginCity').value,
+      originState: document.getElementById('pOriginState').value,
+      destCity: document.getElementById('pDestCity').value,
+      destState: document.getElementById('pDestState').value,
+      width: document.getElementById('pWidth').value,
+      height: document.getElementById('pHeight').value,
+      length: document.getElementById('pLength').value,
+      weight: document.getElementById('pWeight').value,
+      loadType: document.getElementById('pLoadType').value,
+      pilots: document.getElementById('pPilots').value,
+      pay: document.getElementById('pPay').value,
+      miles: document.getElementById('pMiles').value,
+      notes: document.getElementById('pNotes').value,
+      createdAt: serverTimestamp()
+    });
+    showToast('✓ Template saved!');
+    await loadTemplates();
+  } catch(e) { showToast('Could not save template.'); }
+};
+
+function loadTemplate(t) {
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  setVal('pOriginCity', t.originCity);
+  setVal('pOriginState', t.originState);
+  setVal('pDestCity', t.destCity);
+  setVal('pDestState', t.destState);
+  setVal('pWidth', t.width);
+  setVal('pHeight', t.height);
+  setVal('pLength', t.length);
+  setVal('pWeight', t.weight);
+  setVal('pLoadType', t.loadType);
+  setVal('pPilots', t.pilots);
+  setVal('pPay', t.pay);
+  setVal('pMiles', t.miles);
+  setVal('pNotes', t.notes);
+  showToast('✓ Template loaded!');
+}
+
+window.deleteTemplate = async (docId) => {
+  try {
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(db, 'loadTemplates', docId));
+    showToast('Template deleted');
+    await loadTemplates();
+  } catch(e) { showToast('Could not delete template.'); }
+};
+
+// Fleet First toggle
+let fleetFirstEnabled = false;
+// ── BULK LOAD UPLOAD ──
+// ── DOT PERMIT CHECKER ──
+window.checkDOTPermits = () => {
+  const widthStr = document.getElementById('dotWidth')?.value || '';
+  const heightStr = document.getElementById('dotHeight')?.value || '';
+  const weightStr = document.getElementById('dotWeight')?.value || '';
+  const result = document.getElementById('dotResult');
+
+  // Parse dimensions
+  const parseInches = str => {
+    const match = str.match(/(\d+)['']?\s*(\d+)?/);
+    if (!match) return 0;
+    return (parseInt(match[1]) * 12) + (parseInt(match[2]) || 0);
+  };
+
+  const widthIn = parseInches(widthStr);
+  const heightIn = parseInches(heightStr);
+  const weight = parseInt(weightStr.replace(/,/g, '')) || 0;
+
+  const widthFt = widthIn / 12;
+  const heightFt = heightIn / 12;
+
+  const alerts = [];
+  const requirements = [];
+
+  // Standard legal limits
+  if (widthIn > 96) { // 8 feet
+    requirements.push({ icon: '📋', text: 'Overwidth Permit Required', detail: `Load is ${widthFt.toFixed(1)} ft wide — legal limit is 8 ft`, severity: 'warning' });
+  }
+  if (widthIn >= 144) { // 12 feet
+    requirements.push({ icon: '🚩', text: 'Pilot Car(s) Required', detail: 'Width 12 ft or more requires pilot car escort in most states', severity: 'required' });
+    alerts.push('Pilot car escort required');
+  }
+  if (widthIn >= 168) { // 14 feet
+    requirements.push({ icon: '🚩🚩', text: 'Front AND Rear Pilot Cars', detail: 'Width 14 ft or more typically requires front and rear escorts', severity: 'required' });
+  }
+  if (widthIn >= 192) { // 16 feet
+    requirements.push({ icon: '⛔', text: 'Special Route Survey May Be Required', detail: 'Loads 16 ft+ may require route survey and special authorization', severity: 'danger' });
+  }
+  if (heightIn > 162) { // 13.5 feet
+    requirements.push({ icon: '📋', text: 'Overheight Permit Required', detail: `Load is ${heightFt.toFixed(1)} ft tall — legal limit is 13.5 ft`, severity: 'warning' });
+  }
+  if (heightIn >= 180) { // 15 feet
+    requirements.push({ icon: '🚩', text: 'Height Pole Required', detail: 'Heights 15 ft+ require height pole on pilot car in most states', severity: 'required' });
+  }
+  if (heightIn >= 192) { // 16 feet
+    requirements.push({ icon: '⛔', text: 'Utility Coordination Required', detail: 'Heights 16 ft+ may require utility line raises and advance coordination', severity: 'danger' });
+  }
+  if (weight > 80000) {
+    requirements.push({ icon: '📋', text: 'Overweight Permit Required', detail: `Load is ${weight.toLocaleString()} lbs — legal limit is 80,000 lbs`, severity: 'warning' });
+  }
+  if (weight > 105000) {
+    requirements.push({ icon: '🚩', text: 'Engineering Analysis May Be Required', detail: 'Loads over 105,000 lbs may require bridge engineering analysis', severity: 'required' });
+  }
+
+  if (!requirements.length && (widthIn > 0 || heightIn > 0)) {
+    result.style.display = 'block';
+    result.innerHTML = '<div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:.75rem 1rem;font-size:.82rem;color:var(--green);">✅ Load appears to be within standard legal limits — no special permits required</div>';
+    return;
+  }
+
+  if (!requirements.length) {
+    result.style.display = 'none';
+    return;
+  }
+
+  const colorMap = { warning: 'rgba(245,196,0,0.08)', required: 'rgba(251,146,60,0.08)', danger: 'rgba(248,113,113,0.08)' };
+  const borderMap = { warning: 'rgba(245,196,0,0.25)', required: 'rgba(251,146,60,0.25)', danger: 'rgba(248,113,113,0.25)' };
+  const textMap = { warning: 'var(--yellow)', required: 'var(--orange)', danger: 'var(--red)' };
+
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.6rem;font-weight:600;">Permit Requirements</div>
+    ${requirements.map(r => `
+      <div style="background:${colorMap[r.severity]};border:1px solid ${borderMap[r.severity]};border-radius:6px;padding:.65rem .9rem;margin-bottom:.4rem;">
+        <div style="font-size:.82rem;font-weight:600;color:${textMap[r.severity]};margin-bottom:.15rem;">${r.icon} ${r.text}</div>
+        <div style="font-size:.72rem;color:#888;">${r.detail}</div>
+      </div>`).join('')}
+    <div style="font-size:.68rem;color:#444;margin-top:.5rem;">Note: Requirements vary by state. Always verify with your state DOT before moving.</div>`;
+};
+
+window.downloadBulkTemplate = () => {
+  const csv = 'from,fromSt,to,toSt,width,height,length,weight,loadType,pilots,pay,miles,date,notes\nNorth Canton,OH,Columbus,OH,14ft,14.5ft,,,Wide Load,1,550,190,2026-05-01,Call ahead for gate code\nHouston,TX,Oklahoma City,OK,16ft,14ft,,,Oversize,2,620,450,2026-05-02,';
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'loadleader-bulk-template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+window.handleBulkUpload = async (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('bulkFileName').textContent = file.name;
+  const text = await file.text();
+  const lines = text.trim().split('
+');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+  const loads = lines.slice(1).filter(l => l.trim()).map(line => {
+    const vals = line.split(',').map(v => v.trim().replace(/"/g,''));
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = vals[i] || '');
+    return obj;
+  });
+
+  if (!loads.length) {
+    document.getElementById('bulkUploadResult').style.cssText = 'display:block;color:var(--red);';
+    document.getElementById('bulkUploadResult').textContent = 'No loads found in CSV file.';
+    return;
+  }
+
+  const result = document.getElementById('bulkUploadResult');
+  result.style.cssText = 'display:block;color:var(--muted);';
+  result.textContent = `Found ${loads.length} loads. Uploading...`;
+
+  try {
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    let posted = 0;
+    for (const l of loads) {
+      if (!l.from || !l.to) continue;
+      await addDoc(collection(db, 'loads'), {
+        carrierId: currentUser.uid,
+        carrierName: userProfile?.company || userProfile?.firstName || 'Carrier',
+        from: l.from, fromSt: l.fromSt,
+        to: l.to, toSt: l.toSt,
+        width: l.width, height: l.height, length: l.length, weight: l.weight,
+        type: l.loadType || 'Oversize',
+        pilots: parseInt(l.pilots) || 1,
+        pay: parseFloat(l.pay) || 0,
+        miles: l.miles,
+        date: l.date,
+        notes: l.notes,
+        status: 'active',
+        fleetFirst: false,
+        fleetFirstExpiry: null,
+        postedAt: serverTimestamp()
+      });
+      posted++;
+    }
+    result.style.cssText = 'display:block;color:var(--green);background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:5px;padding:.5rem .75rem;';
+    result.textContent = '✓ ' + posted + ' loads posted successfully!';
+    input.value = '';
+    document.getElementById('bulkFileName').textContent = 'No file chosen';
+    setTimeout(() => showPanel('myloads', document.querySelectorAll('.nav-tab')[1]), 2000);
+  } catch(e) {
+    result.style.cssText = 'display:block;color:var(--red);';
+    result.textContent = 'Upload failed: ' + e.message;
+  }
+};
+
+window.toggleFleetFirst = () => {
+  fleetFirstEnabled = !fleetFirstEnabled;
+  document.getElementById('pFleetFirst').value = String(fleetFirstEnabled);
+  document.getElementById('fleetToggle').style.background = fleetFirstEnabled ? 'var(--yellow)' : '#2a2a2a';
+  document.getElementById('fleetToggleKnob').style.transform = fleetFirstEnabled ? 'translateX(20px)' : 'translateX(0)';
+  document.getElementById('fleetToggleKnob').style.background = fleetFirstEnabled ? 'var(--black)' : '#666';
+  document.getElementById('fleetFirstInfo').style.display = fleetFirstEnabled ? 'block' : 'none';
+};
+
+// Fleet management
+async function loadFleet() {
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'fleet'), where('carrierId', '==', currentUser.uid)));
+    const fleetList = document.getElementById('fleetList');
+    if (!fleetList) return;
+    if (snap.empty) {
+      fleetList.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-text">Your fleet is empty</div><div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">Add trusted pilots after working with them</div></div>';
+      return;
+    }
+    fleetList.innerHTML = '';
+    snap.forEach(d => {
+      const p = d.data();
+      const initials = (p.pilotName || 'P').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;';
+      card.innerHTML = `
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--black);flex-shrink:0;">${initials}</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;font-size:.9rem;">${p.pilotName}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${p.pilotState || ''} · Added to fleet</div>
+        </div>
+        <div style="display:flex;gap:.4rem;">
+          <button onclick="messageFleetPilot('${p.pilotId}','${p.pilotName}')" style="background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.35rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">💬 Message</button>
+          <button onclick="removeFromFleet('${d.id}')" style="background:transparent;border:1px solid rgba(248,113,113,.2);color:var(--red);padding:.35rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">Remove</button>
+        </div>`;
+      fleetList.appendChild(card);
+    });
+  } catch(e) { console.error('Load fleet:', e); }
+}
+
+// Filter applications
+window.filterApplications = () => {
+  const status = document.getElementById('appFilterStatus')?.value || 'all';
+  const search = (document.getElementById('appFilterSearch')?.value || '').toLowerCase();
+  const state = document.getElementById('appFilterState')?.value || '';
+  const loadFilter = document.getElementById('appFilterLoad')?.value || 'all';
+
+  const filtered = allApplications.filter(a => {
+    if (status !== 'all' && a.status !== status) return false;
+    if (search && !(a.pilotName || '').toLowerCase().includes(search)) return false;
+    if (state && a.pilotState !== state) return false;
+    if (loadFilter !== 'all' && a.loadId !== loadFilter) return false;
+    return true;
+  });
+  renderApplications(filtered);
+  const countEl = document.getElementById('appCount');
+  if (countEl) countEl.textContent = filtered.filter(a => a.status === 'pending').length;
+};
+
+window.searchAndAddPilot = async () => {
+  const query = document.getElementById('fleetSearchInput').value.trim();
+  if (!query) { alert('Enter a pilot name or email to search'); return; }
+  try {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'users'));
+    const results = [];
+    snap.forEach(d => {
+      if (d.id === currentUser.uid) return;
+      const data = d.data();
+      if (data.accountType === 'carrier') return;
+      const name = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+      if (name.toLowerCase().includes(query.toLowerCase()) || (data.email||'').toLowerCase().includes(query.toLowerCase())) {
+        results.push({ id: d.id, name, state: data.state, email: data.email });
+      }
+    });
+    if (!results.length) { alert('No pilots found with that name or email'); return; }
+    const pilot = results[0];
+    await addToFleet(pilot.id, pilot.name, pilot.state);
+  } catch(e) { console.error(e); alert('Search failed. Try again.'); }
+};
+
+async function addToFleet(pilotId, pilotName, pilotState) {
+  try {
+    const { collection, addDoc, getDocs, query, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    // Check not already in fleet
+    const existing = await getDocs(query(collection(db, 'fleet'), where('carrierId','==',currentUser.uid), where('pilotId','==',pilotId)));
+    if (!existing.empty) { showToast(pilotName + ' is already in your fleet'); return; }
+    await addDoc(collection(db, 'fleet'), {
+      carrierId: currentUser.uid,
+      pilotId,
+      pilotName,
+      pilotState: pilotState || '',
+      addedAt: serverTimestamp()
+    });
+    showToast('✓ ' + pilotName + ' added to fleet!');
+    document.getElementById('fleetSearchInput').value = '';
+    await loadFleet();
+  } catch(e) { console.error(e); showToast('Could not add to fleet. Try again.'); }
+}
+
+window.removeFromFleet = async (docId) => {
+  if (!confirm('Remove this pilot from your fleet?')) return;
+  try {
+    const { doc: fsDoc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(fsDoc(db, 'fleet', docId));
+    showToast('Pilot removed from fleet');
+    await loadFleet();
+  } catch(e) { showToast('Could not remove. Try again.'); }
+};
+
+window.messageFleetPilot = async (pilotId, pilotName) => {
+  cSelectedRecipient = { id: pilotId, name: pilotName };
+  document.getElementById('cNewMsgText').value = '';
+  document.getElementById('cNewMsgSearch').value = pilotName;
+  document.getElementById('cSearchResults').innerHTML = '';
+  document.getElementById('cNewMsgModal').style.display = 'flex';
+  document.getElementById('cNewMsgText').focus();
+};
+
+// Add to fleet button on accepted pilots
+window.addAcceptedToFleet = async (pilotId, pilotName, pilotState) => {
+  await addToFleet(pilotId, pilotName, pilotState);
+};
+
+window.saveCarrierNotifPrefs = async () => {
+  if (!currentUser) return;
+  const prefs = {
+    notif_application: document.getElementById('cNotif_application')?.checked !== false,
+    notif_delivery: document.getElementById('cNotif_delivery')?.checked !== false,
+    notif_message: document.getElementById('cNotif_message')?.checked !== false,
+  };
+  try {
+    const { doc: fsDoc, setDoc: fsSet } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await fsSet(fsDoc(db, 'users', currentUser.uid), { carrierNotifPrefs: prefs }, { merge: true });
+    const msg = document.getElementById('cNotifSaveMsg');
+    msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;';
+    msg.textContent = '✓ Notification preferences saved!';
+    setTimeout(() => msg.style.display = 'none', 3000);
+  } catch(e) { console.error(e); }
 };
 
 window.saveCarrierProfile = async () => {
@@ -793,6 +1876,178 @@ window.saveCarrierProfile = async () => {
   } catch(e) { showToast('Error saving profile.'); }
 };
 
+// ── CARRIER MESSAGING ──
+let cActiveConvId = null;
+let cConvUnsubscribe = null;
+let cSelectedRecipient = null;
+
+async function loadCarrierConversations() {
+  if (!currentUser) return;
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid)));
+    const convList = document.getElementById('cConvList');
+    if (!convList) return;
+    if (snap.empty) {
+      convList.innerHTML = '<div class="empty-state" style="padding:2rem 1rem;"><div class="empty-icon">💬</div><div class="empty-text" style="font-size:.82rem;">No conversations yet</div></div>';
+      return;
+    }
+    const convs = [];
+    snap.forEach(d => convs.push({ id: d.id, ...d.data() }));
+    convs.sort((a, b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
+    convList.innerHTML = convs.map(c => {
+      const otherId = c.participants.find(p => p !== currentUser.uid);
+      const otherName = c.participantNames?.[otherId] || 'Pilot';
+      const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+      const hasUnread = c.unread?.[currentUser.uid] > 0;
+      return `<div class="conv-item ${cActiveConvId === c.id ? 'active' : ''}" onclick="openCarrierConversation('${c.id}','${otherId}','${otherName}')">
+        <div class="conv-av">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="conv-name">${otherName}</div>
+          <div class="conv-preview">${c.lastMessage || 'No messages yet'}</div>
+        </div>
+        ${hasUnread ? '<div class="conv-unread-dot" style="width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;"></div>' : ''}
+      </div>`;
+    }).join('');
+
+    // Update unread badge
+    const unreadCount = convs.filter(c => c.unread?.[currentUser.uid] > 0).length;
+    const dot = document.getElementById('msgTabDot');
+    if (dot) dot.style.display = unreadCount > 0 ? 'block' : 'none';
+  } catch(e) { console.error('Load carrier conversations:', e); }
+}
+
+window.openCarrierConversation = async (convId, otherId, otherName) => {
+  cActiveConvId = convId;
+  const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('cChatAvatar').textContent = initials;
+  document.getElementById('cChatName').textContent = otherName;
+  document.getElementById('cChatSub').textContent = 'Direct message';
+  document.getElementById('cMsgInput').focus();
+
+  try {
+    const { collection, query, where, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    if (cConvUnsubscribe) cConvUnsubscribe();
+    cConvUnsubscribe = onSnapshot(
+      query(collection(db, 'messages'), where('conversationId', '==', convId)),
+      (snap) => {
+        const msgs = [];
+        snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
+        msgs.sort((a, b) => (a.sentAt?.toMillis?.() || 0) - (b.sentAt?.toMillis?.() || 0));
+        const container = document.getElementById('cChatMessages');
+        if (!msgs.length) {
+          container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Start the conversation!</div>';
+          return;
+        }
+        container.innerHTML = msgs.map(m => {
+          const isMine = m.senderId === currentUser.uid;
+          return `<div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
+            <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${m.text}</div>
+            <div style="font-size:.62rem;color:#444;margin-top:.2rem;${isMine ? 'text-align:right' : ''}">${m.sentAt ? new Date(m.sentAt.toMillis()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}</div>
+          </div>`;
+        }).join('');
+        container.scrollTop = container.scrollHeight;
+      }
+    );
+  } catch(e) { console.error('Open carrier conversation:', e); }
+};
+
+window.sendCarrierMessage = async () => {
+  if (!cActiveConvId) return;
+  const input = document.getElementById('cMsgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    const { collection, addDoc, updateDoc, doc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await addDoc(collection(db, 'messages'), {
+      conversationId: cActiveConvId,
+      senderId: currentUser.uid,
+      text,
+      sentAt: serverTimestamp(),
+      read: false
+    });
+    await updateDoc(doc(db, 'conversations', cActiveConvId), {
+      lastMessage: text,
+      lastMessageAt: serverTimestamp()
+    });
+  } catch(e) { console.error('Send carrier message:', e); }
+};
+
+window.showCarrierNewMsgModal = () => {
+  cSelectedRecipient = null;
+  document.getElementById('cNewMsgSearch').value = '';
+  document.getElementById('cNewMsgText').value = '';
+  document.getElementById('cSearchResults').innerHTML = '';
+  document.getElementById('cNewMsgModal').style.display = 'flex';
+  document.getElementById('cNewMsgSearch').focus();
+};
+
+window.searchCarrierUsers = async (q) => {
+  if (!q || q.length < 2) { document.getElementById('cSearchResults').innerHTML = ''; return; }
+  try {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'users'));
+    const results = [];
+    snap.forEach(d => {
+      if (d.id === currentUser.uid) return;
+      const data = d.data();
+      const name = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+      if (name.toLowerCase().includes(q.toLowerCase()) || (data.email||'').toLowerCase().includes(q.toLowerCase())) {
+        results.push({ id: d.id, name, type: data.accountType });
+      }
+    });
+    document.getElementById('cSearchResults').innerHTML = results.slice(0,5).map(u => `
+      <div onclick="cSelectRecipient('${u.id}','${u.name}')" style="display:flex;align-items:center;gap:.75rem;padding:.75rem;cursor:pointer;border-radius:6px;transition:background .2s;" onmouseover="this.style.background='var(--mid)'" onmouseout="this.style.background='transparent'">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.82rem;color:var(--black);">${u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+        <div><div style="font-size:.85rem;font-weight:500;">${u.name}</div><div style="font-size:.72rem;color:var(--muted);">${u.type || 'User'}</div></div>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
+};
+
+window.cSelectRecipient = (id, name) => {
+  cSelectedRecipient = { id, name };
+  document.getElementById('cNewMsgSearch').value = name;
+  document.getElementById('cSearchResults').innerHTML = '';
+};
+
+window.startCarrierConversation = async () => {
+  if (!cSelectedRecipient) { alert('Please select a recipient'); return; }
+  const text = document.getElementById('cNewMsgText').value.trim();
+  if (!text) { alert('Please write a message'); return; }
+  try {
+    const { collection, addDoc, getDocs, query, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const myName = userProfile ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() : 'Carrier';
+    const existing = await getDocs(query(collection(db, 'conversations'), where('participants', 'array-contains', currentUser.uid)));
+    let convId = null;
+    existing.forEach(d => { if (d.data().participants.includes(cSelectedRecipient.id)) convId = d.id; });
+    if (!convId) {
+      const conv = await addDoc(collection(db, 'conversations'), {
+        participants: [currentUser.uid, cSelectedRecipient.id],
+        participantNames: { [currentUser.uid]: myName, [cSelectedRecipient.id]: cSelectedRecipient.name },
+        lastMessage: text,
+        lastMessageAt: serverTimestamp(),
+        createdAt: serverTimestamp()
+      });
+      convId = conv.id;
+    }
+    await addDoc(collection(db, 'messages'), {
+      conversationId: convId,
+      senderId: currentUser.uid,
+      text,
+      sentAt: serverTimestamp(),
+      read: false
+    });
+    document.getElementById('cNewMsgModal').style.display = 'none';
+    showPanel('messages', document.querySelectorAll('.nav-tab')[3]);
+    await loadCarrierConversations();
+    openCarrierConversation(convId, cSelectedRecipient.id, cSelectedRecipient.name);
+  } catch(e) { console.error('Start carrier conversation:', e); alert('Could not send message. Try again.'); }
+};
+
+// Load conversations when messages tab is opened
+const origShowPanel = window.showPanel;
+
 window.toggleCarrierNotif = () => {
   const panel = document.getElementById('cNotifPanel');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -802,6 +2057,122 @@ document.addEventListener('click', (e) => {
   const panel = document.getElementById('cNotifPanel');
   if (btn && panel && !btn.contains(e.target)) panel.style.display = 'none';
 });
+
+// ── PERMIT UPLOAD ──
+let currentPermitLoadId = null;
+let pendingPermitFiles = [];
+
+window.openPermitUpload = async (loadId, route) => {
+  currentPermitLoadId = loadId;
+  pendingPermitFiles = [];
+  document.getElementById('permitLoadTitle').textContent = route;
+  document.getElementById('permitFileInput').value = '';
+  document.getElementById('permitFileList').innerHTML = '';
+  document.getElementById('permitUploadBtn').style.display = 'none';
+  document.getElementById('permitUploadMsg').style.display = 'none';
+
+  // Load existing permits
+  const existingDiv = document.getElementById('existingPermits');
+  existingDiv.innerHTML = '<div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">Loading existing permits...</div>';
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(db, 'permits'), where('loadId', '==', loadId)));
+    if (snap.empty) {
+      existingDiv.innerHTML = '<div style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem;">No permits uploaded yet</div>';
+    } else {
+      existingDiv.innerHTML = '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.5rem;font-weight:600;">Uploaded Permits</div>' +
+        snap.docs.map(d => {
+          const p = d.data();
+          return `<div style="display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;">
+            <span style="font-size:1rem;">📄</span>
+            <div style="flex:1;font-size:.82rem;">${p.fileName}</div>
+            <span style="font-size:.68rem;color:var(--green);">✓ Uploaded</span>
+          </div>`;
+        }).join('') + '<div style="height:.5rem;"></div>';
+    }
+  } catch(e) { existingDiv.innerHTML = ''; }
+
+  document.getElementById('permitModal').style.display = 'flex';
+};
+
+window.handlePermitFiles = (input) => {
+  const files = Array.from(input.files);
+  pendingPermitFiles = [...pendingPermitFiles, ...files];
+  const list = document.getElementById('permitFileList');
+  list.innerHTML = pendingPermitFiles.map((f, i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;background:var(--mid);border-radius:6px;">
+      <span>📄</span>
+      <div style="flex:1;font-size:.82rem;">${f.name}</div>
+      <span style="font-size:.72rem;color:var(--muted);">${(f.size/1024).toFixed(0)}KB</span>
+      <button onclick="removePendingPermit(${i})" style="background:none;border:none;color:#555;cursor:pointer;font-size:.9rem;">✕</button>
+    </div>`).join('');
+  document.getElementById('permitUploadBtn').style.display = pendingPermitFiles.length > 0 ? 'block' : 'none';
+};
+
+window.removePendingPermit = (index) => {
+  pendingPermitFiles.splice(index, 1);
+  const list = document.getElementById('permitFileList');
+  list.innerHTML = pendingPermitFiles.map((f, i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;background:var(--mid);border-radius:6px;">
+      <span>📄</span>
+      <div style="flex:1;font-size:.82rem;">${f.name}</div>
+      <span style="font-size:.72rem;color:var(--muted);">${(f.size/1024).toFixed(0)}KB</span>
+      <button onclick="removePendingPermit(${i})" style="background:none;border:none;color:#555;cursor:pointer;font-size:.9rem;">✕</button>
+    </div>`).join('');
+  document.getElementById('permitUploadBtn').style.display = pendingPermitFiles.length > 0 ? 'block' : 'none';
+};
+
+window.uploadPermits = async () => {
+  if (!pendingPermitFiles.length || !currentPermitLoadId) return;
+  const btn = document.getElementById('permitUploadBtn');
+  const msg = document.getElementById('permitUploadMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Uploading...';
+
+  try {
+    const { collection, addDoc, serverTimestamp, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    for (const file of pendingPermitFiles) {
+      // Convert file to base64 for Firestore storage (for small files)
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+
+      await addDoc(collection(db, 'permits'), {
+        loadId: currentPermitLoadId,
+        carrierId: currentUser.uid,
+        fileName: file.name,
+        fileType: file.type,
+        fileData: base64,
+        fileSize: file.size,
+        uploadedAt: serverTimestamp()
+      });
+    }
+
+    // Update load to show permits are ready
+    await updateDoc(doc(db, 'loads', currentPermitLoadId), {
+      permitsUploaded: true,
+      permitsCount: pendingPermitFiles.length
+    });
+
+    msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;';
+    msg.textContent = `✓ ${pendingPermitFiles.length} permit${pendingPermitFiles.length !== 1 ? 's' : ''} uploaded! Accepted pilots can now view them.`;
+    btn.innerHTML = '📤 Upload Permits';
+    btn.disabled = false;
+    pendingPermitFiles = [];
+    document.getElementById('permitFileList').innerHTML = '';
+    document.getElementById('permitUploadBtn').style.display = 'none';
+    await openPermitUpload(currentPermitLoadId, document.getElementById('permitLoadTitle').textContent);
+  } catch(e) {
+    console.error('Permit upload error:', e);
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;';
+    msg.textContent = 'Upload failed. Files may be too large — try PDFs under 500KB.';
+    btn.innerHTML = '📤 Upload Permits';
+    btn.disabled = false;
+  }
+};
 
 window.deleteLoad = async (loadId) => {
   if (!confirm('Are you sure you want to delete this load? This cannot be undone.')) return;
@@ -816,7 +2187,50 @@ window.deleteLoad = async (loadId) => {
   }
 };
 
+// Carrier review system
+let carrierReviewRating = 0;
+
+window.setCarrierRating = (n) => {
+  carrierReviewRating = n;
+  document.querySelectorAll('#carrierStarPicker span').forEach((s, i) => {
+    s.style.color = i < n ? '#f5c400' : '#2a2a2a';
+  });
+};
+
+window.openCarrierReview = (pilotId, loadId) => {
+  carrierReviewRating = 0;
+  document.querySelectorAll('#carrierStarPicker span').forEach(s => s.style.color = '#2a2a2a');
+  document.getElementById('carrierReviewText').value = '';
+  document.getElementById('carrierReviewTargetId').value = pilotId;
+  document.getElementById('carrierReviewLoadId').value = loadId;
+  document.getElementById('carrierReviewModal').style.display = 'flex';
+};
+
+window.submitCarrierReview = async () => {
+  if (carrierReviewRating === 0) { alert('Please select a rating'); return; }
+  const targetId = document.getElementById('carrierReviewTargetId').value;
+  const loadId = document.getElementById('carrierReviewLoadId').value;
+  const text = document.getElementById('carrierReviewText').value.trim();
+  try {
+    const { collection: col, addDoc: add, serverTimestamp: sts } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await add(col(db, 'reviews'), {
+      targetId,
+      loadId,
+      rating: carrierReviewRating,
+      text,
+      anonymous: true,
+      reviewerType: 'carrier',
+      createdAt: sts()
+    });
+    document.getElementById('carrierReviewModal').style.display = 'none';
+    showToast('✓ Review submitted anonymously!');
+  } catch(e) { showToast('Could not submit review. Try again.'); }
+};
+
 window.showPanel = (name, el) => {
+  if (name === 'fleet') loadFleet();
+  if (name === 'messages') loadCarrierConversations();
+  if (name === 'postload') loadTemplates();
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelectorAll('.nav-tab, .mn-item').forEach(t => t.classList.remove('active'));

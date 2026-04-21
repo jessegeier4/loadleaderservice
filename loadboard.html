@@ -421,8 +421,10 @@ async function fetchLoads() {
           date: data.date || '',
           status: data.status === 'active' ? 'open' : (data.status || 'open'),
           carrier: data.carrierName || 'Carrier',
+          carrierId: data.carrierId || '',
           equipment: data.equipment || '',
-          notes: data.notes || ''
+          notes: data.notes || '',
+          permitsUploaded: data.permitsUploaded || false
         };
       });
       // Update stats
@@ -502,6 +504,7 @@ function renderLoads() {
         <div><div class="cg-label">Pilots</div><div class="cg-val">${l.pilots} needed</div></div>
         <div><div class="cg-label">Type</div><div class="cg-val">${l.type}</div></div>
         <div><div class="cg-label">Date</div><div class="cg-val">${l.date}</div></div>
+        ${l.permitsUploaded ? '<div style="grid-column:1/-1;"><span style="font-size:.68rem;background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,.2);padding:.15rem .55rem;border-radius:100px;font-weight:700;">📄 Permits Ready</span></div>' : ''}
       </div>
       <div class="card-bottom">
         <div><div class="pay-label">Per Pilot</div><div class="pay-amount">$${l.pay.toLocaleString()}</div></div>
@@ -578,6 +581,7 @@ window.openApplyModal=(loadId)=>{
   const firstName=userProfile?.firstName||currentUser.displayName?.split(' ')[0]||'Pilot';
   const lastName=userProfile?.lastName||'';
   const initials=(firstName[0]+(lastName[0]||'')).toUpperCase();
+  const quickMsg = userProfile?.quickApplyMessage || '';
 
   content.innerHTML=`
     <div class="modal-head">
@@ -601,14 +605,14 @@ window.openApplyModal=(loadId)=>{
           <div class="mls-item">Date<strong>${load.date}</strong></div>
           <div class="mls-item">Carrier<strong>${load.carrier}</strong></div>
         </div>
-        <div class="mls-pay">$${load.pay.toLocaleString()} <span style="font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--muted);font-weight:400;letter-spacing:0">per pilot</span></div>
+        <div class="mls-pay">$${load.pay.toLocaleString()} <span style="font-family:sans-serif;font-size:.75rem;color:var(--muted);font-weight:400;letter-spacing:0">per pilot</span></div>
       </div>
       <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.6rem;font-weight:600;">Your Profile — Carrier will see this</div>
       <div class="pilot-preview">
         <div class="pp-avatar">${initials}</div>
         <div>
           <div class="pp-name">${firstName} ${lastName}</div>
-          <div style="color:var(--yellow);font-size:.8rem;">★★★★★ <span style="color:var(--muted)">4.9 · 38 jobs</span></div>
+          <div style="color:var(--yellow);font-size:.8rem;" id="pilotRatingDisplay">★☆☆☆☆ <span style="color:var(--muted)">No ratings yet</span></div>
           <div class="pp-meta">${userProfile?.state||'Location not set'} · Pilot Car Driver</div>
           <div class="pp-badges">
             <span class="pp-badge">✓ Certified</span>
@@ -626,13 +630,14 @@ window.openApplyModal=(loadId)=>{
       </div>
       <div class="modal-form-group">
         <label class="modal-label">Message to Carrier <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type..."></textarea>
+        <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type...">${quickMsg}</textarea>
       </div>
       <div class="check-row">
         <input type="checkbox" id="confirmAvail" checked>
         <label for="confirmAvail">I confirm I am available on <strong>${load.date}</strong> and meet all requirements for this load</label>
       </div>
       <div id="applyMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
+      ${quickMsg ? `<div style="font-size:.72rem;color:var(--yellow);margin-bottom:.5rem;cursor:pointer;" onclick="document.getElementById('applyMessage').value=this.dataset.msg" data-msg="${quickMsg.replace(/"/g,'&quot;')}">⚡ Quick Apply message loaded — tap to reset</div>` : ''}
       <button class="modal-submit" id="applySubmitBtn" onclick="submitApplication('${load.id}')">🚩 Submit Application</button>
       <div class="modal-note">📞 Your phone number is only shared with the carrier if they accept you.</div>
     </div>`;
@@ -658,8 +663,8 @@ window.submitApplication=async(loadId)=>{
       pilotName:`${firstName} ${lastName}`.trim(),
       pilotEmail:currentUser.email,
       pilotPhone:userProfile?.phone||'',
-      pilotRating:4.9,
-      pilotJobs:38,
+      pilotRating: 0,
+      pilotJobs: 0,
       pilotState:userProfile?.state||'',
       message:document.getElementById('applyMessage').value.trim(),
       availFrom:document.getElementById('availFrom').value,
@@ -672,21 +677,19 @@ window.submitApplication=async(loadId)=>{
       appliedAt:serverTimestamp()
     });
 
-    // Email notification
-    try{
-      await fetch('https://load-leader.onrender.com/api/notify',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          type:'application',
-          pilotName:`${firstName} ${lastName}`.trim(),
-          pilotEmail:currentUser.email,
-          loadId,carrier:load.carrier,
-          route:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
-          pay:load.pay,date:load.date,
-          message:document.getElementById('applyMessage').value.trim()
-        })
-      });
-    }catch(e){console.log('Email notify:',e);}
+    // Email notification — silent fail so it never blocks the application
+    fetch('https://load-leader.onrender.com/api/notify',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        type:'application',
+        pilotName:`${firstName} ${lastName}`.trim(),
+        pilotEmail:currentUser.email,
+        loadId,carrier:load.carrier,
+        route:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
+        pay:load.pay,date:load.date,
+        message:document.getElementById('applyMessage').value.trim()
+      })
+    }).catch(()=>{});
 
     appliedLoads.add(loadId);
     document.getElementById('applyModalContent').innerHTML=`
@@ -695,15 +698,18 @@ window.submitApplication=async(loadId)=>{
         <div class="success-state">
           <div class="success-icon">🎉</div>
           <div class="success-title">Application <span>Submitted!</span></div>
-          <div class="success-desc">Your application for <strong>${load.from} → ${load.to}</strong> has been sent to <strong>${load.carrier}</strong>.<br><br>If accepted, you'll receive an email notification and their phone number will appear in your dashboard.</div>
+          <div class="success-desc">Your application for <strong>${load.from} → ${load.to}</strong> has been sent to <strong>${load.carrier}</strong>.<br><br>If accepted, you will receive an email notification and their phone number will appear in your dashboard.</div>
           <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--green);line-height:1.8;text-align:left;">
             ✅ Application saved to your dashboard<br>
             📧 ${load.carrier} has been notified by email<br>
-            🔔 You'll be notified when they respond
+            🔔 We will notify you when they respond
           </div>
           <div class="success-actions">
             <a href="dashboard.html" class="success-btn" style="background:var(--yellow);color:var(--black);">View My Applications</a>
             <button class="success-btn" style="background:transparent;border:1px solid #2a2a2a;color:var(--white);" onclick="closeApplyModal()">Browse More Loads</button>
+          </div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #1a1a1a;text-align:center;">
+            <button onclick="followCarrierFromModal(this)" data-id="${load.carrierId}" data-name="${load.carrier}" style="background:transparent;border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.5rem 1.1rem;border-radius:6px;font-family:sans-serif;font-size:.78rem;cursor:pointer;">👥 Follow ${load.carrier} for future loads</button>
           </div>
         </div>
       </div>`;
@@ -716,6 +722,26 @@ window.submitApplication=async(loadId)=>{
 };
 
 document.getElementById('applyModal').addEventListener('click',function(e){if(e.target===this)closeApplyModal();});
+
+window.followCarrierFromModal = async (btn) => {
+  const carrierId = btn.dataset.id;
+  const carrierName = btn.dataset.name;
+  if (!currentUser) return;
+  try {
+    const { collection, addDoc, getDocs, query, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    if (!carrierId) { alert('Could not follow — carrier ID not available'); return; }
+    const existing = await getDocs(query(collection(db,'follows'),where('followerId','==',currentUser.uid),where('followingId','==',carrierId)));
+    if (!existing.empty) { alert('You are already following ' + carrierName); return; }
+    await addDoc(collection(db,'follows'),{
+      followerId: currentUser.uid,
+      followingId: carrierId,
+      followingName: carrierName,
+      followingType: 'carrier',
+      createdAt: serverTimestamp()
+    });
+    alert('✓ Now following ' + carrierName + '! You will be notified when they post new loads.');
+  } catch(e) { console.error('Follow carrier:', e); }
+};
 
 
 window.runAISearch=async()=>{
