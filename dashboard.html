@@ -1738,9 +1738,6 @@ if ('serviceWorker' in navigator) {
               <option>Pickup Truck</option><option>SUV</option><option>Dedicated Pilot Car</option><option>Other</option>
             </select>
           </div>
-          <div class="form-group"><label>States You Cover</label>
-            <input type="text" id="pfCoverage" placeholder="e.g. OH, PA, WV, KY, IN">
-          </div>
           <div class="form-group"><label>Equipment</label>
             <input type="text" id="pfEquipment" placeholder="e.g. Height pole, CB radio, flags, lights">
           </div>
@@ -2124,7 +2121,7 @@ onAuthStateChanged(auth, async (user) => {
         if (opt.value === data.state || opt.text === data.state) { opt.selected = true; break; }
       }
     }
-    document.getElementById('pfCoverage').value = data.coverage || '';
+    const pfCovEl = document.getElementById('pfCoverage'); if (pfCovEl) pfCovEl.value = data.coverage || '';
     document.getElementById('pfEquipment').value = data.equipment || '';
     document.getElementById('pfBio').value = data.bio || '';
     const qaEl = document.getElementById('pfQuickApply');
@@ -2374,22 +2371,30 @@ function renderStateCoverageMap(selectedStates = []) {
   map.innerHTML = ALL_STATES.map(s => {
     const code = s.slice(0,2).toUpperCase();
     const isSelected = selectedStates.includes(s) || selectedStates.includes(code);
-    return `<div onclick="toggleState(this,'${s}')" data-state="${s}" style="padding:.4rem .6rem;border-radius:5px;font-size:.72rem;font-weight:500;cursor:pointer;text-align:center;border:1px solid ${isSelected ? 'rgba(255,205,17,.4)' : '#2a2a2a'};background:${isSelected ? 'rgba(255,205,17,0.1)' : 'var(--mid)'};color:${isSelected ? 'var(--yellow)' : '#888'};transition:all .15s;">${s}</div>`;
+    return `<div onclick="toggleState(this,'${s}')" data-state="${s}" data-active="${isSelected ? 'true' : 'false'}" style="padding:.5rem .6rem;border-radius:3px;font-size:.72rem;font-weight:600;cursor:pointer;text-align:center;border:1px solid ${isSelected ? 'var(--border-hot)' : 'var(--border)'};background:${isSelected ? 'var(--accent-glow)' : 'var(--surface)'};color:${isSelected ? 'var(--accent)' : 'var(--text-muted)'};transition:all .15s;user-select:none;">${s}</div>`;
   }).join('');
 }
 
 window.toggleState = (el, state) => {
-  const isActive = el.style.background.includes('245');
-  el.style.background = isActive ? 'var(--mid)' : 'rgba(255,205,17,0.1)';
-  el.style.color = isActive ? '#888' : 'var(--yellow)';
-  el.style.borderColor = isActive ? '#2a2a2a' : 'rgba(255,205,17,.4)';
+  const isActive = el.dataset.active === 'true';
+  if (isActive) {
+    el.dataset.active = 'false';
+    el.style.background = 'var(--surface)';
+    el.style.color = 'var(--text-muted)';
+    el.style.borderColor = 'var(--border)';
+  } else {
+    el.dataset.active = 'true';
+    el.style.background = 'var(--accent-glow)';
+    el.style.color = 'var(--accent)';
+    el.style.borderColor = 'var(--border-hot)';
+  }
 };
 
 window.saveStateCoverage = async () => {
   const user = auth.currentUser;
   if (!user) return;
-  const selected = Array.from(document.querySelectorAll('#stateCoverageMap div'))
-    .filter(el => el.style.background.includes('245'))
+  const selected = Array.from(document.querySelectorAll('#stateCoverageMap div[data-state]'))
+    .filter(el => el.dataset.active === 'true')
     .map(el => el.dataset.state);
   try {
     const { doc: fd, updateDoc: ud } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -2755,7 +2760,7 @@ window.saveEquipment = async () => {
   if (!user) return;
   try {
     await updateDoc(doc(db, 'users', user.uid), {
-      coverage: document.getElementById('pfCoverage').value,
+      coverage: document.getElementById('pfCoverage')?.value || '',
       equipment: document.getElementById('pfEquipment').value,
       bio: document.getElementById('pfBio').value,
       quickApplyMessage: document.getElementById('pfQuickApply')?.value || '',
