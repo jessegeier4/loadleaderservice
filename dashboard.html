@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoadLeader – Pilot Dashboard</title>
+<script>
+  // Set theme IMMEDIATELY before any CSS loads to prevent flash
+  (function() {
+    var saved = localStorage.getItem('ll_theme');
+    if (saved !== 'light' && saved !== 'dark') { saved = 'dark'; localStorage.setItem('ll_theme', 'dark'); }
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -51,12 +59,7 @@
   --font-body: 'Inter', 'DM Sans', sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--color-bg) !important;color:var(--color-text) !important;font-family:var(--font-body) !important;min-height:100vh;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,205,17,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(96,165,250,0.04) 0%, transparent 60%);
-  background-attachment: fixed;
-}
+body{min-height:100vh;}
 
 /* LOADING SCREEN */
 #loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
@@ -325,7 +328,7 @@ select option{background:var(--mid);}
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Theme Tokens ── */
-:root, [data-theme="dark"] {
+html, :root, [data-theme="dark"], html[data-theme="dark"] {
   --bg: #0A0A0A;
   --bg-elevated: #141414;
   --surface: rgba(255,255,255,0.03);
@@ -350,7 +353,7 @@ select option{background:var(--mid);}
   --ambient-2: radial-gradient(ellipse 50% 40% at 85% 90%, rgba(255,205,17,0.03) 0%, transparent 55%);
 }
 
-[data-theme="light"] {
+html[data-theme="light"], [data-theme="light"] {
   --bg: #F5F5F5;
   --bg-elevated: #FFFFFF;
   --surface: #FFFFFF;
@@ -375,19 +378,40 @@ select option{background:var(--mid);}
   --ambient-2: radial-gradient(ellipse 50% 40% at 85% 90%, rgba(255,205,17,0.04) 0%, transparent 55%);
 }
 
-/* ── Smooth theme transitions ── */
-*, *::before, *::after {
+/* ── Smooth theme transitions (excluding body to prevent flash) ── */
+nav, .welcome-banner, .stat-card, .job-card, .profile-card, .form-section,
+.earnings-card, .payout-card, .cert-item, .mobile-nav, .btn-y, .btn-o,
+.save-btn, .job-btn, .nav-tab, #themeToggle, #notifBtn,
+.form-group input, .form-group select, .form-group textarea,
+.msg-bubble, .conv-item, .empty-state, .badge {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* ── Base ── */
+html { background: #0A0A0A; }
+html[data-theme="dark"] { background: #0A0A0A; }
+html[data-theme="light"] { background: #F5F5F5; }
+
 body {
-  background: var(--bg) !important;
-  background-image: var(--ambient-1), var(--ambient-2) !important;
+  background: #0A0A0A !important;
   background-attachment: fixed !important;
-  color: var(--text) !important;
+  color: #F2F2F2 !important;
   font-family: 'Inter', 'DM Sans', system-ui, sans-serif !important;
   min-height: 100vh;
+}
+html[data-theme="dark"] body {
+  background: #0A0A0A !important;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(255,205,17,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(255,205,17,0.03) 0%, transparent 55%) !important;
+  color: #F2F2F2 !important;
+}
+html[data-theme="light"] body {
+  background: #F5F5F5 !important;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(0,0,0,0.02) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(255,205,17,0.04) 0%, transparent 55%) !important;
+  color: #0A0A0A !important;
 }
 
 ::selection { background: var(--accent); color: var(--accent-contrast); }
@@ -1006,6 +1030,43 @@ nav {
 
 @media (max-width: 500px) {
   .stats-row { grid-template-columns: 1fr !important; }
+}
+
+/* ── Light mode accent consistency fixes ── */
+[data-theme="light"] a[style*="var(--yellow)"],
+[data-theme="light"] [style*="color:var(--yellow)"] {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .badge-applied {
+  background: rgba(0,0,0,0.06) !important;
+  border-color: rgba(0,0,0,0.15) !important;
+  color: var(--accent) !important;
+}
+[data-theme="light"] .job-card::before,
+[data-theme="light"] .stat-card::before,
+[data-theme="light"] .welcome-banner::before,
+[data-theme="light"] .profile-card::before {
+  background: var(--gradient-accent) !important;
+}
+[data-theme="light"] .sec-title span {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .welcome-name span {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .ps-val,
+[data-theme="light"] .job-pay {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .welcome-sup {
+  color: var(--accent) !important;
+}
+/* Make "View all →" etc links use accent color in light mode */
+[data-theme="light"] a {
+  color: var(--accent);
+}
+[data-theme="light"] .stat-card.yellow .sc-val {
+  color: var(--accent) !important;
 }
 
 </style>
