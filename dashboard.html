@@ -1123,6 +1123,49 @@ nav {
   color: var(--accent) !important;
   background: var(--accent-glow) !important;
 }
+.cert-delete-btn {
+  background: transparent !important;
+  border: 1px solid rgba(248,113,113,0.25) !important;
+  color: #f87171 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: .7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .5px !important;
+  padding: .45rem .85rem !important;
+  border-radius: 3px !important;
+  cursor: pointer;
+  min-height: 34px;
+  white-space: nowrap;
+  transition: all .2s;
+  margin-left: .4rem !important;
+}
+.cert-delete-btn:hover {
+  background: rgba(248,113,113,0.08) !important;
+  border-color: #f87171 !important;
+}
+.cert-delete-btn {
+  background: transparent !important;
+  border: 1px solid rgba(248,113,113,0.3) !important;
+  color: #f87171 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: .7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .5px !important;
+  padding: .45rem .85rem !important;
+  border-radius: 3px !important;
+  cursor: pointer;
+  transition: all .2s;
+  min-height: 34px;
+  white-space: nowrap;
+  margin-left: .4rem;
+  flex-shrink: 0;
+}
+.cert-delete-btn:hover {
+  background: rgba(248,113,113,0.1) !important;
+  border-color: #f87171 !important;
+}
 .cert-exp {
   font-family: 'Inter', sans-serif !important;
   font-size: .7rem !important;
@@ -1162,6 +1205,11 @@ nav {
   margin-top: .85rem;
   border-radius: 0 0 4px 4px;
 }
+
+/* Hide the drop label instructions since + Add opens file picker directly */
+.cert-drop-label { display: none !important; }
+.cert-drop { padding: 0 !important; border: none !important; }
+.cert-upload-area { background: transparent !important; border: none !important; padding: 0 !important; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1514,12 +1562,12 @@ if ('serviceWorker' in navigator) {
                 <span class="cert-icon">📋</span>
                 <span class="cert-name">Pilot Car Certification</span>
                 <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
-                <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+                <button class="cert-expand-btn" onclick="document.getElementById('file-pilot').click()">+ Add</button>
               </div>
               <span class="cert-exp" id="exp-pilot" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-pilot">
                 <div class="cert-drop" id="drop-pilot">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
+                  <input type="file" id="file-pilot" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)" style="display:none">
                   <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
                 </div>
                 <div class="cert-preview" id="preview-pilot">
@@ -1539,12 +1587,12 @@ if ('serviceWorker' in navigator) {
                 <span class="cert-icon">🚗</span>
                 <span class="cert-name">Driver's License (CDL)</span>
                 <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
-                <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
+                <button class="cert-expand-btn" onclick="document.getElementById('file-license').click()">+ Add</button>
               </div>
               <span class="cert-exp" id="exp-license" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-license">
                 <div class="cert-drop" id="drop-license">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
+                  <input type="file" id="file-license" accept="image/*,.pdf" onchange="handleCertFile('license',this)" style="display:none">
                   <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
                 </div>
                 <div class="cert-preview" id="preview-license">
@@ -1564,12 +1612,12 @@ if ('serviceWorker' in navigator) {
                 <span class="cert-icon">🛡️</span>
                 <span class="cert-name">Liability Insurance</span>
                 <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
-                <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
+                <button class="cert-expand-btn" onclick="document.getElementById('file-insurance').click()">+ Add</button>
               </div>
               <span class="cert-exp" id="exp-insurance" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-insurance">
                 <div class="cert-drop" id="drop-insurance">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
+                  <input type="file" id="file-insurance" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)" style="display:none">
                   <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
                 </div>
                 <div class="cert-preview" id="preview-insurance">
@@ -1589,12 +1637,12 @@ if ('serviceWorker' in navigator) {
                 <span class="cert-icon">🔰</span>
                 <span class="cert-name">OSHA Safety Training</span>
                 <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
-                <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
+                <button class="cert-expand-btn" onclick="document.getElementById('file-osha').click()">+ Add</button>
               </div>
               <span class="cert-exp" id="exp-osha" style="display:none">No expiry added</span>
               <div class="cert-upload-area" id="upload-osha">
                 <div class="cert-drop" id="drop-osha">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
+                  <input type="file" id="file-osha" accept="image/*,.pdf" onchange="handleCertFile('osha',this)" style="display:none">
                   <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
                 </div>
                 <div class="cert-preview" id="preview-osha">
@@ -2739,18 +2787,24 @@ window.toggleCert = (id) => {
 window.handleCertFile = (id, input) => {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { alert('File too large — max 5MB'); return; }
+  if (file.size > 5 * 1024 * 1024) { alert('File too large — max 5MB'); input.value = ''; return; }
+  // Auto-expand the cert item to show preview, expiry date, and save button
+  const item = document.getElementById('cert-' + id);
+  document.querySelectorAll('.cert-item').forEach(i => i.classList.remove('expanded'));
+  document.querySelectorAll('.cert-expand-btn').forEach(b => b.textContent = '+ Add');
+  item.classList.add('expanded');
+  item.querySelector('.cert-expand-btn').textContent = '✕ Close';
   const preview = document.getElementById('preview-' + id);
   const img = document.getElementById('preview-img-' + id);
   if (file.type.startsWith('image/')) {
     const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
+    reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; preview.style.display = 'block'; };
     reader.readAsDataURL(file);
   } else {
     img.src = '';
     preview.style.display = 'block';
     img.style.display = 'none';
-    preview.innerHTML += '<div style="padding:.75rem;background:var(--mid);border-radius:6px;font-size:.8rem;color:#aaa;text-align:center;">📄 ' + file.name + '</div>';
+    preview.innerHTML += '<div style="padding:.75rem;background:var(--surface-hover);border-radius:6px;font-size:.8rem;color:var(--text-muted);text-align:center;">📄 ' + file.name + '</div>';
   }
 };
 
@@ -2866,14 +2920,66 @@ async function loadSavedCerts(data) {
         expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
       }
       if (expandBtn) {
-        expandBtn.textContent = '✓ On file';
-        expandBtn.style.color = 'var(--green)';
-        expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+        expandBtn.textContent = '↻ Replace';
+        expandBtn.style.color = '';
+        expandBtn.style.borderColor = '';
+        // Ensure clicking it opens the file picker to replace
+        expandBtn.setAttribute('onclick', "document.getElementById('file-" + id + "').click()");
+        // Add delete button if not already present
+        const parent = expandBtn.parentNode;
+        if (!parent.querySelector('.cert-delete-btn')) {
+          const delBtn = document.createElement('button');
+          delBtn.className = 'cert-delete-btn';
+          delBtn.textContent = '🗑 Delete';
+          delBtn.onclick = () => deleteCert(id, data['cert_' + id]?.fileUrl);
+          parent.appendChild(delBtn);
+        }
       }
       document.getElementById('cert-' + id)?.classList.add('has-file');
     }
   });
 }
+
+window.deleteCert = async (id, fileUrl) => {
+  if (!confirm('Delete this certificate? This cannot be undone.')) return;
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    const { doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    // Remove from user document
+    await updateDoc(doc(db, 'users', user.uid), { ['cert_' + id]: deleteField() });
+    // Delete file from Storage if it has a URL
+    if (fileUrl) {
+      try {
+        const { getStorage, ref, deleteObject } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+        await deleteObject(ref(getStorage(), fileUrl));
+      } catch(e) { /* file may already be gone */ }
+    }
+    // Reset UI
+    const statusEl = document.getElementById('status-' + id);
+    if (statusEl) { statusEl.textContent = 'Not uploaded'; statusEl.className = 'cert-status cert-missing'; }
+    const expEl = document.getElementById('exp-' + id);
+    if (expEl) expEl.textContent = 'No expiry added';
+    const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+    if (expandBtn) {
+      expandBtn.textContent = '+ Add';
+      expandBtn.style.color = '';
+      expandBtn.style.borderColor = '';
+      expandBtn.setAttribute('onclick', "document.getElementById('file-" + id + "').click()");
+    }
+    const delBtn = document.getElementById('cert-' + id)?.querySelector('.cert-delete-btn');
+    if (delBtn) delBtn.remove();
+    document.getElementById('cert-' + id)?.classList.remove('has-file', 'expanded');
+    const preview = document.getElementById('preview-' + id);
+    if (preview) { preview.style.display = 'none'; preview.innerHTML = '<img id="preview-img-' + id + '" src="" alt="Certificate"><button class="cert-preview-remove" onclick="removeCert(\'' + id + '\')">✕</button>'; }
+    const fileInput = document.getElementById('file-' + id);
+    if (fileInput) fileInput.value = '';
+    showToast('✓ Certificate deleted');
+  } catch(e) {
+    console.error('Delete cert error:', e);
+    alert('Could not delete certificate: ' + e.message);
+  }
+};
 
 // Notification panel toggle moved to regular script
 
