@@ -417,7 +417,7 @@ if ('serviceWorker' in navigator) {
         <div class="form-group"><label>Width</label><input type="text" id="pWidth" placeholder='e.g. 14&apos;0"'></div>
         <div class="form-group"><label>Height</label><input type="text" id="pHeight" placeholder='e.g. 14&apos;6"'></div>
         <div class="form-group"><label>Length</label><input type="text" id="pLength" placeholder='e.g. 120&apos;0"'></div>
-        <div class="form-group"><label>Weight (tons)</label><input type="text" id="pWeight" placeholder="e.g. 23.5"></div>
+        <div class="form-group"><label>Weight (lbs)</label><input type="text" id="pWeight" placeholder="e.g. 47000"></div>
         <div class="form-group"><label>Load Type</label><select id="pType"><option>Oversize</option><option>Overweight</option><option>Wide Load</option><option>Tall Load</option><option>Combination</option></select></div>
       </div>
       <div class="form-group"><label>Equipment / Load Description</label><input type="text" id="pEquipment" placeholder="e.g. CAT 988H Loader"></div>
@@ -425,7 +425,6 @@ if ('serviceWorker' in navigator) {
       <div class="form-section-title" style="margin-top:1.25rem;">🚩 Escort Requirements</div>
       <div class="form-grid">
         <div class="form-group"><label>Pilots Needed</label><select id="pPilots"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div class="form-group"><label>Pay Per Pilot ($)</label><input type="number" id="pPay" placeholder="e.g. 550"></div>
         <div class="form-group"><label>Move Date</label><input type="date" id="pDate" style="color-scheme:dark"></div>
         <div class="form-group"><label>Start Time</label><input type="time" id="pTime" style="color-scheme:dark"></div>
       </div>
@@ -1226,7 +1225,7 @@ window.submitLoad = async () => {
   const destState = document.getElementById('pDestState').value;
   const width = document.getElementById('pWidth').value.trim();
   const height = document.getElementById('pHeight').value.trim();
-  const pay = document.getElementById('pPay').value.trim();
+  const pay = 0;
   const date = document.getElementById('pDate').value;
 
   if (!originCity || !destCity || !originState || !destState) {
@@ -1249,7 +1248,6 @@ window.submitLoad = async () => {
       type: document.getElementById('pType').value,
       equipment: document.getElementById('pEquipment').value,
       pilots: parseInt(document.getElementById('pPilots').value),
-      pay: parseFloat(pay) || 0,
       date, time: document.getElementById('pTime').value,
       notes: document.getElementById('pNotes').value,
       status: 'active',
@@ -1267,7 +1265,7 @@ window.submitLoad = async () => {
     msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
 
     // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pPay','pNotes'].forEach(id => document.getElementById(id).value = '');
+    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pNotes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');
@@ -1672,7 +1670,7 @@ window.saveAsTemplate = async () => {
       weight: document.getElementById('pWeight').value,
       loadType: document.getElementById('pLoadType').value,
       pilots: document.getElementById('pPilots').value,
-      pay: document.getElementById('pPay').value,
+      pay: '',
       miles: document.getElementById('pMiles').value,
       notes: document.getElementById('pNotes').value,
       createdAt: serverTimestamp()
@@ -1694,7 +1692,7 @@ function loadTemplate(t) {
   setVal('pWeight', t.weight);
   setVal('pLoadType', t.loadType);
   setVal('pPilots', t.pilots);
-  setVal('pPay', t.pay);
+  // setVal('pPay', t.pay); // Field removed — pay lives in payStructure now
   setVal('pMiles', t.miles);
   setVal('pNotes', t.notes);
   showToast('✓ Template loaded!');
