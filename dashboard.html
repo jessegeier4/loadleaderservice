@@ -2383,7 +2383,6 @@ window.submitDelivery = async (forceManual) => {
 
     // Generate invoice number
     const invoiceNum = 'LL-INV-' + Date.now().toString().slice(-6);
-    const now = new Date();
 
     // Build invoice data
     const invoiceData = {
