@@ -6,179 +6,164 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoadLeader – The Future of Pilot Car Escorts</title>
-<meta name="description" content="LoadLeader is modernizing the oversize load industry. Connect certified pilot car escorts with carriers moving America's biggest freight.">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<meta name="description" content="LoadLeader is the first load board built for pilot car operators and the carriers who hire them. Real loads, real pay, real time.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f5c400">
+<meta name="theme-color" content="#FFCD11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="LoadLeader">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-:root {
-  --black:#0a0a0a; --yellow:#f5c400; --yellow-dim:#c49a00; --yellow-bg:rgba(245,196,0,0.07);
-  --white:#f0ede6; --gray:#111; --mid:#1e1e1e; --card:#161616;
-  --border:#1e1e1e; --muted:#666; --green:#4ade80;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
-
 /* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3rem;border-bottom:1px solid var(--border);position:fixed;top:0;width:100%;background:rgba(10,10,10,0.92);backdrop-filter:blur(16px);z-index:200;transition:padding .3s;}
-nav.scrolled{padding:.8rem 3rem;border-bottom-color:#222;}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
-.logo span{color:var(--white);}
-.nav-links{display:flex;gap:2.5rem;}
-.nav-links a{color:#888;text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
-.nav-links a:hover{color:var(--white);}
-.nav-right{display:flex;gap:.6rem;align-items:center;}
-.btn-ghost{background:transparent;border:1px solid #333;color:var(--white);padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;}
-.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
-.btn-yellow{background:var(--yellow);color:var(--black);padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .2s;text-decoration:none;border:none;}
-.btn-yellow:hover{background:var(--yellow-dim);}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;border-bottom:1px solid var(--line);position:fixed;top:0;width:100%;background:rgba(10,10,10,0.92);backdrop-filter:blur(16px);z-index:200;transition:padding var(--dur-hover) var(--ease);}
+nav.scrolled{padding:.75rem 3rem;}
+.logo{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:0.10em;color:var(--text);text-decoration:none;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;}
+.logo-sq{width:20px;height:20px;background:var(--accent);display:inline-block;flex-shrink:0;}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;gap:.25rem;}
+.nav-links a{font-family:var(--font-display);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-2);text-decoration:none;padding:8px 12px;transition:color var(--dur-hover) var(--ease);}
+.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;gap:.5rem;align-items:center;}
+.btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);text-decoration:none;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-yellow{background:var(--accent);color:#0A0A0A;padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background var(--dur-hover) var(--ease);text-decoration:none;border:none;}
+.btn-yellow:hover{background:var(--accent-hot);}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 5rem;position:relative;overflow:hidden;}
-.hero-grid-bg{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(245,196,0,0.02) 80px,rgba(245,196,0,0.02) 81px),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(245,196,0,0.02) 80px,rgba(245,196,0,0.02) 81px);}
-.hero-glow-1{position:absolute;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(245,196,0,0.07) 0%,transparent 65%);pointer-events:none;}
-.hero-glow-2{position:absolute;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 65%);pointer-events:none;}
-.hero-content{position:relative;z-index:1;max-width:900px;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);font-size:.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:.4rem 1rem;border-radius:100px;margin-bottom:2rem;animation:fadeUp .6s ease both;}
-.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);animation:blink 1.4s ease infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8rem);line-height:.9;letter-spacing:1px;margin-bottom:2rem;animation:fadeUp .6s .1s ease both;}
-.hero h1 .line1{display:block;color:var(--white);}
-.hero h1 .line2{display:block;color:var(--yellow);}
-.hero h1 .line3{display:block;color:var(--white);opacity:.35;}
-.hero-desc{font-size:1.15rem;color:#888;line-height:1.75;max-width:580px;margin-bottom:3rem;animation:fadeUp .6s .2s ease both;}
-.hero-desc strong{color:#ccc;font-weight:500;}
-.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;animation:fadeUp .6s .3s ease both;}
-.cta-primary{background:var(--yellow);color:var(--black);padding:.9rem 2.25rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;border:none;display:inline-block;}
-.cta-primary:hover{background:var(--yellow-dim);transform:translateY(-2px);}
-.cta-secondary{background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.9rem 2.25rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
-.cta-secondary:hover{border-color:#444;}
-.hero-stats{display:flex;gap:3.5rem;flex-wrap:wrap;padding-top:2.5rem;border-top:1px solid var(--border);animation:fadeUp .6s .4s ease both;}
-.hs-num{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
-.hs-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:.2rem;}
+.hero-dot-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
+.hero-glow{position:absolute;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,205,17,0.06) 0%,transparent 65%);pointer-events:none;}
+.hero-content{position:relative;z-index:1;max-width:960px;}
+.hero-tag{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.hero-tag-line{width:32px;height:1px;background:var(--accent);}
+.hero-eyebrow{font-family:var(--font-display);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);}
+.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(3.5rem,9vw,7.5rem);line-height:.92;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:24px;}
+.hero h1 .line-yellow{color:var(--accent);}
+.hero h1 .line-dim{color:var(--text);opacity:.35;}
+.hero-desc{font-size:1.05rem;color:var(--text-2);line-height:1.7;max-width:560px;margin-bottom:36px;}
+.hero-ctas{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:52px;}
+.cta-primary{background:var(--accent);color:#0A0A0A;padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background var(--dur-hover) var(--ease);text-decoration:none;border:none;display:inline-block;}
+.cta-primary:hover{background:var(--accent-hot);}
+.cta-secondary{background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);text-decoration:none;display:inline-block;}
+.cta-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.hs-item{padding:24px 20px;border-right:1px solid var(--line);}
+.hs-item:last-child{border-right:none;}
+.hs-num{font-family:var(--font-display);font-weight:700;font-size:2rem;color:var(--accent);letter-spacing:0.04em;line-height:1;margin-bottom:6px;}
+.hs-label{font-family:var(--font-display);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-2);}
 
 /* TICKER */
-.ticker-wrap{background:var(--yellow);padding:.6rem 0;overflow:hidden;}
-.ticker{display:flex;animation:ticker 25s linear infinite;white-space:nowrap;}
-.ticker-item{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:var(--black);padding:0 2.5rem;opacity:.7;}
+.ticker-wrap{background:var(--accent);padding:.55rem 0;overflow:hidden;}
+.ticker{display:flex;animation:ticker 28s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:var(--font-display);font-size:.9rem;font-weight:700;letter-spacing:0.15em;color:#0A0A0A;padding:0 2.5rem;opacity:.6;}
 .ticker-item.hl{opacity:1;}
-@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-/* SHARED SECTION STYLES */
+/* SHARED SECTIONS */
 .section-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;}
-.section-eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:2.5px;color:var(--yellow);font-weight:600;margin-bottom:1rem;}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);letter-spacing:1px;line-height:.95;margin-bottom:1.5rem;}
-.section-title span{color:var(--yellow);}
+.section-eyebrow{font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:12px;}
+.section-title{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.5rem);font-weight:700;letter-spacing:0.04em;text-transform:uppercase;line-height:.95;margin-bottom:1.25rem;}
+.section-title span{color:var(--accent);}
 
 /* INDUSTRY */
-.industry-section{padding:7rem 3rem;position:relative;overflow:hidden;}
+.industry-section{padding:7rem 3rem;border-top:1px solid var(--line);}
 .industry-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
 @media(max-width:800px){.industry-grid{grid-template-columns:1fr;gap:3rem;}}
-.section-body{font-size:1rem;color:#777;line-height:1.85;max-width:640px;}
-.section-body strong{color:#aaa;font-weight:500;}
-.industry-cards{display:flex;flex-direction:column;gap:1rem;}
-.ind-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.4rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color .2s,transform .2s;opacity:0;}
-.ind-card:hover{border-color:#2a2a2a;transform:translateX(4px);}
-.ind-icon{font-size:1.5rem;flex-shrink:0;width:44px;height:44px;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.ind-title{font-weight:600;font-size:.9rem;margin-bottom:.3rem;}
-.ind-desc{font-size:.8rem;color:var(--muted);line-height:1.55;}
+.section-body{font-size:.95rem;color:var(--text-2);line-height:1.85;max-width:600px;}
+.section-body strong{color:var(--text);font-weight:500;}
+.industry-cards{display:flex;flex-direction:column;gap:10px;}
+.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color var(--dur-hover) var(--ease);opacity:0;}
+.ind-card:hover{border-color:var(--line-strong);}
+.ind-icon{font-size:1.2rem;flex-shrink:0;width:40px;height:40px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;}
+.ind-title{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:.3rem;}
+.ind-desc{font-size:.8rem;color:var(--text-2);line-height:1.55;}
 
 /* MISSION */
-.mission-section{padding:7rem 3rem;background:linear-gradient(135deg,#060600 0%,#0a0a0a 40%,#000806 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.mission-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(245,196,0,0.04) 0%,transparent 60%);pointer-events:none;}
-.mission-inner{max-width:900px;margin:0 auto;text-align:center;position:relative;z-index:1;}
-.mission-quote{font-family:'Bebas Neue',sans-serif;font-size:8rem;color:rgba(245,196,0,0.07);line-height:.7;margin-bottom:1rem;letter-spacing:-4px;}
-.mission-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:1px;line-height:1.15;margin-bottom:2rem;}
-.mission-headline span{color:var(--yellow);}
-.mission-divider{width:60px;height:2px;background:var(--yellow);margin:0 auto 2rem;opacity:.4;}
-.mission-body{font-size:.975rem;color:#777;line-height:1.9;max-width:680px;margin:0 auto 2.5rem;}
-.mission-body strong{color:#aaa;font-weight:500;}
-.mission-values{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;}
+.mission-section{padding:7rem 3rem;background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.mission-inner{max-width:860px;margin:0 auto;text-align:center;}
+.mission-headline{font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;letter-spacing:0.04em;text-transform:uppercase;line-height:1.1;margin-bottom:1.75rem;}
+.mission-headline span{color:var(--accent);}
+.mission-rule{width:48px;height:2px;background:var(--accent);margin:0 auto 1.75rem;opacity:.5;}
+.mission-body{font-size:.9rem;color:var(--text-2);line-height:1.9;max-width:640px;margin:0 auto 2.5rem;}
+.mission-body strong{color:var(--text);font-weight:500;}
+.mission-values{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;}
 .mv-item{text-align:center;opacity:0;}
-.mv-icon{font-size:1.4rem;margin-bottom:.4rem;}
-.mv-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;}
+.mv-icon{font-size:1.3rem;margin-bottom:.35rem;}
+.mv-label{font-family:var(--font-display);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);font-weight:600;}
 
 /* HOW IT WORKS */
-.hiw-section{padding:7rem 3rem;}
+.hiw-section{padding:7rem 3rem;border-top:1px solid var(--line);}
 .hiw-inner{max-width:1100px;margin:0 auto;}
-.hiw-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;margin-bottom:3rem;}
-@media(max-width:700px){.hiw-header{grid-template-columns:1fr;gap:1.5rem;}}
-.hiw-header-right{font-size:.9rem;color:#555;line-height:1.8;}
-.hiw-tabs{display:flex;gap:.35rem;background:var(--mid);padding:.3rem;border-radius:8px;width:fit-content;margin-bottom:3rem;}
-.hiw-tab{padding:.5rem 1.25rem;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;}
-.hiw-tab.active{background:var(--yellow);color:var(--black);}
-.hiw-tab:hover:not(.active){color:var(--white);}
-.hiw-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+.hiw-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;margin-bottom:2.5rem;}
+@media(max-width:700px){.hiw-header{grid-template-columns:1fr;gap:1.25rem;}}
+.hiw-header-right{font-size:.875rem;color:var(--text-2);line-height:1.8;}
+.hiw-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-btn);width:fit-content;margin-bottom:2.5rem;overflow:hidden;}
+.hiw-tab{padding:.55rem 1.5rem;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;color:var(--text-2);transition:all var(--dur-hover) var(--ease);border:none;background:transparent;}
+.hiw-tab.active{background:var(--accent);color:#0A0A0A;}
+.hiw-tab:hover:not(.active){color:var(--text);}
+.hiw-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
 @media(max-width:900px){.hiw-steps{grid-template-columns:1fr 1fr;}}
 @media(max-width:500px){.hiw-steps{grid-template-columns:1fr;}}
 .hiw-step{opacity:0;}
-.hiw-step-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:rgba(245,196,0,0.06);line-height:1;margin-bottom:-.75rem;letter-spacing:2px;}
-.hiw-step-icon{width:48px;height:48px;background:var(--yellow-bg);border:1px solid rgba(245,196,0,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
-.hiw-step-title{font-weight:600;font-size:.95rem;margin-bottom:.5rem;}
-.hiw-step-desc{font-size:.82rem;color:var(--muted);line-height:1.65;}
+.hiw-step-num{font-family:var(--font-display);font-size:4.5rem;font-weight:700;color:rgba(255,205,17,0.05);line-height:1;margin-bottom:-.75rem;letter-spacing:0.04em;}
+.hiw-step-icon{width:44px;height:44px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.9rem;}
+.hiw-step-title{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:.5rem;}
+.hiw-step-desc{font-size:.8rem;color:var(--text-2);line-height:1.65;}
 
 /* FOR WHO */
-.forwho-section{padding:7rem 3rem;background:var(--gray);border-top:1px solid var(--border);}
+.forwho-section{padding:7rem 3rem;background:var(--surface);border-top:1px solid var(--line);}
 .forwho-inner{max-width:1100px;margin:0 auto;}
-.forwho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem;}
+.forwho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:2.5rem;}
 @media(max-width:700px){.forwho-grid{grid-template-columns:1fr;}}
-.forwho-card{border-radius:12px;padding:2.5rem;position:relative;overflow:hidden;opacity:0;}
-.forwho-card.pilot{background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.15);}
-.forwho-card.carrier{background:linear-gradient(135deg,#000814,#0a0a0a);border:1px solid rgba(96,165,250,.15);}
-.forwho-card::after{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;pointer-events:none;}
-.forwho-card.pilot::after{background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 65%);}
-.forwho-card.carrier::after{background:radial-gradient(circle,rgba(96,165,250,0.06),transparent 65%);}
-.fw-badge{font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.25rem .75rem;border-radius:100px;display:inline-block;margin-bottom:1.25rem;}
-.fw-badge.pilot{background:rgba(245,196,0,.1);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
-.fw-badge.carrier{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2);}
-.fw-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;margin-bottom:.75rem;}
-.fw-desc{font-size:.875rem;color:#777;line-height:1.75;margin-bottom:1.75rem;}
-.fw-features{display:flex;flex-direction:column;gap:.55rem;margin-bottom:2rem;}
-.fw-feat{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:#aaa;}
-.fw-cta{display:inline-block;padding:.7rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:700;text-decoration:none;transition:all .2s;}
-.fw-cta.pilot{background:var(--yellow);color:var(--black);}
-.fw-cta.pilot:hover{background:var(--yellow-dim);}
-.fw-cta.carrier{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:#60a5fa;}
-.fw-cta.carrier:hover{background:rgba(96,165,250,.2);}
+.forwho-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-card);padding:2.25rem;position:relative;overflow:hidden;opacity:0;}
+.forwho-card.pilot{border-color:var(--accent-border);}
+.forwho-card.carrier{border-color:rgba(96,165,250,0.25);}
+.fw-badge{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:.3rem .75rem;border-radius:var(--r-chip);display:inline-block;margin-bottom:1.25rem;}
+.fw-badge.pilot{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border);}
+.fw-badge.carrier{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border);}
+.fw-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:.75rem;line-height:1.1;}
+.fw-desc{font-size:.875rem;color:var(--text-2);line-height:1.75;margin-bottom:1.75rem;}
+.fw-features{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;}
+.fw-feat{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--text-2);}
+.fw-feat-check{color:var(--ok);font-weight:700;}
+.fw-cta{display:inline-block;padding:.7rem 1.5rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:all var(--dur-hover) var(--ease);}
+.fw-cta.pilot{background:var(--accent);color:#0A0A0A;}
+.fw-cta.pilot:hover{background:var(--accent-hot);}
+.fw-cta.carrier{background:var(--info-bg);border:1px solid var(--info-border);color:var(--info);}
+.fw-cta.carrier:hover{background:rgba(96,165,250,0.15);}
 
 /* FINAL CTA */
-.final-cta{padding:7rem 3rem;text-align:center;position:relative;overflow:hidden;}
-.final-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,#0a0900 50%,var(--black) 100%);}
-.final-cta::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(245,196,0,0.06) 0%,transparent 60%);pointer-events:none;}
-.fc-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;}
-.fc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);letter-spacing:1px;line-height:.95;margin-bottom:1.25rem;}
-.fc-title span{color:var(--yellow);}
-.fc-sub{font-size:1rem;color:#555;line-height:1.7;margin-bottom:2.5rem;}
-.fc-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.final-cta{padding:7rem 3rem;border-top:1px solid var(--line);position:relative;overflow:hidden;}
+.final-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(255,205,17,0.05) 0%,transparent 60%);pointer-events:none;}
+.fc-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;text-align:center;}
+.fc-title{font-family:var(--font-display);font-size:clamp(2.5rem,6vw,5rem);font-weight:700;letter-spacing:0.04em;text-transform:uppercase;line-height:.95;margin-bottom:1.25rem;}
+.fc-title span{color:var(--accent);}
+.fc-sub{font-size:.95rem;color:var(--text-2);line-height:1.7;margin-bottom:2.5rem;}
+.fc-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
 
 /* FOOTER */
-footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
+footer{background:var(--surface);border-top:1px solid var(--line);padding:3rem;}
 .footer-inner{max-width:1100px;margin:0 auto;}
-.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
 @media(max-width:800px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}}
 @media(max-width:500px){.footer-top{grid-template-columns:1fr;}}
-.footer-brand p{font-size:.82rem;color:#555;line-height:1.7;max-width:260px;margin-top:.75rem;}
-.footer-col-title{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:#444;font-weight:600;margin-bottom:1rem;}
-.footer-col a{display:block;color:#555;text-decoration:none;font-size:.82rem;margin-bottom:.5rem;transition:color .2s;}
-.footer-col a:hover{color:var(--white);}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--border);flex-wrap:wrap;gap:1rem;}
-.footer-copy{font-size:.78rem;color:#333;}
+.footer-brand p{font-size:.8rem;color:var(--text-3);line-height:1.7;max-width:240px;margin-top:.75rem;}
+.footer-col-title{font-family:var(--font-display);font-size:10px;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-3);font-weight:600;margin-bottom:.9rem;}
+.footer-col a{display:block;color:var(--text-3);text-decoration:none;font-size:.8rem;margin-bottom:.45rem;transition:color var(--dur-hover) var(--ease);}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:1.75rem;border-top:1px solid var(--line);flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:.75rem;color:var(--text-3);}
 .footer-legal{display:flex;gap:1.5rem;}
-.footer-legal a{color:#333;text-decoration:none;font-size:.78rem;transition:color .2s;}
-.footer-legal a:hover{color:#555;}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.footer-legal a{color:var(--text-3);text-decoration:none;font-size:.75rem;transition:color var(--dur-hover) var(--ease);}
+.footer-legal a:hover{color:var(--text-2);}
 
 /* MOBILE */
 @media(max-width:600px){
   nav{padding:.9rem 1.25rem;}
   .nav-links{display:none;}
   .hero{padding:7rem 1.25rem 4rem;}
-  .hero-stats{gap:1.5rem;display:grid;grid-template-columns:1fr 1fr;}
+  .hero-stats{grid-template-columns:1fr 1fr;}
+  .hs-item:nth-child(2){border-right:none;}
   .industry-section,.mission-section,.hiw-section,.forwho-section,.final-cta{padding:4.5rem 1.25rem;}
   .fc-btns,.hero-ctas{flex-direction:column;}
   .cta-primary,.cta-secondary{width:100%;text-align:center;}
@@ -189,40 +174,42 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
 <body>
 
 <nav id="mainNav">
-  <a href="index.html" class="logo">Load<span>Leader</span></a>
+  <a href="index.html" class="logo"><span class="logo-sq"></span>Load<span>Leader</span></a>
   <div class="nav-links">
     <a href="#how-it-works">How It Works</a>
-    <a href="#for-who">Pilots & Carriers</a>
+    <a href="#for-who">Pilots &amp; Carriers</a>
     <a href="loadboard.html">Load Board</a>
     <a href="pricing.html">Pricing</a>
   </div>
-  <div class="nav-right">
+  <div class="nav-right" id="navAuthBtns">
     <a href="login.html" class="btn-ghost">Log In</a>
     <a href="login.html?tab=signup" class="btn-yellow">Get Started Free</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-grid-bg"></div>
-  <div class="hero-glow-1"></div>
-  <div class="hero-glow-2"></div>
+  <div class="hero-dot-grid"></div>
+  <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>The Future of Pilot Car Escorts</div>
+    <div class="hero-tag">
+      <span class="hero-tag-line"></span>
+      <span class="hero-eyebrow">The Future of Pilot Car Escorts</span>
+    </div>
     <h1>
-      <span class="line1">America Moves</span>
-      <span class="line2">Oversize.</span>
-      <span class="line3">We Lead The Way.</span>
+      <span class="line1">America Moves</span><br>
+      <span class="line-yellow">Oversize.</span><br>
+      <span class="line-dim">We Lead The Way.</span>
     </h1>
-    <p class="hero-desc">LoadLeader is the <strong>first AI-powered load board</strong> built exclusively for the oversize transport industry — connecting certified pilot car escorts with the carriers moving America's biggest freight.</p>
+    <p class="hero-desc">The first load board built for pilot car operators and the carriers who hire them. No more Facebook groups. No more dispatch phone tag. See real loads, posted live, with real pay attached.</p>
     <div class="hero-ctas">
-      <a href="login.html?tab=signup" class="cta-primary">🚩 Join as a Pilot — Free</a>
-      <a href="loadboard.html" class="cta-secondary">Browse Live Loads →</a>
+      <a href="login.html?tab=signup" class="cta-primary">Join as a Pilot — Free</a>
+      <a href="loadboard.html" class="cta-secondary">Browse Live Loads</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-num" id="heroLoads">—</div><div class="hs-label">Active Loads</div></div>
-      <div><div class="hs-num" id="heroPilots">—</div><div class="hs-label">Registered Pilots</div></div>
-      <div><div class="hs-num">48</div><div class="hs-label">States Covered</div></div>
-      <div><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
+      <div class="hs-item"><div class="hs-num" id="heroLoads">—</div><div class="hs-label">Active Loads</div></div>
+      <div class="hs-item"><div class="hs-num" id="heroPilots">—</div><div class="hs-label">Registered Pilots</div></div>
+      <div class="hs-item"><div class="hs-num">49</div><div class="hs-label">States Covered</div></div>
+      <div class="hs-item"><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
     </div>
   </div>
 </section>
@@ -252,13 +239,13 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
       <div>
         <div class="section-eyebrow">The Industry</div>
         <h2 class="section-title">Oversize Transport<br>Is <span>Big Business</span></h2>
-        <p class="section-body">Every wind turbine blade, every bridge beam, every industrial machine that moves across America requires a certified pilot car escort. It's a <strong>multi-billion dollar industry</strong> — and it's growing fast.<br><br>Yet the way pilots and carriers connect hasn't changed in decades. Phone calls. Word of mouth. Outdated boards built for a different era.<br><br><strong>LoadLeader is changing that.</strong></p>
+        <p class="section-body">Every wind turbine blade, every bridge beam, every industrial machine that moves across America requires a certified pilot car escort. It is a <strong>multi-billion dollar industry</strong> — and it is growing fast.<br><br>Yet the way pilots and carriers connect has not changed in decades. Phone calls. Word of mouth. Outdated boards built for a different era.<br><br><strong>LoadLeader is changing that.</strong></p>
       </div>
       <div class="industry-cards">
-        <div class="ind-card"><div class="ind-icon">📈</div><div><div class="ind-title">Growing Industry</div><div class="ind-desc">Oversize transport demand is accelerating driven by infrastructure, energy, and industrial expansion across all 48 states.</div></div></div>
+        <div class="ind-card"><div class="ind-icon">📈</div><div><div class="ind-title">Growing Industry</div><div class="ind-desc">Oversize transport demand is accelerating, driven by infrastructure, energy, and industrial expansion across all 48 states.</div></div></div>
         <div class="ind-card"><div class="ind-icon">🔗</div><div><div class="ind-title">Disconnected Market</div><div class="ind-desc">Pilots and carriers still rely on phone calls and word of mouth. There is no modern platform built for this industry — until now.</div></div></div>
         <div class="ind-card"><div class="ind-icon">🤖</div><div><div class="ind-title">AI-Powered Matching</div><div class="ind-desc">LoadLeader uses AI to match the right pilot to the right load — faster, smarter, and more reliably than any board before it.</div></div></div>
-        <div class="ind-card"><div class="ind-icon">📱</div><div><div class="ind-title">Built for Mobile</div><div class="ind-desc">Pilots work on the road. LoadLeader is designed for the phone in your truck — apply to loads, track jobs, get paid, all from mobile.</div></div></div>
+        <div class="ind-card"><div class="ind-icon">📱</div><div><div class="ind-title">Built for Mobile</div><div class="ind-desc">Pilots work on the road. LoadLeader is designed for the phone in your truck — apply, track jobs, get paid, all from mobile.</div></div></div>
       </div>
     </div>
   </div>
@@ -266,14 +253,14 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
 
 <section class="mission-section">
   <div class="mission-inner">
-    <div class="mission-quote">"</div>
-    <h2 class="mission-headline">We're building the <span>infrastructure</span> that moves<br>the infrastructure of America.</h2>
-    <div class="mission-divider"></div>
-    <p class="mission-body">The oversize transport industry is the backbone of American infrastructure — yet the people who keep it moving have been overlooked by technology for too long. Pilot car drivers are skilled professionals who deserve a modern platform that respects their time, grows their business, and connects them to opportunity.<br><br><strong>LoadLeader's mission is simple:</strong> build the most trusted, most efficient, and most complete platform the pilot car industry has ever seen. We're not just a load board. We're building the future of how oversize freight moves across America.</p>
+    <div class="section-eyebrow" style="text-align:center;margin-bottom:1.25rem;">Our Mission</div>
+    <h2 class="mission-headline">We are building the <span>infrastructure</span> that moves<br>the infrastructure of America.</h2>
+    <div class="mission-rule"></div>
+    <p class="mission-body">The oversize transport industry is the backbone of American infrastructure — yet the people who keep it moving have been overlooked by technology for too long. Pilot car drivers are skilled professionals who deserve a modern platform that respects their time, grows their business, and connects them to opportunity.<br><br><strong>LoadLeader mission is simple:</strong> build the most trusted, most efficient, and most complete platform the pilot car industry has ever seen. We are not just a load board. We are building the future of how oversize freight moves across America.</p>
     <div class="mission-values">
       <div class="mv-item"><div class="mv-icon">🚩</div><div class="mv-label">Pilot First</div></div>
       <div class="mv-item"><div class="mv-icon">⚡</div><div class="mv-label">Built for Speed</div></div>
-      <div class="mv-item"><div class="mv-icon">🤝</div><div class="mv-label">Trust & Transparency</div></div>
+      <div class="mv-item"><div class="mv-icon">🤝</div><div class="mv-label">Trust &amp; Transparency</div></div>
       <div class="mv-item"><div class="mv-icon">🌎</div><div class="mv-label">48 States Strong</div></div>
       <div class="mv-item"><div class="mv-icon">🔒</div><div class="mv-label">Secure Payments</div></div>
     </div>
@@ -287,7 +274,7 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
         <div class="section-eyebrow">How It Works</div>
         <h2 class="section-title">Simple.<br><span>Fast. Reliable.</span></h2>
       </div>
-      <div class="hiw-header-right">LoadLeader handles the connection so you can focus on the road. Whether you're a pilot looking for work or a carrier needing escorts — the process takes minutes, not days.</div>
+      <div class="hiw-header-right">LoadLeader handles the connection so you can focus on the road. Whether you are a pilot looking for work or a carrier needing escorts — the process takes minutes, not days.</div>
     </div>
     <div class="hiw-tabs">
       <button class="hiw-tab active" onclick="switchTab('pilot',this)">🚩 For Pilots</button>
@@ -295,15 +282,15 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
     </div>
     <div id="pilotSteps" class="hiw-steps">
       <div class="hiw-step"><div class="hiw-step-num">01</div><div class="hiw-step-icon">👤</div><div class="hiw-step-title">Create Your Profile</div><div class="hiw-step-desc">Sign up free in under 2 minutes. Add your certifications, states you cover, vehicle type, and equipment.</div></div>
-      <div class="hiw-step"><div class="hiw-step-num">02</div><div class="hiw-step-icon">🔍</div><div class="hiw-step-title">Find the Right Load</div><div class="hiw-step-desc">Browse the live board or use AI search to describe exactly what you're looking for. Filter by route, pay, and date.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">02</div><div class="hiw-step-icon">🔍</div><div class="hiw-step-title">Find the Right Load</div><div class="hiw-step-desc">Browse the live board or use AI search to describe exactly what you are looking for. Filter by route, pay, and date.</div></div>
       <div class="hiw-step"><div class="hiw-step-num">03</div><div class="hiw-step-icon">📋</div><div class="hiw-step-title">Apply in One Tap</div><div class="hiw-step-desc">Send your application with a message to the carrier. Your rating, certifications, and experience are sent automatically.</div></div>
-      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">💰</div><div class="hiw-step-title">Get Accepted & Get Paid</div><div class="hiw-step-desc">Carrier accepts you — their phone number is revealed instantly. Complete the job and get paid directly.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">💰</div><div class="hiw-step-title">Get Accepted and Get Paid</div><div class="hiw-step-desc">Carrier accepts you — their phone number is revealed instantly. Complete the job and get paid directly.</div></div>
     </div>
     <div id="carrierSteps" class="hiw-steps" style="display:none;">
       <div class="hiw-step"><div class="hiw-step-num">01</div><div class="hiw-step-icon">🏢</div><div class="hiw-step-title">Create Carrier Account</div><div class="hiw-step-desc">Sign up free — 30 day trial included. Set up your company profile with DOT number and contact info.</div></div>
       <div class="hiw-step"><div class="hiw-step-num">02</div><div class="hiw-step-icon">📦</div><div class="hiw-step-title">Post Your Load</div><div class="hiw-step-desc">Enter route, dimensions, date, and pay. Or paste a dispatch message and let AI parse the details automatically.</div></div>
       <div class="hiw-step"><div class="hiw-step-num">03</div><div class="hiw-step-icon">👥</div><div class="hiw-step-title">Review Pilot Applications</div><div class="hiw-step-desc">Pilots apply and you review their full profiles — ratings, jobs completed, certifications, and their message to you.</div></div>
-      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">✅</div><div class="hiw-step-title">Accept & Move the Load</div><div class="hiw-step-desc">Accept your pilot — they get your phone number instantly. Coordinate directly and move your load with confidence.</div></div>
+      <div class="hiw-step"><div class="hiw-step-num">04</div><div class="hiw-step-icon">✅</div><div class="hiw-step-title">Accept and Move the Load</div><div class="hiw-step-desc">Accept your pilot — they get your phone number instantly. Coordinate directly and move your load with confidence.</div></div>
     </div>
   </div>
 </section>
@@ -311,9 +298,9 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
 <section class="forwho-section" id="for-who">
   <div class="forwho-inner">
     <div style="text-align:center;">
-      <div class="section-eyebrow">Who It's For</div>
+      <div class="section-eyebrow">Who It Is For</div>
       <h2 class="section-title">Built for <span>Both Sides</span> of the Load</h2>
-      <p style="color:var(--muted);font-size:.875rem;margin-top:-.5rem;">Every oversize move needs two things — a carrier with a load and a pilot to lead it.</p>
+      <p style="color:var(--text-2);font-size:.875rem;margin-top:-.5rem;">Every oversize move needs two things — a carrier with a load and a pilot to lead it.</p>
     </div>
     <div class="forwho-grid">
       <div class="forwho-card pilot">
@@ -321,40 +308,42 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
         <div class="fw-title">Find More Work.<br>Earn More Money.</div>
         <p class="fw-desc">Stop waiting for the phone to ring. LoadLeader puts thousands of loads in front of you — filtered to your routes, your availability, and your pay requirements.</p>
         <div class="fw-features">
-          <div class="fw-feat">✓ Browse live loads across 48 states</div>
-          <div class="fw-feat">✓ Apply with one tap — no phone tag</div>
-          <div class="fw-feat">✓ AI matches you to loads that fit your route</div>
-          <div class="fw-feat">✓ Track all applications and earnings in one place</div>
-          <div class="fw-feat">✓ Build your reputation with verified reviews</div>
-          <div class="fw-feat">✓ Free to start — no credit card needed</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Browse live loads across 48 states</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Apply with one tap — no phone tag</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> AI matches you to loads that fit your route</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Track all applications and earnings in one place</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Build your reputation with verified reviews</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Free to start — no credit card needed</div>
         </div>
-        <a href="login.html?tab=signup" class="fw-cta pilot">Join as a Pilot — Free →</a>
+        <a href="login.html?tab=signup" class="fw-cta pilot">Join as a Pilot — Free</a>
       </div>
       <div class="forwho-card carrier">
-        <span class="fw-badge carrier">🚛 Carriers & Haulers</span>
+        <span class="fw-badge carrier">🚛 Carriers &amp; Haulers</span>
         <div class="fw-title">Find Trusted Escorts.<br>Move Every Load.</div>
         <p class="fw-desc">Never scramble for a pilot again. Post your load and get applications from certified, rated, insured pilot car drivers — reviewed and ready to go.</p>
         <div class="fw-features">
-          <div class="fw-feat" style="color:#aaa">✓ Post loads in under 2 minutes</div>
-          <div class="fw-feat" style="color:#aaa">✓ Review full pilot profiles before hiring</div>
-          <div class="fw-feat" style="color:#aaa">✓ AI parses dispatch messages automatically</div>
-          <div class="fw-feat" style="color:#aaa">✓ Email notifications when pilots apply</div>
-          <div class="fw-feat" style="color:#aaa">✓ Accept pilots and exchange contacts instantly</div>
-          <div class="fw-feat" style="color:#aaa">✓ 30-day free trial — no commitment</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Post loads in under 2 minutes</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Review full pilot profiles before hiring</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> AI parses dispatch messages automatically</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Email notifications when pilots apply</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> Accept pilots and exchange contacts instantly</div>
+          <div class="fw-feat"><span class="fw-feat-check">✓</span> 30-day free trial — no commitment</div>
         </div>
-        <a href="login.html?tab=signup" class="fw-cta carrier">Start Free Trial →</a>
+        <a href="login.html?tab=signup" class="fw-cta carrier">Start Free Trial</a>
       </div>
     </div>
   </div>
 </section>
 
 <section class="final-cta">
+  <div class="final-glow"></div>
   <div class="fc-inner">
+    <div class="section-eyebrow" style="margin-bottom:1rem;">Get Set Up in 4 Minutes</div>
     <h2 class="fc-title">The Road<br><span>Starts Here.</span></h2>
-    <p class="fc-sub">Join thousands of pilot car drivers and carriers already using LoadLeader to move America's oversize freight. Free to start. No credit card required.</p>
+    <p class="fc-sub">Join thousands of pilot car drivers and carriers already using LoadLeader to move America oversize freight. Free to start. No credit card required.</p>
     <div class="fc-btns">
-      <a href="login.html?tab=signup" class="cta-primary">🚩 Create Free Account</a>
-      <a href="loadboard.html" class="cta-secondary">Browse Live Loads →</a>
+      <a href="login.html?tab=signup" class="cta-primary">Create Free Account</a>
+      <a href="loadboard.html" class="cta-secondary">Browse Live Loads</a>
     </div>
   </div>
 </section>
@@ -363,8 +352,8 @@ footer{background:var(--gray);border-top:1px solid var(--border);padding:3rem;}
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="index.html" class="logo">Load<span>Leader</span></a>
-        <p>The AI-powered load board built exclusively for the oversize transport industry. Connecting pilot car escorts with carriers across all 48 states.</p>
+        <a href="index.html" class="logo"><span class="logo-sq"></span>Load<span>Leader</span></a>
+        <p>The load board built for the oversize transport industry. Connecting pilot car escorts with carriers across all 48 states.</p>
       </div>
       <div class="footer-col">
         <div class="footer-col-title">Platform</div>
@@ -411,13 +400,10 @@ function switchTab(type, btn) {
   document.getElementById('carrierSteps').style.display = type === 'carrier' ? 'grid' : 'none';
 }
 
-// Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
     if (entry.isIntersecting) {
-      setTimeout(() => {
-        entry.target.style.animation = 'fadeUp .6s ease forwards';
-      }, i * 80);
+      setTimeout(() => { entry.target.style.animation = 'fadeUp .6s ease forwards'; }, i * 80);
       observer.unobserve(entry.target);
     }
   });
@@ -444,7 +430,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Load real stats from Firestore
 async function loadSiteStats() {
   try {
     const { collection, getCountFromServer, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -477,24 +462,19 @@ onAuthStateChanged(auth, async (user) => {
       const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
       const isCarrier = data.accountType === 'carrier';
       const dashUrl = isCarrier ? 'carrier-dashboard.html' : 'dashboard.html';
-      const profileUrl = isCarrier ? 'carrier-dashboard.html#profile' : 'dashboard.html#profile';
       navRight.innerHTML = `
-        <a href="${profileUrl}" style="display:flex;align-items:center;gap:.5rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:100px;text-decoration:none;color:var(--white);font-size:.82rem;font-weight:500;">
-          <div style="width:26px;height:26px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--black);">${initials}</div>
+        <a href="${dashUrl}" style="display:flex;align-items:center;gap:.5rem;background:var(--surface-2);padding:.35rem .85rem .35rem .4rem;border-radius:var(--r-btn);text-decoration:none;color:var(--text);font-size:.82rem;font-weight:500;">
+          <div style="width:26px;height:26px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.68rem;font-weight:700;color:#0A0A0A;">${initials}</div>
           ${firstName}
         </a>
-        <a href="${dashUrl}" class="btn-yellow" style="padding:.45rem 1.1rem;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;text-decoration:none;background:var(--yellow);color:var(--black);">Dashboard</a>`;
-    } catch(e) {
-      console.error(e);
-    }
+        <a href="${dashUrl}" style="background:var(--accent);color:#0A0A0A;padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">Dashboard</a>`;
+    } catch(e) { console.error(e); }
   }
 });
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(reg => reg.unregister());
-  });
+  navigator.serviceWorker.getRegistrations().then(regs => { regs.forEach(reg => reg.unregister()); });
   caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
 }
 </script>
