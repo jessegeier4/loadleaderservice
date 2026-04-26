@@ -965,7 +965,8 @@ if ('serviceWorker' in navigator) {
       📄 Invoice will be auto-generated and emailed to both parties<br>
       ⭐ You'll be asked to leave an anonymous review
     </div>
-    <button onclick="submitDelivery()" style="width:100%;background:var(--green);color:var(--black);border:none;padding:.85rem;border-radius:7px;font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;">✅ Confirm Delivery</button>
+    <div id="delivGpsStatus" style="display:none;background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--r-card);padding:.75rem;margin-bottom:.85rem;font-size:.8rem;line-height:1.6;"></div>
+    <button id="delivConfirmBtn" onclick="submitDelivery()" style="width:100%;background:var(--ok);color:#0A0A0A;border:none;padding:.85rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Confirm Delivery</button>
   </div>
 </div>
 
@@ -1181,6 +1182,12 @@ onAuthStateChanged(auth, async (user) => {
       // Also populate full jobs list
       const fullJobList = document.getElementById('jobsList');
       if (fullJobList && apps.length > 0) fullJobList.innerHTML = apps.map(a => buildJobCard(a)).join('');
+      // Auto-load route weather for all accepted job cards
+      setTimeout(() => {
+        document.querySelectorAll('[data-weather-load]').forEach(el => {
+          loadRouteWeather(el.dataset.weatherLoad, el.dataset.weatherRoute || '');
+        });
+      }, 300);
     }
 
     // Show real saved loads
@@ -1501,7 +1508,7 @@ function buildJobCard(a) {
           ${isAccepted ? '<div class="job-meta-item" style="color:var(--green)">✓ Accepted!</div>' : ''}
           ${isCompleted ? '<div class="job-meta-item" style="color:var(--muted)">✓ Delivered</div>' : ''}
         </div>
-        ${isAccepted ? `<div id="weather-${a.loadId}" style="margin-top:.5rem;"></div>` : ''}
+        ${isAccepted ? `<div id="weather-${a.loadId}" data-weather-load="${a.loadId}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>
       <div class="job-right">
         <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
@@ -1511,7 +1518,6 @@ function buildJobCard(a) {
         <div class="job-actions">
           ${isAccepted ? `
             <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 View Permits</button>
-            <button class="job-btn" onclick="checkWeather('${a.loadId || ''}','${origin}')">🌤 Weather</button>
             <button class="job-btn primary" onclick="confirmDelivery('${a.loadId || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `<button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>` : ''}
@@ -1520,81 +1526,110 @@ function buildJobCard(a) {
     </div>`;
 }
 
-// ── WEATHER ALERTS ──
-window.checkWeather = async (loadId, location) => {
+// ── ROUTE WEATHER WITH SUNRISE / SUNSET ──
+const STATE_COORDS = {
+  AL:[32.81,-86.79],AK:[61.37,-152.40],AZ:[33.73,-111.43],AR:[34.97,-92.37],
+  CA:[36.12,-119.68],CO:[39.06,-105.31],CT:[41.60,-72.76],DE:[39.32,-75.51],
+  FL:[27.77,-81.69],GA:[33.04,-83.64],HI:[21.09,-157.50],ID:[44.24,-114.48],
+  IL:[40.35,-88.99],IN:[39.85,-86.26],IA:[42.01,-93.21],KS:[38.53,-96.73],
+  KY:[37.67,-84.67],LA:[31.17,-91.87],ME:[44.69,-69.38],MD:[39.06,-76.80],
+  MA:[42.23,-71.53],MI:[43.33,-84.54],MN:[45.69,-93.90],MS:[32.74,-89.68],
+  MO:[38.46,-92.29],MT:[46.92,-110.45],NE:[41.13,-98.27],NV:[38.31,-117.06],
+  NH:[43.45,-71.56],NJ:[40.30,-74.52],NM:[34.84,-106.25],NY:[42.17,-74.95],
+  NC:[35.63,-79.81],ND:[47.53,-99.78],OH:[40.39,-82.76],OK:[35.57,-96.93],
+  OR:[44.57,-122.07],PA:[40.59,-77.21],RI:[41.68,-71.51],SC:[33.86,-80.95],
+  SD:[44.30,-99.44],TN:[35.75,-86.69],TX:[31.05,-97.56],UT:[40.15,-111.86],
+  VT:[44.05,-72.71],VA:[37.77,-78.17],WA:[47.40,-121.49],WV:[38.49,-80.95],
+  WI:[44.27,-89.62],WY:[42.76,-107.30]
+};
+
+const WX_ICON = c => {
+  if (c === 0) return '☀️';
+  if (c <= 2) return '⛅';
+  if (c <= 9) return '🌫️';
+  if (c <= 49) return c <= 29 ? '🌧️' : '🌫️';
+  if (c <= 69) return '🌨️';
+  if (c <= 79) return '❄️';
+  if (c <= 82) return '🌧️';
+  if (c <= 86) return '❄️';
+  if (c <= 99) return '⛈️';
+  return '🌤️';
+};
+
+const fmtSunTime = iso => {
+  if (!iso) return '—';
+  const t = new Date(iso);
+  return t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+};
+
+window.loadRouteWeather = async (loadId, route) => {
   const weatherDiv = document.getElementById('weather-' + loadId);
   if (!weatherDiv) return;
-  weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Loading weather...</span>';
+  if (!route) { weatherDiv.innerHTML = ''; return; }
+
+  weatherDiv.innerHTML = '<span style="font-size:.7rem;color:var(--text-2);">Loading route weather...</span>';
 
   try {
-    // Geocode the location — strip state code if present (e.g. "North Canton OH" -> "North Canton")
-    const city = location.replace(/\s+[A-Z]{2}$/, '').split(',')[0].trim();
-    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
-    const geoData = await geoRes.json();
+    // Extract 2-letter state codes from route string
+    const found = [...route.matchAll(/\b([A-Z]{2})\b/g)].map(m => m[1]).filter(s => STATE_COORDS[s]);
+    const states = [...new Set(found)];
 
-    if (!geoData.results?.length) {
-      weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Weather unavailable for this location</span>';
-      return;
-    }
+    if (!states.length) { weatherDiv.innerHTML = ''; return; }
 
-    const { latitude, longitude } = geoData.results[0];
+    const cards = await Promise.all(states.map(async state => {
+      const [lat, lng] = STATE_COORDS[state];
+      const res = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=' + lat +
+        '&longitude=' + lng +
+        '&current=temperature_2m,weather_code,wind_speed_10m' +
+        '&daily=sunrise,sunset,temperature_2m_max,precipitation_sum,windspeed_10m_max' +
+        '&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=1'
+      );
+      const d = await res.json();
 
-    // Get weather forecast (free, no API key)
-    const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=America/Chicago&forecast_days=3`);
-    const wxData = await wxRes.json();
+      const temp  = Math.round(d.current?.temperature_2m ?? d.daily?.temperature_2m_max?.[0] ?? 0);
+      const code  = d.current?.weather_code ?? d.daily?.weathercode?.[0] ?? 0;
+      const wind  = Math.round(d.current?.wind_speed_10m ?? d.daily?.windspeed_10m_max?.[0] ?? 0);
+      const precip = d.daily?.precipitation_sum?.[0] ?? 0;
+      const sunrise = fmtSunTime(d.daily?.sunrise?.[0]);
+      const sunset  = fmtSunTime(d.daily?.sunset?.[0]);
 
-    const codes = wxData.daily.weathercode;
-    const maxTemps = wxData.daily.temperature_2m_max;
-    const precip = wxData.daily.precipitation_sum;
-    const wind = wxData.daily.windspeed_10m_max;
-    const dates = wxData.daily.time;
+      const isStorm   = code >= 95;
+      const isSnow    = code >= 71 && code < 80;
+      const isWind    = wind > 45;
+      const isRain    = precip > 0.5;
+      const hasAlert  = isStorm || isSnow || isWind || isRain;
+      const alertClr  = isStorm ? 'var(--bad)' : (isWind ? 'var(--warn)' : 'var(--info)');
+      const alertTxt  = isStorm ? 'Storm Warning' : isSnow ? 'Snow' : isWind ? 'High Wind' : 'Heavy Rain';
+      const borderClr = hasAlert ? alertClr : 'var(--line)';
 
-    const getIcon = code => {
-      if (code === 0) return '☀️';
-      if (code <= 2) return '⛅';
-      if (code <= 9) return '🌫️';
-      if (code <= 29) return '🌧️';
-      if (code <= 39) return '🌨️';
-      if (code <= 49) return '🌫️';
-      if (code <= 59) return '🌧️';
-      if (code <= 69) return '🌨️';
-      if (code <= 79) return '❄️';
-      if (code <= 82) return '🌧️';
-      if (code <= 86) return '❄️';
-      if (code <= 99) return '⛈️';
-      return '🌤️';
-    };
+      return '<div style="background:var(--surface-2);border:1px solid ' + borderClr + ';border-radius:var(--r-card);padding:.6rem .7rem;min-width:110px;flex-shrink:0;">' +
+        '<div style="font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:' + (hasAlert ? alertClr : 'var(--accent)') + ';">' + state + '</div>' +
+        '<div style="display:flex;align-items:center;gap:.35rem;margin:.25rem 0;">' +
+          '<span style="font-size:1.05rem;">' + WX_ICON(code) + '</span>' +
+          '<span style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--text);">' + temp + '°F</span>' +
+          '<span style="font-size:.65rem;color:var(--text-2);">' + wind + 'mph</span>' +
+        '</div>' +
+        '<div style="font-size:.63rem;color:var(--text-2);">🌅 ' + sunrise + '</div>' +
+        '<div style="font-size:.63rem;color:var(--text-2);">🌇 ' + sunset + '</div>' +
+        (precip > 0 ? '<div style="font-size:.63rem;color:var(--info);">💧 ' + precip.toFixed(1) + '"</div>' : '') +
+        (hasAlert ? '<div style="font-size:.63rem;font-weight:700;color:' + alertClr + ';margin-top:.2rem;">' + alertTxt + '</div>' : '') +
+      '</div>';
+    }));
 
-    const getAlert = (code, windSpeed, precipAmt) => {
-      if (code >= 95) return { text: 'Thunderstorm Warning', color: 'var(--red)' };
-      if (code >= 71) return { text: 'Snow Warning', color: 'var(--blue)' };
-      if (windSpeed > 40) return { text: 'High Wind Warning', color: 'var(--orange)' };
-      if (precipAmt > 0.5) return { text: 'Heavy Rain', color: 'var(--orange)' };
-      return null;
-    };
-
-    const days = dates.slice(0, 3).map((d, i) => {
-      const alert = getAlert(codes[i], wind[i], precip[i]);
-      const dayName = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : new Date(d).toLocaleDateString('en-US', {weekday:'short'});
-      return `<div style="text-align:center;padding:.4rem .6rem;background:var(--mid);border-radius:6px;min-width:60px;">
-        <div style="font-size:.6rem;color:var(--muted);margin-bottom:.2rem;">${dayName}</div>
-        <div style="font-size:1rem;">${getIcon(codes[i])}</div>
-        <div style="font-size:.68rem;font-weight:600;">${Math.round(maxTemps[i])}°F</div>
-        ${precip[i] > 0 ? `<div style="font-size:.6rem;color:var(--blue);">${precip[i].toFixed(1)}"</div>` : ''}
-        ${alert ? `<div style="font-size:.58rem;color:${alert.color};font-weight:700;margin-top:.1rem;">${alert.text}</div>` : ''}
-      </div>`;
-    }).join('');
-
-    weatherDiv.innerHTML = `
-      <div style="margin-top:.5rem;">
-        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Weather — ${city}</div>
-        <div style="display:flex;gap:.4rem;">${days}</div>
-      </div>`;
+    weatherDiv.innerHTML =
+      '<div style="margin-top:.6rem;">' +
+        '<div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:.4rem;">Route Weather · Today</div>' +
+        '<div style="display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;">' + cards.join('') + '</div>' +
+      '</div>';
 
   } catch(e) {
-    weatherDiv.innerHTML = '<span style="font-size:.72rem;color:var(--muted);">Could not load weather</span>';
+    weatherDiv.innerHTML = '<span style="font-size:.7rem;color:var(--text-2);">Weather unavailable</span>';
   }
 };
+
+// backward compat alias
+window.checkWeather = (loadId, loc) => loadRouteWeather(loadId, loc);
 
 // Logout
 window.handleLogout = async () => {
@@ -2259,31 +2294,85 @@ window.confirmDelivery = async (applicationId, loadRoute, carrierId, carrierEmai
   document.getElementById('deliveryModal').style.display = 'flex';
 };
 
-window.submitDelivery = async () => {
+const tryGps = (timeout) => new Promise((resolve, reject) => {
+  if (!navigator.geolocation) { reject(new Error('no_gps')); return; }
+  navigator.geolocation.getCurrentPosition(resolve, reject, { timeout, enableHighAccuracy: true, maximumAge: 0 });
+});
+
+window.submitDelivery = async (forceManual) => {
   if (!pendingDelivery) return;
   const { applicationId, loadRoute, carrierId, carrierEmail, pay } = pendingDelivery;
   const truckNum = document.getElementById('delivTruck').value.trim();
   const trailerNum = document.getElementById('delivTrailer').value.trim();
   const miles = document.getElementById('delivMiles').value.trim();
+
+  const confirmBtn = document.getElementById('delivConfirmBtn');
+  const statusDiv  = document.getElementById('delivGpsStatus');
+
+  let coords = null;
+  let deliveryMethod = 'manual';
+
+  if (!forceManual) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Getting GPS location...';
+    statusDiv.style.display = 'none';
+
+    // Attempt 1
+    try {
+      const pos = await tryGps(8000);
+      coords = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+      deliveryMethod = 'gps';
+    } catch(e1) {
+      // Attempt 2
+      confirmBtn.textContent = 'GPS failed — trying again...';
+      statusDiv.innerHTML = '<span style="color:var(--warn);">GPS signal weak. Trying one more time...</span>';
+      statusDiv.style.display = 'block';
+      await new Promise(r => setTimeout(r, 1200));
+      try {
+        const pos = await tryGps(8000);
+        coords = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+        deliveryMethod = 'gps';
+        statusDiv.style.display = 'none';
+      } catch(e2) {
+        // Both failed — show retry / submit anyway
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm Delivery';
+        statusDiv.innerHTML =
+          '<div style="color:var(--warn);font-weight:600;margin-bottom:.4rem;">Unable to get GPS after 2 attempts.</div>' +
+          '<div style="font-size:.78rem;color:var(--text-2);margin-bottom:.65rem;">Please step outside or move to an open area and try again. You can also submit without GPS — the delivery will be marked as manually confirmed.</div>' +
+          '<div style="display:flex;gap:.5rem;">' +
+            '<button onclick="submitDelivery()" style="flex:1;background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.5rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Try Again</button>' +
+            '<button onclick="submitDelivery(true)" style="flex:1;background:var(--ok);color:#0A0A0A;border:none;padding:.5rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Submit Without GPS</button>' +
+          '</div>';
+        statusDiv.style.display = 'block';
+        return;
+      }
+    }
+  }
+
+  // Proceed with delivery submission
   document.getElementById('deliveryModal').style.display = 'none';
+  if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm Delivery'; }
+  if (statusDiv)  { statusDiv.style.display = 'none'; }
+  pendingDelivery = null;
 
   try {
-    const position = await new Promise((resolve, reject) => {
-      if (!navigator.geolocation) reject(new Error('GPS not available'));
-      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, enableHighAccuracy: true });
-    });
-
-    const { latitude, longitude } = position.coords;
+    const { latitude, longitude } = coords ? { latitude: coords.lat, longitude: coords.lng } : { latitude: null, longitude: null };
     const { doc, updateDoc, addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const user = auth.currentUser;
     const myName = `${window._userProfile?.firstName || ''} ${window._userProfile?.lastName || ''}`.trim() || 'Pilot';
 
-    // Mark application as completed
+    // Mark application as completed — keep GPS proof until paid out
+    const now = new Date();
     await updateDoc(doc(db, 'applications', applicationId), {
       status: 'completed',
       deliveredAt: serverTimestamp(),
+      deliveryTimestamp: now.toISOString(),
+      deliveryMethod,
       deliveryLat: latitude,
-      deliveryLng: longitude
+      deliveryLng: longitude,
+      deliveryAccuracy: coords?.accuracy || null,
+      proofRetained: true
     });
 
     // Generate invoice number
@@ -2351,15 +2440,8 @@ window.submitDelivery = async () => {
     showPanel('jobs', document.querySelectorAll('.nav-tab')[1]);
 
   } catch(e) {
-    if (e.code === 1) {
-      // GPS permission denied — still allow manual confirmation
-      if (confirm('GPS access was denied. Confirm delivery manually? Invoice will still be generated.')) {
-        console.log('Manual delivery confirmation');
-      }
-    } else {
-      console.error('Delivery confirmation error:', e);
-      alert('Could not confirm delivery. Please try again.');
-    }
+    console.error('Delivery confirmation error:', e);
+    alert('Could not confirm delivery. Please try again.');
   }
 };
 
