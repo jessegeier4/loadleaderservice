@@ -1037,6 +1037,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Failsafe: always hide loading screen after 8s
+setTimeout(() => {
+  const ls = document.getElementById('loadingScreen');
+  if (ls) ls.style.display = 'none';
+}, 8000);
+
 // Auth state check — redirect to login if not signed in
 onAuthStateChanged(auth, async (user) => {
   // Demo mode — show dashboard even without login for preview
