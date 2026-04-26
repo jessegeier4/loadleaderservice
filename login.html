@@ -411,7 +411,7 @@ if (_params.get('tab') === 'signup') {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -427,6 +427,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -525,8 +526,9 @@ async function socialAuth(providerName) {
   const orig = btn.innerHTML;
   btn.innerHTML = '<span class="spinner" style="border-top-color:#aaa"></span>Connecting...';
   btn.disabled = true;
+  const provider = providerName === 'Facebook' ? facebookProvider : googleProvider;
   try {
-    const result = await signInWithPopup(auth, googleProvider);
+    const result = await signInWithPopup(auth, provider);
     const user = result.user;
     await setDoc(doc(db, 'users', user.uid), {
       firstName: user.displayName?.split(' ')[0] || '',
@@ -544,7 +546,7 @@ async function socialAuth(providerName) {
     btn.innerHTML = orig;
     btn.disabled = false;
     if (e.code !== 'auth/popup-closed-by-user') {
-      showMsg('loginMsg', 'Google sign-in failed. Try again.', 'error');
+      showMsg('loginMsg', providerName + ' sign-in failed. Try again.', 'error');
     }
   }
 }
