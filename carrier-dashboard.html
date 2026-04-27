@@ -90,7 +90,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
 @media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.stat-card:hover{border-color:#444;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
 .stat-card.yellow::before{background:var(--yellow);}
 .stat-card.green::before{background:var(--green);}
@@ -327,10 +328,10 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="stats-row">
-      <div class="stat-card yellow"><div class="sc-label">Active Loads</div><div class="sc-val" id="cStatLoads">0</div><div class="sc-sub">Currently posted</div></div>
-      <div class="stat-card blue"><div class="sc-label">New Applications</div><div class="sc-val" id="newAppsCount">0</div><div class="sc-sub">Awaiting review</div></div>
-      <div class="stat-card green"><div class="sc-label">Pilots Hired</div><div class="sc-val" id="cStatHired">0</div><div class="sc-sub">All time</div></div>
-      <div class="stat-card orange"><div class="sc-label">Loads Completed</div><div class="sc-val" id="cStatCompleted">0</div><div class="sc-sub">This year</div></div>
+      <div class="stat-card yellow" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])"><div class="sc-label">Active Loads</div><div class="sc-val" id="cStatLoads">0</div><div class="sc-sub">Currently posted</div></div>
+      <div class="stat-card blue" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])"><div class="sc-label">New Applications</div><div class="sc-val" id="newAppsCount">0</div><div class="sc-sub">Awaiting review</div></div>
+      <div class="stat-card green" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])"><div class="sc-label">Pilots Hired</div><div class="sc-val" id="cStatHired">0</div><div class="sc-sub">All time</div></div>
+      <div class="stat-card orange" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])"><div class="sc-label">Loads Completed</div><div class="sc-val" id="cStatCompleted">0</div><div class="sc-sub">This year</div></div>
     </div>
 
     <div class="sec-head">
@@ -1002,9 +1003,11 @@ async function loadApplications() {
     if (allCarrierLoads.length > 0) {
       const loadsList = document.getElementById('myLoadsList');
       const overviewLoads = document.getElementById('overviewLoads');
-      const loadsHtml = allCarrierLoads.map(l => buildLoadCard(l)).join('');
-      if (loadsList) loadsList.innerHTML = loadsHtml;
-      if (overviewLoads) overviewLoads.innerHTML = loadsHtml;
+      if (loadsList) loadsList.innerHTML = allCarrierLoads.map(l => buildLoadCard(l)).join('');
+      const activeOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active').slice(0, 3);
+      if (overviewLoads) overviewLoads.innerHTML = activeOnly.length
+        ? activeOnly.map(l => buildLoadCard(l)).join('')
+        : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div></div>';
       const loadFilter = document.getElementById('loadFilter');
       if (loadFilter) {
         allCarrierLoads.forEach(l => {
@@ -1198,6 +1201,7 @@ window.submitLoad = async () => {
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');
+    loadApplications();
 
     // Check for pilots with matching load alerts and notify them
     try {
