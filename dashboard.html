@@ -1050,6 +1050,7 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
     <input type="hidden" id="logAppId">
+    <input type="hidden" id="logEditIndex" value="">
     <div id="logDayMsg" style="display:none;padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.75rem;"></div>
     <button onclick="submitLogDay()" style="width:100%;background:var(--accent);color:#0A0A0A;border:none;padding:.85rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Save Day Log</button>
   </div>
@@ -1734,11 +1735,13 @@ window.emailInvoice = async () => {
 
 function buildLoadLog(a) {
   if (!a.loadLog?.length) return '';
-  const rows = a.loadLog.map(e =>
-    '<div style="display:flex;align-items:baseline;gap:.5rem;font-size:.72rem;padding:.3rem 0;border-bottom:1px solid var(--line);">' +
+  const rows = a.loadLog.map((e, i) =>
+    '<div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;padding:.3rem 0;border-bottom:1px solid var(--line);">' +
     '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:42px;font-size:.7rem;flex-shrink:0;">Day ' + e.day + '</span>' +
-    '<span style="color:var(--text);">' + (e.stop || '—') + '</span>' +
-    (e.miles ? '<span style="color:var(--text-2);margin-left:auto;flex-shrink:0;">' + e.miles + ' mi</span>' : '') +
+    '<span style="color:var(--text);flex:1;">' + (e.stop || '—') + '</span>' +
+    (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;">' + e.miles + ' mi</span>' : '') +
+    '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.72rem;cursor:pointer;padding:.1rem .35rem;flex-shrink:0;" title="Edit">✏️</button>' +
+    '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.72rem;cursor:pointer;padding:.1rem .35rem;flex-shrink:0;" title="Delete">🗑️</button>' +
     '</div>'
   ).join('');
   return '<div style="margin-top:.6rem;padding:.55rem .75rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
@@ -1904,40 +1907,93 @@ window.openLogDay = (appId, currentDayCount) => {
   document.getElementById('logMiles').value = '';
   document.getElementById('logNotes').value = '';
   document.getElementById('logAppId').value = appId;
+  document.getElementById('logEditIndex').value = '';
   const msg = document.getElementById('logDayMsg');
   if (msg) msg.style.display = 'none';
+  const submitBtn = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
+  if (submitBtn) submitBtn.textContent = 'Save Day Log';
   document.getElementById('logDayModal').style.display = 'flex';
 };
 
+window.openEditLogDay = (appId, index) => {
+  const app = (window._allJobs || []).find(a => a.id === appId);
+  const entry = app?.loadLog?.[index];
+  if (!entry) return;
+  document.getElementById('logDayNum').textContent = entry.day;
+  document.getElementById('logDate').value = entry.date || '';
+  document.getElementById('logStop').value = entry.stop || '';
+  document.getElementById('logMiles').value = entry.miles || '';
+  document.getElementById('logNotes').value = entry.notes || '';
+  document.getElementById('logAppId').value = appId;
+  document.getElementById('logEditIndex').value = String(index);
+  const msg = document.getElementById('logDayMsg');
+  if (msg) msg.style.display = 'none';
+  const submitBtn = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
+  if (submitBtn) submitBtn.textContent = 'Update Day Log';
+  document.getElementById('logDayModal').style.display = 'flex';
+};
+
+window.deleteLogDay = async (appId, index) => {
+  if (!confirm('Delete this day log entry? This cannot be undone.')) return;
+  try {
+    const app = (window._allJobs || []).find(a => a.id === appId);
+    if (!app) return;
+    const newLog = (app.loadLog || []).filter((_, i) => i !== index);
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
+    window._allJobs = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
+    const fullJobList = document.getElementById('jobsList');
+    if (fullJobList) {
+      const activeApps = window._allJobs.filter(a => a.status !== 'completed');
+      const doneApps = window._allJobs.filter(a => a.status === 'completed');
+      let jHtml = activeApps.map(a => buildJobCard(a)).join('');
+      if (doneApps.length > 0) {
+        jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);"><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">Finished <span style="color:var(--accent)">Loads</span></div></div>' + doneApps.map(a => buildJobCard(a)).join('');
+      }
+      fullJobList.innerHTML = jHtml;
+    }
+    showToast('Day log deleted');
+  } catch(e) { console.error('Delete log:', e); alert('Could not delete: ' + (e.message || 'unknown error')); }
+};
+
 window.submitLogDay = async () => {
-  const appId  = document.getElementById('logAppId').value;
-  const date   = document.getElementById('logDate').value;
-  const stop   = document.getElementById('logStop').value.trim();
-  const miles  = parseInt(document.getElementById('logMiles').value) || 0;
-  const notes  = document.getElementById('logNotes').value.trim();
-  const dayNum = parseInt(document.getElementById('logDayNum').textContent) || 1;
-  const msg    = document.getElementById('logDayMsg');
-  const btn    = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
+  const appId    = document.getElementById('logAppId').value;
+  const date     = document.getElementById('logDate').value;
+  const stop     = document.getElementById('logStop').value.trim();
+  const miles    = parseInt(document.getElementById('logMiles').value) || 0;
+  const notes    = document.getElementById('logNotes').value.trim();
+  const dayNum   = parseInt(document.getElementById('logDayNum').textContent) || 1;
+  const editIdx  = document.getElementById('logEditIndex').value;
+  const isEdit   = editIdx !== '' && editIdx !== null;
+  const msg      = document.getElementById('logDayMsg');
+  const btn      = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
 
   if (!stop) {
     msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);';
     msg.textContent = 'Please enter the stop or end-of-day location.';
     return;
   }
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  if (btn) { btn.disabled = true; btn.textContent = isEdit ? 'Updating...' : 'Saving...'; }
 
   try {
     const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await updateDoc(doc(db, 'applications', appId), {
-      loadLog: arrayUnion({ day: dayNum, date, stop, miles, notes, loggedAt: new Date().toISOString() })
-    });
+    let updatedApps;
+    if (isEdit) {
+      const idx = parseInt(editIdx);
+      const app = (window._allJobs || []).find(a => a.id === appId);
+      const oldLog = app?.loadLog || [];
+      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, editedAt: new Date().toISOString() } : e);
+      await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
+      updatedApps = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
+    } else {
+      const newEntry = { day: dayNum, date, stop, miles, notes, loggedAt: new Date().toISOString() };
+      await updateDoc(doc(db, 'applications', appId), { loadLog: arrayUnion(newEntry) });
+      updatedApps = (window._allJobs || []).map(a => {
+        if (a.id !== appId) return a;
+        return { ...a, loadLog: [...(a.loadLog || []), newEntry] };
+      });
+    }
     document.getElementById('logDayModal').style.display = 'none';
-    // Refresh job list to show updated log
-    const updatedApps = (window._allJobs || []).map(a => {
-      if (a.id !== appId) return a;
-      const log = a.loadLog || [];
-      return { ...a, loadLog: [...log, { day: dayNum, date, stop, miles, notes }] };
-    });
     window._allJobs = updatedApps;
     const fullJobList = document.getElementById('jobsList');
     if (fullJobList) {
@@ -1953,7 +2009,7 @@ window.submitLogDay = async () => {
     console.error('Log day:', e);
     msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);';
     msg.textContent = 'Could not save log entry. Please try again.';
-    if (btn) { btn.disabled = false; btn.textContent = 'Save Day Log'; }
+    if (btn) { btn.disabled = false; btn.textContent = isEdit ? 'Update Day Log' : 'Save Day Log'; }
   }
 };
 
