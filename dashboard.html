@@ -2103,6 +2103,7 @@ window.showPanel = (name, el) => {
 
 // ── MESSAGING ──
 let activeConvId = null;
+let activeOtherId = null;
 let convUnsubscribe = null;
 
 async function loadConversations() {
@@ -2139,6 +2140,7 @@ async function loadConversations() {
 
 window.openConversation = async (convId, otherId, otherName) => {
   activeConvId = convId;
+  activeOtherId = otherId;
   const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   document.getElementById('chatAvatar').textContent = initials;
   document.getElementById('chatName').textContent = otherName;
@@ -2191,6 +2193,17 @@ window.sendMessage = async () => {
       lastMessage: text,
       lastMessageAt: serverTimestamp()
     });
+    if (activeOtherId) {
+      const profile = window._userProfile;
+      const senderName = `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Pilot';
+      addDoc(collection(db, 'notifications'), {
+        userId: activeOtherId,
+        type: 'new_message',
+        message: `New message from ${senderName}`,
+        read: false,
+        createdAt: serverTimestamp()
+      }).catch(() => {});
+    }
   } catch(e) { console.error('Send message:', e); }
 };
 

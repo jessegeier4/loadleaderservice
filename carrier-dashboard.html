@@ -1127,18 +1127,19 @@ window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, 
     const app = allApplications.find(a => a.id === appId);
     if (app) app.status = decision;
 
-    // Send email notification
-    try {
-      await fetch('https://load-leader.onrender.com/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: decision,
-          pilotName, pilotEmail, route, pay, carrier,
-          carrierPhone: userProfile?.phone || '',
-        })
-      });
-    } catch(e) { console.log('Email notify:', e); }
+    // Write in-app notification to pilot
+    const decidedApp = allApplications.find(a => a.id === appId);
+    if (decidedApp?.pilotId) {
+      addDoc(collection(db, 'notifications'), {
+        userId: decidedApp.pilotId,
+        type: decision === 'accepted' ? 'application_accepted' : 'application_declined',
+        message: decision === 'accepted'
+          ? `Your application for ${route} was accepted by ${carrier}!`
+          : `Your application for ${route} was not selected this time.`,
+        read: false,
+        createdAt: serverTimestamp()
+      }).catch(() => {});
+    }
 
     // Re-render card
     card.outerHTML = buildAppCard(allApplications.find(a => a.id === appId));
@@ -1914,6 +1915,7 @@ window.saveCarrierProfile = async () => {
 
 // ── CARRIER MESSAGING ──
 let cActiveConvId = null;
+let cActiveOtherId = null;
 let cConvUnsubscribe = null;
 let cSelectedRecipient = null;
 
@@ -1955,6 +1957,7 @@ async function loadCarrierConversations() {
 
 window.openCarrierConversation = async (convId, otherId, otherName) => {
   cActiveConvId = convId;
+  cActiveOtherId = otherId;
   const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('cChatAvatar').textContent = initials;
   document.getElementById('cChatName').textContent = otherName;
@@ -2007,6 +2010,15 @@ window.sendCarrierMessage = async () => {
       lastMessage: text,
       lastMessageAt: serverTimestamp()
     });
+    if (cActiveOtherId) {
+      addDoc(collection(db, 'notifications'), {
+        userId: cActiveOtherId,
+        type: 'new_message',
+        message: `New message from ${userProfile?.company || userProfile?.firstName || 'Carrier'}`,
+        read: false,
+        createdAt: serverTimestamp()
+      }).catch(() => {});
+    }
   } catch(e) { console.error('Send carrier message:', e); }
 };
 

@@ -675,18 +675,17 @@ window.submitApplication=async(loadId)=>{
       appliedAt:serverTimestamp()
     });
 
-    fetch('https://load-leader.onrender.com/api/notify',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        type:'application',
-        pilotName:`${firstName} ${lastName}`.trim(),
-        pilotEmail:currentUser.email,
-        loadId,carrier:load.carrier,
-        route:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
-        pay:load.pay,date:load.date,
-        message:document.getElementById('applyMessage').value.trim()
-      })
-    }).catch(()=>{});
+    // Write in-app notification to carrier
+    if (load.carrierId) {
+      addDoc(collection(db, 'notifications'), {
+        userId: load.carrierId,
+        type: 'new_application',
+        message: `${firstName} ${lastName} applied to your load: ${load.from} to ${load.to}`,
+        loadId,
+        read: false,
+        createdAt: serverTimestamp()
+      }).catch(() => {});
+    }
 
     appliedLoads.add(loadId);
     document.getElementById('applyModalContent').innerHTML=`
