@@ -1169,6 +1169,7 @@ window.submitLoad = async () => {
       timezone: document.getElementById('pTimezone').value,
       notes: document.getElementById('pNotes').value,
       status: 'active',
+      loadNum: (allCarrierLoads.length || 0) + 1,
       fleetFirst: document.getElementById('pFleetFirst')?.value === 'true',
       fleetFirstExpiry: document.getElementById('pFleetFirst')?.value === 'true' ? new Date(Date.now() + 8*60*60*1000).toISOString() : null,
       postedAt: serverTimestamp()
@@ -2346,7 +2347,7 @@ function buildLoadCard(l) {
   return `<div class="load-row ${rowClass}">
     <div class="load-row-top">
       <div class="load-row-left">
-        <div class="load-id">${l.id.slice(0,8).toUpperCase()}</div>
+        <div class="load-id">LOAD #${l.loadNum || '—'}<span style="font-size:.58rem;color:#333;margin-left:.5rem;letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
         <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
       </div>
       <div class="load-row-right"><span class="badge ${badgeClass}">${statusLabel}</span></div>
