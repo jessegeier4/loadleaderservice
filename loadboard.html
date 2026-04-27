@@ -233,7 +233,7 @@ if ('serviceWorker' in navigator) {
 <body>
 
 <nav>
-  <a href="dashboard.html" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
+  <a href="index.html" id="logoLink" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
   <div class="nav-links">
     <a href="loadboard.html" class="active">Board</a>
     <a href="dashboard.html">Dashboard</a>
@@ -385,6 +385,8 @@ onAuthStateChanged(auth, async (user) => {
       const firstName = userProfile.firstName || user.displayName?.split(' ')[0] || 'Pilot';
       const initials = (firstName[0] + (userProfile.lastName?.[0] || '')).toUpperCase();
       const dashUrl = userProfile.accountType === 'carrier' ? 'carrier-dashboard.html' : 'dashboard.html';
+      const logoLink = document.getElementById('logoLink');
+      if (logoLink) logoLink.href = dashUrl;
       document.getElementById('navRight').innerHTML = `
         <a href="${dashUrl}" class="user-chip">
           <div class="user-av">${initials}</div>

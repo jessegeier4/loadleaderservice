@@ -1324,6 +1324,7 @@ window.submitLoad = async () => {
       const { collection: ac, getDocs: ag } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const usersSnap = await ag(ac(db, 'users'));
       const alertEmails = [];
+      const miles = parseFloat(document.getElementById('pMiles').value) || 0;
       usersSnap.forEach(d => {
         const u = d.data();
         if (d.id === currentUser.uid) return;
@@ -1334,11 +1335,11 @@ window.submitLoad = async () => {
         if (ap.minPay && pay < ap.minPay) return;
         // Check miles threshold
         if (ap.maxMiles && miles && miles > ap.maxMiles) return;
-        // Check state match
+        // Check state match — both stored full-name (e.g. "Ohio") and 2-letter codes
         if (ap.states && ap.states.length > 0) {
-          const originState = document.getElementById('pOriginState').value.toUpperCase().slice(0,2);
-          const destState = document.getElementById('pDestState').value.toUpperCase().slice(0,2);
-          const matches = ap.states.some(s => s === originState || s === destState);
+          const oFull = document.getElementById('pOriginState').value;
+          const dFull = document.getElementById('pDestState').value;
+          const matches = ap.states.some(s => s === oFull || s === dFull);
           if (!matches) return;
         }
         if (u.email) alertEmails.push(u.email);
@@ -1502,7 +1503,7 @@ window.removeSub = (index) => {
 window.messageSub = (email) => {
   document.getElementById('cNewMsgSearch').value = email;
   document.getElementById('cNewMsgModal').style.display = 'flex';
-  showPanel('messages', document.querySelectorAll('.nav-tab')[4]);
+  showPanel('messages', window.navTab('messages'));
 };
 
 let clientLinks = JSON.parse(localStorage.getItem('ll_clients') || '[]');
@@ -1624,7 +1625,7 @@ window.confirmRemovePilot = async () => {
 };
 
 window.repeatHire = async (pilotId, pilotName, pilotEmail) => {
-  showPanel('postload', document.querySelectorAll('.nav-tab')[5]);
+  showPanel('postload', window.navTab('postload'));
   showToast('Fill in the load details to re-hire ' + pilotName);
   // Store pilot to auto-accept when load is posted
   window._repeatHirePilot = { id: pilotId, name: pilotName, email: pilotEmail };
@@ -1693,7 +1694,7 @@ window.searchPilots = async () => {
           ${p.coverage ? `<div style="font-size:.72rem;color:#666;margin-top:.1rem;">Covers: ${p.coverage}</div>` : ''}
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',document.querySelectorAll('.nav-tab')[4]);document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">💬 Message</button>
+          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',window.navTab('messages'));document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">💬 Message</button>
           <button onclick="addAcceptedToFleet('${p.id}','${p.name || 'Pilot'}','${p.state || ''}')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">+ Fleet</button>
         </div>
       </div>`;
@@ -1740,7 +1741,7 @@ window.saveAsTemplate = async () => {
       height: document.getElementById('pHeight').value,
       length: document.getElementById('pLength').value,
       weight: document.getElementById('pWeight').value,
-      loadType: document.getElementById('pLoadType').value,
+      loadType: document.getElementById('pType').value,
       pilots: document.getElementById('pPilots').value,
       dayRate: document.getElementById('pDayRate').value,
       mileRate: document.getElementById('pMileRate').value,
@@ -1764,7 +1765,7 @@ function loadTemplate(t) {
   setVal('pHeight', t.height);
   setVal('pLength', t.length);
   setVal('pWeight', t.weight);
-  setVal('pLoadType', t.loadType);
+  setVal('pType', t.loadType);
   setVal('pPilots', t.pilots);
   setVal('pDayRate', t.dayRate || t.pay);
   setVal('pMileRate', t.mileRate);
@@ -2313,7 +2314,7 @@ window.startCarrierConversation = async () => {
       read: false
     });
     document.getElementById('cNewMsgModal').style.display = 'none';
-    showPanel('messages', document.querySelectorAll('.nav-tab')[4]);
+    showPanel('messages', window.navTab('messages'));
     await loadCarrierConversations();
     openCarrierConversation(convId, cSelectedRecipient.id, cSelectedRecipient.name);
   } catch(e) { console.error('Start carrier conversation:', e); alert('Could not send message. Try again.'); }
@@ -2368,8 +2369,8 @@ window.cMarkNotifRead = async (notifId, type) => {
     const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await updateDoc(doc(db, 'notifications', notifId), { read: true });
     document.getElementById('cNotifPanel').style.display = 'none';
-    if (type === 'new_application') showPanel('applicants', document.querySelectorAll('.nav-tab')[2]);
-    else if (type === 'new_message') showPanel('messages', document.querySelectorAll('.nav-tab')[4]);
+    if (type === 'new_application') showPanel('applicants', window.navTab('applicants'));
+    else if (type === 'new_message') showPanel('messages', window.navTab('messages'));
     loadCarrierNotifications(auth.currentUser?.uid);
   } catch(e) { console.error(e); }
 };
@@ -2736,6 +2737,9 @@ window.handleCarrierAvatarUpload = async (input) => {
   }
 };
 
+// Lookup a nav tab by panel name — robust to reordering
+window.navTab = (panelName) => document.querySelector(`.nav-tab[onclick*="showPanel('${panelName}'"]`);
+
 window.showPanel = (name, el) => {
   if (name === 'fleet') loadFleet();
   if (name === 'messages') loadCarrierConversations();
@@ -2745,6 +2749,8 @@ window.showPanel = (name, el) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelectorAll('.nav-tab, .mn-item').forEach(t => t.classList.remove('active'));
+  // If caller didn't pass a button, look it up by name so the highlight still updates
+  if (!el) el = window.navTab(name);
   if (el) el.classList.add('active');
 };
 
