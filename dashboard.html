@@ -1736,17 +1736,17 @@ window.emailInvoice = async () => {
 function buildLoadLog(a) {
   if (!a.loadLog?.length) return '';
   const rows = a.loadLog.map((e, i) =>
-    '<div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;padding:.3rem 0;border-bottom:1px solid var(--line);">' +
-    '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:42px;font-size:.7rem;flex-shrink:0;">Day ' + e.day + '</span>' +
-    '<span style="color:var(--text);flex:1;">' + (e.stop || '—') + '</span>' +
-    (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;">' + e.miles + ' mi</span>' : '') +
-    '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.72rem;cursor:pointer;padding:.1rem .35rem;flex-shrink:0;" title="Edit">✏️</button>' +
-    '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.72rem;cursor:pointer;padding:.1rem .35rem;flex-shrink:0;" title="Delete">🗑️</button>' +
+    '<div style="display:flex;align-items:center;gap:.4rem;font-size:.7rem;padding:.25rem 0;border-bottom:1px solid var(--line);">' +
+    '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:34px;font-size:.65rem;flex-shrink:0;">D' + e.day + '</span>' +
+    '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.stop || '—') + '</span>' +
+    (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;font-size:.65rem;">' + e.miles + 'mi</span>' : '') +
+    '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.7rem;cursor:pointer;padding:0 .25rem;flex-shrink:0;line-height:1;" title="Edit">✏️</button>' +
+    '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.7rem;cursor:pointer;padding:0 .25rem;flex-shrink:0;line-height:1;" title="Delete">🗑️</button>' +
     '</div>'
   ).join('');
-  return '<div style="margin-top:.6rem;padding:.55rem .75rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
-    '<div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:.3rem;">Load Log · ' +
-    a.loadLog.length + ' day' + (a.loadLog.length !== 1 ? 's' : '') + '</div>' +
+  return '<div style="margin-top:.5rem;padding:.45rem .65rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
+    '<div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:.2rem;">Log · ' +
+    a.loadLog.length + 'd</div>' +
     rows + '</div>';
 }
 
@@ -1911,7 +1911,7 @@ window.openLogDay = (appId, currentDayCount) => {
   const msg = document.getElementById('logDayMsg');
   if (msg) msg.style.display = 'none';
   const submitBtn = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
-  if (submitBtn) submitBtn.textContent = 'Save Day Log';
+  if (submitBtn) { submitBtn.textContent = 'Save Day Log'; submitBtn.disabled = false; }
   document.getElementById('logDayModal').style.display = 'flex';
 };
 
@@ -1929,7 +1929,7 @@ window.openEditLogDay = (appId, index) => {
   const msg = document.getElementById('logDayMsg');
   if (msg) msg.style.display = 'none';
   const submitBtn = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
-  if (submitBtn) submitBtn.textContent = 'Update Day Log';
+  if (submitBtn) { submitBtn.textContent = 'Update Day Log'; submitBtn.disabled = false; }
   document.getElementById('logDayModal').style.display = 'flex';
 };
 
