@@ -1787,6 +1787,7 @@ function buildJobCard(a) {
           ${isAccepted ? '<div class="job-meta-item" style="color:var(--ok)">✓ Active Run</div>' : ''}
           ${isCompleted ? '<div class="job-meta-item" style="color:var(--text-2)">✓ Delivered</div>' : ''}
         </div>
+        ${(a.loadQuickPay || a.loadTextOnly) ? `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem;">${a.loadQuickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);font-size:.65rem;">💸 Quick Pay</span>' : ''}${a.loadTextOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);font-size:.65rem;">💬 Text Only</span>' : ''}</div>` : ''}
         ${isAccepted ? buildLoadLog(a) : ''}
         ${isAccepted ? `<div id="weather-${a.id}" data-weather-load="${a.id}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>

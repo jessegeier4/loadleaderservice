@@ -443,6 +443,9 @@ async function fetchLoads() {
           mileThreshold: data.mileThreshold || 0,
           loadNum: data.loadNum || 0,
           truckingCompany: data.truckingCompany || '',
+          quickPay: !!data.quickPay,
+          textOnly: !!data.textOnly,
+          rawStatus: data.status || 'active',
           date: data.date || '',
           status: data.status === 'active' ? 'open' : (data.status || 'open'),
           carrier: data.carrierName || 'Carrier',
@@ -506,7 +509,10 @@ function renderLoads() {
     <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
       <div class="card-top">
         <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:8px;color:var(--text-3);opacity:.5;margin-left:.4rem;letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
-        <div class="badges">
+        <div class="badges" style="display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end;">
+          ${l.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay</span>' : ''}
+          ${l.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);">💬 Text</span>' : ''}
+          ${l.rawStatus === 'filled' ? '<span class="badge" style="background:rgba(160,160,160,.15);color:var(--text-2);border:1px solid var(--line-strong);">✓ Covered</span>' : ''}
           ${appliedLoads.has(l.id)
             ? '<span class="badge badge-applied">Applied</span>'
             : `<span class="badge badge-${l.status==='new'?'new':l.status==='urgent'?'urgent':'open'}">${l.status==='new'?'New':l.status==='urgent'?'Urgent':'Open'}</span>`
@@ -630,6 +636,7 @@ window.openApplyModal=(loadId)=>{
           ${load.type ? `<div class="mls-item">Type<strong>${load.type}</strong></div>` : ''}
           ${load.equipment ? `<div class="mls-item" style="grid-column:1/-1;">Equipment<strong>${load.equipment}</strong></div>` : ''}
           ${load.permitsUploaded ? '<div class="mls-item" style="grid-column:1/-1;color:var(--ok);">✓ Permits Uploaded</div>' : ''}
+          ${(load.quickPay || load.textOnly) ? `<div class="mls-item" style="grid-column:1/-1;display:flex;gap:.4rem;flex-wrap:wrap;">${load.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay (within 7 days)</span>' : ''}${load.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);">💬 Text Only</span>' : ''}</div>` : ''}
         </div>
         ${load.notes ? `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:6px;padding:.65rem .85rem;margin-top:.65rem;font-size:.78rem;color:var(--text-2);line-height:1.5;"><div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:.25rem;">Special Instructions</div>${load.notes}</div>` : ''}
         <div class="mls-pay">${load.dayRate ? '$' + load.dayRate + '/day' + (load.mileRate ? ' + $' + load.mileRate + '/mi' : '') : '$' + (load.pay || 0).toLocaleString() + ' per pilot'}</div>
@@ -695,6 +702,8 @@ window.submitApplication=async(loadId)=>{
       loadDayRate: load.dayRate || 0,
       loadMileRate: load.mileRate || 0,
       truckingCompany: load.truckingCompany || '',
+      loadQuickPay: !!load.quickPay,
+      loadTextOnly: !!load.textOnly,
       loadMileThreshold: load.mileThreshold || 0,
       loadDate:load.date,
       appliedAt:serverTimestamp()

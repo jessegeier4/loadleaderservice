@@ -460,6 +460,20 @@ if ('serviceWorker' in navigator) {
       </div>
       <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
 
+      <div class="form-group">
+        <label>Load Tags <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(optional — appear on the load card)</span></label>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <label style="display:flex;align-items:center;gap:.6rem;padding:.55rem .85rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:6px;cursor:pointer;font-size:.85rem;color:#ccc;text-transform:none;letter-spacing:0;font-weight:500;">
+            <input type="checkbox" id="pQuickPay" style="width:18px;height:18px;accent-color:var(--green);flex-shrink:0;">
+            <span>💸 <strong style="color:var(--green);">Quick Pay</strong> — pays within 7 days of delivery</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:.6rem;padding:.55rem .85rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:6px;cursor:pointer;font-size:.85rem;color:#ccc;text-transform:none;letter-spacing:0;font-weight:500;">
+            <input type="checkbox" id="pTextOnly" style="width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;">
+            <span>💬 <strong style="color:var(--blue);">Text Only</strong> — please text, do not call</span>
+          </label>
+        </div>
+      </div>
+
       <div id="payEstimate" style="display:none;background:rgba(245,196,0,.06);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.85rem;color:var(--yellow);line-height:1.55;">
         <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.35rem;font-weight:600;">Estimated Pay Per Pilot</div>
         <div id="payEstimateValue" style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--yellow);"></div>
@@ -1328,6 +1342,8 @@ window.submitLoad = async () => {
       date, time: document.getElementById('pTime').value,
       timezone: document.getElementById('pTimezone').value,
       notes: document.getElementById('pNotes').value,
+      quickPay: document.getElementById('pQuickPay')?.checked || false,
+      textOnly: document.getElementById('pTextOnly')?.checked || false,
       fleetFirst: document.getElementById('pFleetFirst')?.value === 'true',
       fleetFirstExpiry: document.getElementById('pFleetFirst')?.value === 'true' ? new Date(Date.now() + 8*60*60*1000).toISOString() : null
     };
@@ -2565,6 +2581,8 @@ window.editLoad = (loadId) => {
   setVal('pType', l.type);
   setVal('pEquipment', l.equipment);
   setVal('pTruckingCompany', l.truckingCompany);
+  const qp = document.getElementById('pQuickPay'); if (qp) qp.checked = !!l.quickPay;
+  const to = document.getElementById('pTextOnly'); if (to) to.checked = !!l.textOnly;
   setVal('pPilots', l.pilots);
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
@@ -2598,6 +2616,8 @@ window.repostLoad = (loadId) => {
   setVal('pType', l.type);
   setVal('pEquipment', l.equipment);
   setVal('pTruckingCompany', l.truckingCompany);
+  const qp = document.getElementById('pQuickPay'); if (qp) qp.checked = !!l.quickPay;
+  const to = document.getElementById('pTextOnly'); if (to) to.checked = !!l.textOnly;
   setVal('pPilots', l.pilots);
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
@@ -2620,6 +2640,7 @@ window.cancelEditLoad = () => {
   document.getElementById('postEditBanner').style.display = 'none';
   document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
   ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pTruckingCompany','pDayRate','pMileRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['pQuickPay','pTextOnly'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
   const dateEl = document.getElementById('pDate');
   if (dateEl) dateEl.value = '';
 };
@@ -2709,7 +2730,12 @@ function buildLoadCard(l) {
         <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:.58rem;color:#333;margin-left:${l.loadNum ? '.5rem' : '0'};letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
         <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
       </div>
-      <div class="load-row-right"><span class="badge ${badgeClass}">${statusLabel}</span></div>
+      <div class="load-row-right" style="display:flex;flex-wrap:wrap;gap:.35rem;justify-content:flex-end;">
+        ${l.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay</span>' : ''}
+        ${l.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3);">💬 Text Only</span>' : ''}
+        ${s === 'filled' ? '<span class="badge" style="background:rgba(160,160,160,.15);color:#aaa;border:1px solid #333;">✓ Covered</span>' : ''}
+        <span class="badge ${badgeClass}">${statusLabel}</span>
+      </div>
     </div>
     <div class="load-meta">
       <div class="lm-item">Width<strong>${l.width||'—'}</strong></div>
