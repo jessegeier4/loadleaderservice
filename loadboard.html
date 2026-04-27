@@ -233,9 +233,8 @@ if ('serviceWorker' in navigator) {
 <body>
 
 <nav>
-  <a href="index.html" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
+  <a href="dashboard.html" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
     <a href="loadboard.html" class="active">Board</a>
     <a href="dashboard.html">Dashboard</a>
   </div>
@@ -439,6 +438,7 @@ async function fetchLoads() {
           dayRate: data.dayRate || 0,
           mileRate: data.mileRate || 0,
           mileThreshold: data.mileThreshold || 0,
+          loadNum: data.loadNum || 0,
           date: data.date || '',
           status: data.status === 'active' ? 'open' : (data.status || 'open'),
           carrier: data.carrierName || 'Carrier',
@@ -501,7 +501,7 @@ function renderLoads() {
   grid.innerHTML = page.map((l,i) => `
     <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
       <div class="card-top">
-        <div class="load-id">${l.id}</div>
+        <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:8px;color:var(--text-3);opacity:.5;margin-left:.4rem;letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
         <div class="badges">
           ${appliedLoads.has(l.id)
             ? '<span class="badge badge-applied">Applied</span>'
@@ -581,7 +581,7 @@ window.openApplyModal=(loadId)=>{
 
   if (!currentUser) {
     content.innerHTML=`
-      <div class="modal-head"><div class="modal-title">Apply for <span>${load.id}</span></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
+      <div class="modal-head"><div class="modal-title">Apply for <span>${load.loadNum ? 'Load #' + load.loadNum : load.id.slice(0,8).toUpperCase()}</span></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
       <div class="modal-body">
         <div class="login-prompt">
           <div class="login-prompt-icon">🚩</div>
