@@ -406,6 +406,9 @@ const _params = new URLSearchParams(window.location.search);
 if (_params.get('tab') === 'signup') {
   document.addEventListener('DOMContentLoaded', () => {
     switchTab('signup');
+    const role = _params.get('role');
+    if (role === 'carrier') selectType('carrier');
+    else if (role === 'pilot') selectType('pilot');
     setTimeout(() => { const f = document.getElementById('firstName'); if(f) f.focus(); }, 50);
   });
 }

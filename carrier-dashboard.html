@@ -91,8 +91,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
 @media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s;}
-.stat-card:hover{border-color:#444;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,background .15s,transform .15s;}
+.stat-card:hover{border-color:var(--yellow);background:var(--mid);transform:translateY(-1px);}
 .stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
 .stat-card.yellow::before{background:var(--yellow);}
 .stat-card.green::before{background:var(--green);}
@@ -2863,7 +2863,7 @@ function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
+  setTimeout(() => toast.classList.remove('show'), 5000);
 }
 </script>
 </body>

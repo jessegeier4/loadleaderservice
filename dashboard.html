@@ -89,8 +89,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
 @media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
 @media(max-width:480px){.stats-row{grid-template-columns:1fr;}}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s;}
-.stat-card:hover{border-color:#444;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,background .15s,transform .15s;}
+.stat-card:hover{border-color:var(--yellow);background:var(--mid);transform:translateY(-1px);}
 .stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0;}
 .stat-card.yellow::before{background:var(--yellow);}
 .stat-card.green::before{background:var(--green);}
@@ -2603,11 +2603,13 @@ async function loadConversations() {
     const convs = [];
     snap.forEach(d => convs.push({ id: d.id, ...d.data() }));
     convs.sort((a, b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
+    let totalUnread = 0;
     convList.innerHTML = convs.map(c => {
       const otherId = c.participants.find(p => p !== auth.currentUser.uid);
       const otherName = c.participantNames?.[otherId] || 'User';
       const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const hasUnread = c.unread?.[auth.currentUser.uid] > 0;
+      if (hasUnread) totalUnread++;
       return `<div class="conv-item ${activeConvId === c.id ? 'active' : ''}" onclick="openConversation('${c.id}','${otherId}','${otherName}')">
         <div class="conv-av">${initials}</div>
         <div style="flex:1;min-width:0;">
@@ -2617,6 +2619,8 @@ async function loadConversations() {
         ${hasUnread ? '<div class="conv-unread-dot"></div>' : ''}
       </div>`;
     }).join('');
+    const dot = document.getElementById('msgDot');
+    if (dot) dot.style.display = totalUnread > 0 ? 'inline-block' : 'none';
   } catch(e) { console.error('Load conversations:', e); }
 }
 
