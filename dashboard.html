@@ -1420,75 +1420,96 @@ function buildManualInvoiceForm() {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
   const invoiceNum = 'LL-' + Date.now().toString().slice(-6);
+  const ctr = (id, label) => `<div style="display:flex;align-items:center;gap:.5rem;">
+    <button onclick="window.invAdjust('${id}',-1)" style="width:28px;height:28px;background:var(--mid);border:1px solid #333;color:#aaa;border-radius:4px;cursor:pointer;font-size:1rem;line-height:1;font-family:sans-serif;">−</button>
+    <span id="${id}Count" style="min-width:28px;text-align:center;font-weight:700;font-size:.95rem;">0</span>
+    <button onclick="window.invAdjust('${id}',1)" style="width:28px;height:28px;background:var(--mid);border:1px solid #333;color:#aaa;border-radius:4px;cursor:pointer;font-size:1rem;line-height:1;font-family:sans-serif;">+</button>
+  </div>`;
   return `
-    <div class="inv-form">
-      <div class="inv-section-title">Invoice Details</div>
-      <div class="inv-grid">
-        <div>
-          <label class="inv-label">Invoice #</label>
-          <input type="text" class="inv-input" id="invNum" value="${invoiceNum}">
+    <details style="margin-top:.75rem;">
+      <summary style="cursor:pointer;padding:.75rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:6px;font-size:.85rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+        <span>📋 Manual Invoice</span><span style="font-size:.7rem;color:var(--muted);">Tap to open</span>
+      </summary>
+      <div class="inv-form" style="margin-top:.75rem;">
+        <div class="inv-section-title">Invoice Details</div>
+        <div class="inv-grid">
+          <div><label class="inv-label">Invoice #</label><input type="text" class="inv-input" id="invNum" value="${invoiceNum}"></div>
+          <div><label class="inv-label">Date</label><input type="date" class="inv-input" id="invDate" value="${dateStr}" style="color-scheme:dark;"></div>
+          <div><label class="inv-label">Pick Up</label><input type="text" class="inv-input" id="invPickup" placeholder="City, State"></div>
+          <div><label class="inv-label">Delivery</label><input type="text" class="inv-input" id="invDelivery" placeholder="City, State"></div>
         </div>
-        <div>
-          <label class="inv-label">Date</label>
-          <input type="date" class="inv-input" id="invDate" value="${dateStr}" style="color-scheme:dark;">
+        <div class="inv-section-title">Load Information</div>
+        <div class="inv-grid">
+          <div><label class="inv-label">Company / Carrier</label><input type="text" class="inv-input" id="invCompany" placeholder="Carrier company name"></div>
+          <div><label class="inv-label">Driver Name</label><input type="text" class="inv-input" id="invDriver" placeholder="Your full name"></div>
+          <div><label class="inv-label">Load #</label><input type="text" class="inv-input" id="invLoadNum" placeholder="e.g. LL-00481"></div>
+          <div><label class="inv-label">Truck #</label><input type="text" class="inv-input" id="invTruck" placeholder="e.g. T-1042"></div>
+          <div><label class="inv-label">Trailer #</label><input type="text" class="inv-input" id="invTrailer" placeholder="e.g. TR-2281"></div>
+          <div><label class="inv-label">Total Miles</label><input type="text" inputmode="numeric" class="inv-input" id="invMiles" placeholder="e.g. 190"></div>
         </div>
-        <div>
-          <label class="inv-label">Pick Up Location</label>
-          <input type="text" class="inv-input" id="invPickup" placeholder="City, State">
+        <div class="inv-section-title" style="margin-top:1rem;">Day Logs</div>
+        <div id="invDayLogs" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
+        <button onclick="window.addInvDay()" style="width:100%;background:transparent;border:1px dashed #2a2a2a;color:#666;padding:.5rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;margin-bottom:.25rem;">+ Add Day</button>
+        <div class="inv-section-title" style="margin-top:1rem;">Extras</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+          <div>
+            <label class="inv-label">Overnight Stays</label>
+            ${ctr('invOvernight','Overnight Stays')}
+            <input type="text" inputmode="numeric" class="inv-input" id="invOvernightRate" placeholder="Rate per night ($)" style="margin-top:.4rem;">
+          </div>
+          <div>
+            <label class="inv-label">No-Go Days</label>
+            ${ctr('invNogo','No-Go Days')}
+            <input type="text" inputmode="numeric" class="inv-input" id="invNogoRate" placeholder="Rate per no-go ($)" style="margin-top:.4rem;">
+          </div>
         </div>
-        <div>
-          <label class="inv-label">Delivery Location</label>
-          <input type="text" class="inv-input" id="invDelivery" placeholder="City, State">
+        <div class="inv-section-title">Payment</div>
+        <div class="inv-grid">
+          <div><label class="inv-label">Base Pay ($)</label><input type="text" inputmode="numeric" class="inv-input" id="invPay" placeholder="e.g. 550"></div>
+          <div><label class="inv-label">Carrier Email</label><input type="email" class="inv-input" id="invCarrierEmail" placeholder="carrier@email.com"></div>
         </div>
-      </div>
-      <div class="inv-section-title">Load Information</div>
-      <div class="inv-grid">
-        <div>
-          <label class="inv-label">Company / Carrier</label>
-          <input type="text" class="inv-input" id="invCompany" placeholder="Carrier company name">
-        </div>
-        <div>
-          <label class="inv-label">Driver Name</label>
-          <input type="text" class="inv-input" id="invDriver" placeholder="Your full name">
-        </div>
-        <div>
-          <label class="inv-label">Load #</label>
-          <input type="text" class="inv-input" id="invLoadNum" placeholder="e.g. LL-00481">
-        </div>
-        <div>
-          <label class="inv-label">Truck #</label>
-          <input type="text" class="inv-input" id="invTruck" placeholder="e.g. T-1042">
-        </div>
-        <div>
-          <label class="inv-label">Trailer #</label>
-          <input type="text" class="inv-input" id="invTrailer" placeholder="e.g. TR-2281">
-        </div>
-        <div>
-          <label class="inv-label">Miles with Load</label>
-          <input type="number" class="inv-input" id="invMiles" placeholder="e.g. 190">
-        </div>
-      </div>
-      <div class="inv-section-title">Payment</div>
-      <div class="inv-grid">
-        <div>
-          <label class="inv-label">Total Pay ($)</label>
-          <input type="number" class="inv-input" id="invPay" placeholder="e.g. 550">
-        </div>
-        <div>
-          <label class="inv-label">Carrier Email (for sending)</label>
-          <input type="email" class="inv-input" id="invCarrierEmail" placeholder="carrier@email.com">
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem;">
+          <button onclick="previewInvoice()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">👁 Preview</button>
+          <button onclick="downloadInvoice()" style="background:var(--yellow);color:var(--black);border:none;padding:.7rem 1.5rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;">⬇ Download PDF</button>
+          <button onclick="emailInvoice()" style="background:transparent;border:1px solid rgba(96,165,250,.3);color:var(--blue);padding:.7rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">📧 Email to Carrier</button>
         </div>
       </div>
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem;">
-        <button onclick="previewInvoice()" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.7rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">👁 Preview</button>
-        <button onclick="downloadInvoice()" style="background:var(--yellow);color:var(--black);border:none;padding:.7rem 1.5rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;">⬇ Download PDF</button>
-        <button onclick="emailInvoice()" style="background:transparent;border:1px solid rgba(96,165,250,.3);color:var(--blue);padding:.7rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">📧 Email to Carrier</button>
-      </div>
-    </div>
-    <div id="invPreviewWrap" style="display:none;"></div>`;
+      <div id="invPreviewWrap" style="display:none;"></div>
+    </details>`;
 }
 
+let invDayCount = 0;
+window.addInvDay = () => {
+  invDayCount++;
+  const n = invDayCount;
+  const div = document.createElement('div');
+  div.id = 'invDay-' + n;
+  div.style.cssText = 'display:grid;grid-template-columns:40px 1fr 90px 1fr 28px;gap:.35rem;align-items:center;';
+  div.innerHTML = `<span style="font-size:.72rem;font-weight:700;color:var(--yellow);">Day ${n}</span>
+    <input type="date" class="inv-input" id="invDayDate-${n}" style="color-scheme:dark;font-size:.78rem;padding:.4rem .6rem;">
+    <input type="text" inputmode="numeric" class="inv-input" id="invDayMiles-${n}" placeholder="Miles" style="font-size:.78rem;padding:.4rem .6rem;">
+    <input type="text" class="inv-input" id="invDayNotes-${n}" placeholder="Notes / stop location" style="font-size:.78rem;padding:.4rem .6rem;">
+    <button onclick="window.removeInvDay(${n})" style="background:transparent;border:1px solid #333;color:#666;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:.7rem;font-family:sans-serif;">✕</button>`;
+  document.getElementById('invDayLogs').appendChild(div);
+};
+window.removeInvDay = (n) => { const el = document.getElementById('invDay-' + n); if (el) el.remove(); };
+window.invAdjust = (id, delta) => {
+  const el = document.getElementById(id + 'Count');
+  if (el) el.textContent = Math.max(0, (parseInt(el.textContent) || 0) + delta);
+};
+
 function getManualInvoiceData() {
+  const days = [];
+  document.querySelectorAll('[id^="invDay-"]').forEach(el => {
+    const n = el.id.split('-')[1];
+    days.push({ day: n, date: document.getElementById('invDayDate-' + n)?.value || '', miles: document.getElementById('invDayMiles-' + n)?.value || '', notes: document.getElementById('invDayNotes-' + n)?.value || '' });
+  });
+  const overnights = parseInt(document.getElementById('invOvernightCount')?.textContent) || 0;
+  const overnightRate = parseFloat(document.getElementById('invOvernightRate')?.value) || 0;
+  const nogo = parseInt(document.getElementById('invNogoCount')?.textContent) || 0;
+  const nogoRate = parseFloat(document.getElementById('invNogoRate')?.value) || 0;
+  const basePay = parseFloat(document.getElementById('invPay')?.value) || 0;
+  const totalPay = basePay + (overnights * overnightRate) + (nogo * nogoRate);
   return {
     invoiceNum: document.getElementById('invNum')?.value || '',
     date: new Date(document.getElementById('invDate')?.value || Date.now()).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),
@@ -1500,7 +1521,7 @@ function getManualInvoiceData() {
     truckNum: document.getElementById('invTruck')?.value || '',
     trailerNum: document.getElementById('invTrailer')?.value || '',
     miles: document.getElementById('invMiles')?.value || '',
-    pay: document.getElementById('invPay')?.value || '0',
+    pay: basePay, totalPay, overnights, overnightRate, nogo, nogoRate, days,
     route: `${document.getElementById('invPickup')?.value || ''} → ${document.getElementById('invDelivery')?.value || ''}`
   };
 }
@@ -2645,35 +2666,43 @@ window.submitDelivery = async (forceManual) => {
 };
 
 function buildInvoiceHtml(data) {
+  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${label}</div><div style="font-weight:600;">${val || '—'}</div></div>`;
+  const daysHtml = data.days?.length ? `
+    <div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Day Logs</div>
+      ${data.days.map(d => `<div style="display:flex;gap:.75rem;padding:.4rem 0;border-bottom:1px solid #1a1a1a;font-size:.8rem;">
+        <span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${d.day}</span>
+        <span style="color:#888;">${d.date}</span>
+        ${d.miles ? `<span style="color:#888;">${d.miles} mi</span>` : ''}
+        ${d.notes ? `<span style="color:#aaa;flex:1;">${d.notes}</span>` : ''}
+      </div>`).join('')}
+    </div>` : '';
+  const extrasHtml = (data.overnights > 0 || data.nogo > 0) ? `
+    <div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Extras</div>
+      ${data.overnights > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #1a1a1a;font-size:.82rem;"><span>Overnight stays (${data.overnights} x $${data.overnightRate})</span><span style="color:#f5c400;">$${(data.overnights * data.overnightRate).toFixed(2)}</span></div>` : ''}
+      ${data.nogo > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;font-size:.82rem;"><span>No-go days (${data.nogo} x $${data.nogoRate})</span><span style="color:#f5c400;">$${(data.nogo * data.nogoRate).toFixed(2)}</span></div>` : ''}
+    </div>` : '';
   return `
     <div style="font-family:'Arial',sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#f0ede6;padding:2rem;border-radius:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #f5c400;">
         <div style="font-family:'Arial Black',sans-serif;font-size:1.6rem;font-weight:900;color:#f5c400;letter-spacing:2px;">LOADLEADER</div>
-        <div style="text-align:right;">
-          <div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div>
-          <div style="font-size:.82rem;color:#888;">#${data.invoiceNum}</div>
-        </div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${data.invoiceNum}</div></div>
       </div>
-      <div style="background:#1a1a1a;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Load #</div><div style="font-weight:600;">${data.loadNum}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Date</div><div style="font-weight:600;">${data.date}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Pick Up</div><div style="font-weight:600;">${data.route?.split('→')[0]?.trim() || '—'}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Delivery</div><div style="font-weight:600;">${data.route?.split('→')[1]?.trim() || '—'}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Driver</div><div style="font-weight:600;">${data.pilotName}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Company</div><div style="font-weight:600;">${data.carrierName || '—'}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Truck #</div><div style="font-weight:600;">${data.truckNum || '—'}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Trailer #</div><div style="font-weight:600;">${data.trailerNum || '—'}</div></div>
-          <div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.3rem;">Miles with Load</div><div style="font-weight:600;">${data.miles || '—'} mi</div></div>
-        </div>
+      <div style="background:#1a1a1a;border-radius:8px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
+        ${row('Load #', data.loadNum)} ${row('Date', data.date)}
+        ${row('Pick Up', data.route?.split('→')[0]?.trim())} ${row('Delivery', data.route?.split('→')[1]?.trim())}
+        ${row('Driver', data.pilotName)} ${row('Company', data.carrierName)}
+        ${row('Truck #', data.truckNum)} ${row('Trailer #', data.trailerNum)}
+        ${row('Miles', data.miles ? data.miles + ' mi' : '')}
       </div>
-      <div style="background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:1.25rem;text-align:center;margin-bottom:1.5rem;">
-        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
-        <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${data.pay}</div>
+      ${daysHtml}${extrasHtml}
+      <div style="background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:1.25rem;margin-bottom:1rem;">
+        ${data.totalPay !== data.pay && data.pay ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Base Pay</span><span>$${Number(data.pay).toFixed(2)}</span></div>` : ''}
+        <div style="text-align:center;"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
+        <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${Number(data.totalPay || data.pay || 0).toFixed(2)}</div></div>
       </div>
-      <div style="font-size:.72rem;color:#444;text-align:center;margin-top:1rem;">
-        Generated by LoadLeader · loadleaderservice.com · ${data.date}
-      </div>
+      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${data.date}</div>
     </div>`;
 }
 
