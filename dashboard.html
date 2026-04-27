@@ -983,8 +983,13 @@ if ('serviceWorker' in navigator) {
         <input type="text" id="delivTrailer" placeholder="e.g. TR-2281" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;">
       </div>
       <div>
-        <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Miles with Load <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="text" inputmode="numeric" id="delivMiles" placeholder="e.g. 190" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;">
+        <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Carrier / Broker Load #</label>
+        <input type="text" id="delivLoadNum" placeholder="e.g. 50342 or LL-00481" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;">
+        <div style="font-size:.65rem;color:#555;margin-top:.25rem;">Use the load number from your dispatch sheet so it matches the broker and trucking records.</div>
+      </div>
+      <div>
+        <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Total Miles <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(auto-summed from day logs)</span></label>
+        <div id="delivMilesDisplay" style="background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;">—</div>
       </div>
     </div>
     <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:.75rem;margin-bottom:1.1rem;font-size:.78rem;color:var(--green);line-height:1.6;">
@@ -2883,8 +2888,20 @@ const origOnAuthChanged = window.__origAuth;
 let pendingDelivery = null;
 
 window.confirmDelivery = async (applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate, mileRate, mileThreshold) => {
-  // Show delivery details modal first
-  pendingDelivery = { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate: dayRate || 0, mileRate: mileRate || 0, mileThreshold: mileThreshold || 0 };
+  // Compute total miles from logged days
+  const app = (window._allJobs || []).find(a => a.id === applicationId);
+  const totalMiles = (app?.loadLog || []).reduce((sum, e) => sum + (parseFloat(e.miles) || 0), 0);
+  pendingDelivery = { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate: dayRate || 0, mileRate: mileRate || 0, mileThreshold: mileThreshold || 0, totalMiles };
+  // Reset and prefill the modal
+  document.getElementById('delivTruck').value = '';
+  document.getElementById('delivTrailer').value = '';
+  document.getElementById('delivLoadNum').value = '';
+  document.getElementById('delivMilesDisplay').textContent = totalMiles > 0
+    ? totalMiles + ' mi (across ' + (app?.loadLog?.length || 0) + ' day log' + ((app?.loadLog?.length || 0) !== 1 ? 's' : '') + ')'
+    : 'No day logs yet — log days before confirming delivery';
+  document.getElementById('delivMilesDisplay').style.color = totalMiles > 0 ? 'var(--white)' : 'var(--warn)';
+  const btn = document.getElementById('delivConfirmBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Confirm Delivery'; }
   document.getElementById('deliveryModal').style.display = 'flex';
 };
 
@@ -2895,10 +2912,11 @@ const tryGps = (timeout) => new Promise((resolve, reject) => {
 
 window.submitDelivery = async (forceManual) => {
   if (!pendingDelivery) return;
-  const { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate, mileRate, mileThreshold } = pendingDelivery;
+  const { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate, mileRate, mileThreshold, totalMiles } = pendingDelivery;
   const truckNum = document.getElementById('delivTruck').value.trim();
   const trailerNum = document.getElementById('delivTrailer').value.trim();
-  const miles = document.getElementById('delivMiles').value.trim();
+  const enteredLoadNum = document.getElementById('delivLoadNum').value.trim();
+  const miles = String(totalMiles || 0);
 
   const confirmBtn = document.getElementById('delivConfirmBtn');
   const statusDiv  = document.getElementById('delivGpsStatus');
@@ -3031,7 +3049,7 @@ window.submitDelivery = async (forceManual) => {
     // Build invoice data
     const invoiceData = {
       invoiceNum,
-      loadNum: applicationId.slice(0, 8).toUpperCase(),
+      loadNum: enteredLoadNum || applicationId.slice(0, 8).toUpperCase(),
       date: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       route: loadRoute,
       pickup: loadRoute?.split('→')[0]?.trim() || '',
@@ -3047,6 +3065,8 @@ window.submitDelivery = async (forceManual) => {
       totalPay,
       truckNum: truckNum || '—',
       trailerNum: trailerNum || '—',
+      truckingCompany: (window._allJobs || []).find(a => a.id === applicationId)?.truckingCompany || '',
+      carrierName: (window._allJobs || []).find(a => a.id === applicationId)?.carrier || '',
       miles: miles || '—',
       createdAt: serverTimestamp(),
       status: 'generated'
@@ -3141,7 +3161,8 @@ function buildInvoiceHtml(data) {
       <div style="background:#1a1a1a;border-radius:8px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
         ${row('Load #', data.loadNum)} ${row('Date', data.date)}
         ${row('Pick Up', data.route?.split('→')[0]?.trim())} ${row('Delivery', data.route?.split('→')[1]?.trim())}
-        ${row('Driver', data.pilotName)} ${row('Company', data.carrierName)}
+        ${row('Driver', data.pilotName)} ${row('Carrier / Broker', data.carrierName)}
+        ${data.truckingCompany ? `<div style="grid-column:1/-1;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">Trucking Company</div><div style="font-weight:600;">${data.truckingCompany}</div></div>` : ''}
         ${row('Truck #', data.truckNum)} ${row('Trailer #', data.trailerNum)}
         ${row('Miles', data.miles ? data.miles + ' mi' : '')}
       </div>
