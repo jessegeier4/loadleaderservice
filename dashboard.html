@@ -2949,26 +2949,39 @@ window.submitDelivery = async (forceManual) => {
     try {
       const dest = pendingDelivery?.loadRoute?.split('→')[1]?.trim() || '';
       if (dest) {
-        const city = dest.replace(/\s+[A-Z]{2}$/, '').trim();
-        const gr = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=en&format=json');
-        const gd = await gr.json();
-        if (gd.results?.length) {
-          const dlat = gd.results[0].latitude, dlng = gd.results[0].longitude;
+        // Try the geocoder with the full destination first (e.g. "Cape Canaveral Florida"),
+        // then fall back to dropping the last word (state name) if no match
+        const tryGeocode = async (q) => {
+          const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) + '&count=1&language=en&format=json&countryCode=US');
+          const j = await r.json();
+          return j.results?.[0] || null;
+        };
+        let geo = await tryGeocode(dest);
+        if (!geo) {
+          // Strip the trailing word (state) and try again — handles "Cape Canaveral Florida" -> "Cape Canaveral"
+          const cityOnly = dest.replace(/\s+\S+$/, '').trim();
+          if (cityOnly && cityOnly !== dest) geo = await tryGeocode(cityOnly);
+        }
+        if (geo) {
+          const dlat = geo.latitude, dlng = geo.longitude;
           const R = 3959;
           const dLat = (dlat - coords.lat) * Math.PI / 180;
           const dLon = (dlng - coords.lng) * Math.PI / 180;
           const aa = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(coords.lat*Math.PI/180)*Math.cos(dlat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
           const dist = Math.round(R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa)));
-          if (dist > 100) {
-            const go = confirm('Your GPS shows you are ' + dist + ' miles from ' + dest + '. Confirm delivery from this location?');
+          console.log('GPS distance check:', dist, 'mi from', dest);
+          if (dist > 50) {
+            const go = confirm('Your GPS shows you are ' + dist + ' miles from ' + dest + '.\n\nAre you sure you want to confirm delivery from this location?');
             if (!go) {
               if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm Delivery'; }
               return;
             }
           }
+        } else {
+          console.warn('GPS distance check skipped — could not geocode destination:', dest);
         }
       }
-    } catch(e) { /* distance check failed silently */ }
+    } catch(e) { console.warn('GPS distance check error:', e.message); }
   }
 
   // Proceed with delivery submission
