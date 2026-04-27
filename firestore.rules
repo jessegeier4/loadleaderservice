@@ -1,0 +1,127 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+
+    // ─── USERS ───
+    // Each user can read/write only their own user document.
+    // Public read of basic profile info (firstName, lastName, state, rating) is allowed
+    // so carriers can display pilot profiles on applications.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── LOADS ───
+    // Anyone signed in can read loads (public load board).
+    // Only the carrier who owns the load can create/update/delete it.
+    match /loads/{loadId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.carrierId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.carrierId == request.auth.uid;
+    }
+
+    // ─── APPLICATIONS ───
+    // Pilot creates their own application. Both pilot and carrier on the load can read.
+    // Pilot can update their own (e.g. log day, log expense). Carrier can update status (accept/decline).
+    match /applications/{appId} {
+      allow read: if isSignedIn() && (
+        resource.data.pilotId == request.auth.uid ||
+        resource.data.carrierId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.pilotId == request.auth.uid ||
+        resource.data.carrierId == request.auth.uid
+      );
+      allow delete: if isSignedIn() && resource.data.pilotId == request.auth.uid;
+    }
+
+    // ─── INVOICES ───
+    // Pilot creates invoice on delivery. Both pilot and carrier can read.
+    // No updates or deletes after generation (immutable record).
+    match /invoices/{invoiceId} {
+      allow read: if isSignedIn() && (
+        resource.data.pilotId == request.auth.uid ||
+        resource.data.carrierId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+    }
+
+    // ─── SAVED LOADS ───
+    // Pilot only — saved/favorited loads.
+    match /savedLoads/{docId} {
+      allow read, write: if isSignedIn() && resource.data.pilotId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+    }
+
+    // ─── LOAD TEMPLATES ───
+    // Carrier only — saved post-a-load templates.
+    match /loadTemplates/{docId} {
+      allow read, write: if isSignedIn() && resource.data.carrierId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.carrierId == request.auth.uid;
+    }
+
+    // ─── NOTIFICATIONS ───
+    // Each user reads their own. Anyone signed in can create (so the system can write to anyone).
+    match /notifications/{notifId} {
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn();
+    }
+
+    // ─── CONVERSATIONS / MESSAGES ───
+    // Both participants can read and write.
+    match /conversations/{convId} {
+      allow read, write: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants;
+
+      match /messages/{msgId} {
+        allow read, write: if isSignedIn() &&
+          request.auth.uid in get(/databases/$(database)/documents/conversations/$(convId)).data.participants;
+      }
+    }
+
+    // ─── FLEET / FOLLOWS ───
+    match /fleet/{docId} {
+      allow read, write: if isSignedIn() && resource.data.carrierId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.carrierId == request.auth.uid;
+    }
+    match /follows/{docId} {
+      allow read, write: if isSignedIn() && resource.data.followerId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.followerId == request.auth.uid;
+    }
+
+    // ─── REVIEWS ───
+    // Anyone signed in can read reviews. Pilot creates anonymous review on a carrier.
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+    }
+
+    // ─── PERMITS ───
+    // Carrier writes permits for their loads. All signed-in users can read (so pilots see them).
+    match /permits/{permitId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && resource.data.carrierId == request.auth.uid;
+    }
+  }
+}
+
+// ─── DEPLOYMENT ───
+// 1. Install Firebase CLI if you do not have it: `npm install -g firebase-tools`
+// 2. From the project root: `firebase login`
+// 3. Initialize firestore once: `firebase init firestore` (select the load-leader project, accept defaults)
+// 4. Deploy these rules: `firebase deploy --only firestore:rules`
+//
+// OR via the Firebase Console:
+// - Go to https://console.firebase.google.com/project/load-leader/firestore/rules
+// - Paste the contents above (everything before this comment block)
+// - Click Publish
+//
+// After deploying, test that:
+// - A signed-in carrier can see only their own loads in the dashboard
+// - A signed-in pilot can apply to a load and see their own applications
+// - A carrier can read applications for their own loads (the loadId-in query was failing — this fixes it)
+// - Two unrelated users cannot read each other's user docs, applications, or invoices

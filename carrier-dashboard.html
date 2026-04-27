@@ -290,6 +290,7 @@ if ('serviceWorker' in navigator) {
     <button class="nav-tab" onclick="showPanel('myloads',this)">My Loads</button>
     <button class="nav-tab" onclick="showPanel('applicants',this)" id="appTab">Applicants <span class="tab-notif" id="appTabDot" style="display:none"></span></button>
     <button class="nav-tab" onclick="showPanel('postload',this)">Post a Load</button>
+    <button class="nav-tab" onclick="showPanel('invoices',this)">Invoices</button>
     <button class="nav-tab" onclick="showPanel('messages',this)" id="msgTab">Messages <span class="tab-notif" id="msgTabDot" style="display:none"></span></button>
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
@@ -518,8 +519,26 @@ if ('serviceWorker' in navigator) {
         <button onclick="saveAsTemplate()" style="background:transparent;border:1px solid #2a2a2a;color:#aaa;padding:.35rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;flex-shrink:0;">💾 Save as Template</button>
       </div>
 
+      <input type="hidden" id="pEditLoadId" value="">
+      <div id="postEditBanner" style="display:none;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.25);color:var(--blue);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;display:none;align-items:center;justify-content:space-between;gap:.5rem;">
+        <span>📝 Editing Load <strong id="postEditLoadNum"></strong> — changes will update the existing post</span>
+        <button onclick="cancelEditLoad()" style="background:transparent;border:1px solid rgba(96,165,250,.3);color:var(--blue);padding:.3rem .75rem;border-radius:5px;font-size:.72rem;cursor:pointer;">Cancel Edit</button>
+      </div>
       <div id="postMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
       <button class="post-btn" id="postLoadBtn" onclick="submitLoad()">🚛 Post Load to Board</button>
+    </div>
+  </div>
+
+  <!-- INVOICES -->
+  <div class="panel" id="panel-invoices">
+    <div class="sec-head" style="margin-bottom:1.5rem;">
+      <div class="sec-title"><span>Invoices</span></div>
+    </div>
+    <div id="invoicesList">
+      <div class="empty-state">
+        <div class="empty-icon">📄</div>
+        <div class="empty-text">Loading invoices...</div>
+      </div>
     </div>
   </div>
 
@@ -1168,26 +1187,33 @@ window.submitLoad = async () => {
       date, time: document.getElementById('pTime').value,
       timezone: document.getElementById('pTimezone').value,
       notes: document.getElementById('pNotes').value,
-      status: 'active',
-      loadNum: (allCarrierLoads.length || 0) + 1,
       fleetFirst: document.getElementById('pFleetFirst')?.value === 'true',
-      fleetFirstExpiry: document.getElementById('pFleetFirst')?.value === 'true' ? new Date(Date.now() + 8*60*60*1000).toISOString() : null,
-      postedAt: serverTimestamp()
+      fleetFirstExpiry: document.getElementById('pFleetFirst')?.value === 'true' ? new Date(Date.now() + 8*60*60*1000).toISOString() : null
     };
 
-    await addDoc(collection(db, 'loads'), loadData);
+    const editId = document.getElementById('pEditLoadId').value;
+    if (editId) {
+      const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      await updateDoc(doc(db, 'loads', editId), { ...loadData, updatedAt: serverTimestamp() });
+    } else {
+      loadData.status = 'active';
+      loadData.loadNum = (allCarrierLoads.length || 0) + 1;
+      loadData.postedAt = serverTimestamp();
+      await addDoc(collection(db, 'loads'), loadData);
+    }
 
     btn.disabled = false;
     btn.innerHTML = '🚛 Post Load to Board';
     msgBox.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;';
-    msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
+    msgBox.textContent = editId
+      ? `✓ Load updated! ${originCity} ${originState} → ${destCity} ${destState}`
+      : `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
 
-    // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pDayRate','pMileRate','pMileThreshold','pTime','pNotes'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('pDate').value = '';
+    cancelEditLoad();
 
-    showToast('✓ Load posted to board successfully!');
+    showToast(editId ? '✓ Load updated' : '✓ Load posted to board successfully!');
     loadApplications();
+    if (editId) { showPanel('myloads', document.querySelectorAll('.nav-tab')[1]); return; }
 
     // Check for pilots with matching load alerts and notify them
     try {
@@ -2266,6 +2292,78 @@ window.uploadPermits = async () => {
   }
 };
 
+window.editLoad = (loadId) => {
+  const l = allCarrierLoads.find(x => x.id === loadId);
+  if (!l) return;
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? '' : v; };
+  setVal('pOriginCity', l.from);
+  setVal('pOriginState', l.fromSt);
+  setVal('pDestCity', l.to);
+  setVal('pDestState', l.toSt);
+  setVal('pWidth', l.width);
+  setVal('pHeight', l.height);
+  setVal('pLength', l.length);
+  setVal('pWeight', l.weight);
+  setVal('pType', l.type);
+  setVal('pEquipment', l.equipment);
+  setVal('pPilots', l.pilots);
+  setVal('pDayRate', l.dayRate);
+  setVal('pMileRate', l.mileRate);
+  setVal('pMileThreshold', l.mileThreshold);
+  setVal('pMiles', l.miles);
+  setVal('pDate', l.date);
+  setVal('pTime', l.time);
+  setVal('pTimezone', l.timezone || 'ET');
+  setVal('pNotes', l.notes);
+  document.getElementById('pEditLoadId').value = loadId;
+  const banner = document.getElementById('postEditBanner');
+  banner.style.display = 'flex';
+  document.getElementById('postEditLoadNum').textContent = '#' + (l.loadNum || l.id.slice(0,8).toUpperCase());
+  document.getElementById('postLoadBtn').innerHTML = '💾 Update Load';
+  showPanel('postload', document.querySelectorAll('.nav-tab')[3]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.repostLoad = (loadId) => {
+  const l = allCarrierLoads.find(x => x.id === loadId);
+  if (!l) return;
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? '' : v; };
+  setVal('pOriginCity', l.from);
+  setVal('pOriginState', l.fromSt);
+  setVal('pDestCity', l.to);
+  setVal('pDestState', l.toSt);
+  setVal('pWidth', l.width);
+  setVal('pHeight', l.height);
+  setVal('pLength', l.length);
+  setVal('pWeight', l.weight);
+  setVal('pType', l.type);
+  setVal('pEquipment', l.equipment);
+  setVal('pPilots', l.pilots);
+  setVal('pDayRate', l.dayRate);
+  setVal('pMileRate', l.mileRate);
+  setVal('pMileThreshold', l.mileThreshold);
+  setVal('pMiles', l.miles);
+  setVal('pTime', l.time);
+  setVal('pTimezone', l.timezone || 'ET');
+  setVal('pNotes', l.notes);
+  setVal('pDate', '');
+  document.getElementById('pEditLoadId').value = '';
+  document.getElementById('postEditBanner').style.display = 'none';
+  document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
+  showPanel('postload', document.querySelectorAll('.nav-tab')[3]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Load fields copied — set a new date and post');
+};
+
+window.cancelEditLoad = () => {
+  document.getElementById('pEditLoadId').value = '';
+  document.getElementById('postEditBanner').style.display = 'none';
+  document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
+  ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pDayRate','pMileRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const dateEl = document.getElementById('pDate');
+  if (dateEl) dateEl.value = '';
+};
+
 window.markLoadComplete = async (loadId) => {
   try {
     await updateDoc(doc(db, 'loads', loadId), { status: 'completed' });
@@ -2347,7 +2445,7 @@ function buildLoadCard(l) {
   return `<div class="load-row ${rowClass}">
     <div class="load-row-top">
       <div class="load-row-left">
-        <div class="load-id">LOAD #${l.loadNum || '—'}<span style="font-size:.58rem;color:#333;margin-left:.5rem;letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
+        <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:.58rem;color:#333;margin-left:${l.loadNum ? '.5rem' : '0'};letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
         <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
       </div>
       <div class="load-row-right"><span class="badge ${badgeClass}">${statusLabel}</span></div>
@@ -2357,14 +2455,16 @@ function buildLoadCard(l) {
       <div class="lm-item">Height<strong>${l.height||'—'}</strong></div>
       <div class="lm-item">Pilots<strong>${l.pilots} needed</strong></div>
       <div class="lm-item">Date<strong>${l.date||'—'}</strong></div>
-      <div class="lm-item">Pay<strong style="color:var(--yellow)">${l.dayRate ? '$' + l.dayRate + '/day' : ''}${l.mileRate ? ' + $' + l.mileRate + '/mi over ' + (l.mileThreshold||0) + ' mi' : ''}${!l.dayRate && !l.mileRate ? '$' + (l.pay||0) + ' each' : ''}</strong></div>
+      <div class="lm-item">Pay<strong style="color:var(--yellow)">${l.dayRate ? '$' + l.dayRate + '/day' : ''}${l.mileRate ? ' + $' + l.mileRate + '/mi over ' + (l.mileThreshold||0) + ' mi' : ''}${!l.dayRate && !l.mileRate ? (l.pay ? '$' + l.pay + ' flat' : 'Rate not set') : ''}</strong></div>
     </div>
     <div class="load-row-footer">
       <div class="applicant-count"><span>${statusLabel}</span></div>
       <div class="load-actions">
         <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+        ${s !== 'completed' ? `<button class="load-btn" onclick="editLoad('${l.id}')">✏️ Edit</button>` : ''}
         <button class="load-btn" onclick="openPermitUpload('${l.id}','${l.from} → ${l.to}')">📄 Permits</button>
         ${s !== 'completed' ? `<button class="load-btn" style="color:var(--green);border-color:rgba(74,222,128,.2);" onclick="markLoadComplete('${l.id}')">✓ Complete</button>` : ''}
+        ${s === 'completed' ? `<button class="load-btn" onclick="repostLoad('${l.id}')">🔁 Re-post</button>` : ''}
         <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${l.id}')">Delete</button>
       </div>
     </div>
@@ -2407,11 +2507,94 @@ window.showPanel = (name, el) => {
   if (name === 'fleet') loadFleet();
   if (name === 'messages') loadCarrierConversations();
   if (name === 'postload') loadTemplates();
+  if (name === 'invoices') loadCarrierInvoices();
   if (name === 'myloads' || name === 'applicants' || name === 'overview') loadApplications();
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelectorAll('.nav-tab, .mn-item').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
+};
+
+async function loadCarrierInvoices() {
+  const list = document.getElementById('invoicesList');
+  if (!list) return;
+  try {
+    const snap = await getDocs(query(collection(db, 'invoices'), where('carrierId', '==', currentUser.uid)));
+    const invoices = [];
+    snap.forEach(d => invoices.push({ id: d.id, ...d.data() }));
+    invoices.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    if (!invoices.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-text">No invoices yet — invoices appear here after a pilot confirms delivery</div></div>';
+      return;
+    }
+    window._carrierInvoices = invoices;
+    list.innerHTML = invoices.map((inv, i) => `
+      <div class="load-row" style="margin-bottom:.85rem;">
+        <div class="load-row-top">
+          <div class="load-row-left">
+            <div class="load-id">INVOICE #${inv.invoiceNum || '—'}<span style="font-size:.58rem;color:#333;margin-left:.5rem;letter-spacing:1px;">LOAD ${inv.loadNum || ''}</span></div>
+            <div class="load-route"><div><span class="lr-city">${inv.pickup || (inv.route?.split('→')[0]?.trim()) || '—'}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${inv.delivery || (inv.route?.split('→')[1]?.trim()) || '—'}</span></div></div>
+          </div>
+          <div class="load-row-right"><span class="badge badge-active">$${Number(inv.totalPay || inv.pay || 0).toFixed(2)}</span></div>
+        </div>
+        <div class="load-meta">
+          <div class="lm-item">Date<strong>${inv.date || '—'}</strong></div>
+          <div class="lm-item">Driver<strong>${inv.pilotName || '—'}</strong></div>
+          <div class="lm-item">Miles<strong>${inv.miles || '—'}</strong></div>
+        </div>
+        <div class="load-row-footer">
+          <div class="applicant-count"><span>Generated</span></div>
+          <div class="load-actions">
+            <button class="load-btn primary" onclick="viewInvoice(${i})">📄 View Invoice</button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    console.error('Invoice load error:', e);
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">Could not load invoices.</div></div>';
+  }
+}
+
+window.viewInvoice = (idx) => {
+  const inv = (window._carrierInvoices || [])[idx];
+  if (!inv) return;
+  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${label}</div><div style="font-weight:600;">${val || '—'}</div></div>`;
+  const daysHtml = inv.days?.length ? `<div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Day Logs</div>${inv.days.map(d => `<div style="display:flex;gap:.75rem;padding:.4rem 0;border-bottom:1px solid #1a1a1a;font-size:.8rem;"><span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${d.day}</span><span style="color:#888;">${d.date}</span>${d.miles ? `<span style="color:#888;">${d.miles} mi</span>` : ''}${d.notes ? `<span style="color:#aaa;flex:1;">${d.notes}</span>` : ''}</div>`).join('')}</div>` : '';
+  let payLines = '';
+  if (inv.dayRate && inv.days?.length) {
+    inv.days.forEach(d => {
+      const dm = parseFloat(d.miles) || 0;
+      const hits = inv.mileRate && inv.mileThreshold ? dm >= inv.mileThreshold : false;
+      const dayPay = hits ? dm * inv.mileRate : inv.dayRate;
+      const label = hits ? `${dm} mi x $${inv.mileRate}/mi` : 'day rate';
+      payLines += `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.3rem;"><span>Day ${d.day} — ${label}</span><span>$${dayPay.toFixed(2)}</span></div>`;
+    });
+  }
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${inv.invoiceNum}</title><style>body{margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;}@media print{body{background:#fff;} button{display:none;}}</style></head><body>
+    <div style="max-width:600px;margin:0 auto;background:#0a0a0a;color:#f0ede6;padding:2rem;border-radius:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #f5c400;">
+        <div style="font-family:'Arial Black',sans-serif;font-size:1.6rem;font-weight:900;color:#f5c400;letter-spacing:2px;">LOADLEADER</div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${inv.invoiceNum}</div></div>
+      </div>
+      <div style="background:#1a1a1a;border-radius:8px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
+        ${row('Load #', inv.loadNum)} ${row('Date', inv.date)}
+        ${row('Pick Up', inv.pickup || inv.route?.split('→')[0]?.trim())} ${row('Delivery', inv.delivery || inv.route?.split('→')[1]?.trim())}
+        ${row('Driver', inv.pilotName)} ${row('Miles', inv.miles ? inv.miles + ' mi' : '')}
+        ${row('Truck #', inv.truckNum)} ${row('Trailer #', inv.trailerNum)}
+      </div>
+      ${daysHtml}
+      <div style="background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:1.25rem;margin-bottom:1rem;">
+        ${payLines}
+        <div style="text-align:center;margin-top:.5rem;"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
+        <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${Number(inv.totalPay || inv.pay || 0).toFixed(2)}</div></div>
+      </div>
+      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${inv.date}</div>
+      <button onclick="window.print()" style="margin-top:1.5rem;display:block;width:100%;padding:.75rem;background:#f5c400;border:none;font-weight:700;font-size:1rem;cursor:pointer;border-radius:4px;color:#000;">Print / Save as PDF</button>
+    </div>
+  </body></html>`;
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
 };
 
 window.filterApps = (status, btn) => {

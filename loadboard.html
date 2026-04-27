@@ -602,13 +602,18 @@ window.openApplyModal=(loadId)=>{
           <div><span style="font-family:var(--font-display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:0.04em;">${load.to}</span><span style="color:var(--text-2);font-size:.78rem;margin-left:.15rem">${load.toSt}</span></div>
         </div>
         <div class="mls-details">
-          <div class="mls-item">Width<strong>${load.width}</strong></div>
-          <div class="mls-item">Height<strong>${load.height}</strong></div>
-          <div class="mls-item">Miles<strong>${load.miles} mi</strong></div>
-          <div class="mls-item">Date<strong>${load.date}</strong></div>
+          <div class="mls-item">Width<strong>${load.width || '—'}</strong></div>
+          <div class="mls-item">Height<strong>${load.height || '—'}</strong></div>
+          ${load.length ? `<div class="mls-item">Length<strong>${load.length}</strong></div>` : ''}
+          <div class="mls-item">Miles<strong>${load.miles || '—'} mi</strong></div>
+          <div class="mls-item">Date<strong>${load.date || '—'}</strong></div>
           <div class="mls-item">Carrier<strong>${load.carrier}</strong></div>
+          ${load.type ? `<div class="mls-item">Type<strong>${load.type}</strong></div>` : ''}
+          ${load.equipment ? `<div class="mls-item" style="grid-column:1/-1;">Equipment<strong>${load.equipment}</strong></div>` : ''}
+          ${load.permitsUploaded ? '<div class="mls-item" style="grid-column:1/-1;color:var(--ok);">✓ Permits Uploaded</div>' : ''}
         </div>
-        <div class="mls-pay">${load.dayRate ? '$' + load.dayRate + '/day' + (load.mileRate ? ' + $' + load.mileRate + '/mi' : '') : '$' + load.pay.toLocaleString() + ' per pilot'}</div>
+        ${load.notes ? `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:6px;padding:.65rem .85rem;margin-top:.65rem;font-size:.78rem;color:var(--text-2);line-height:1.5;"><div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:.25rem;">Special Instructions</div>${load.notes}</div>` : ''}
+        <div class="mls-pay">${load.dayRate ? '$' + load.dayRate + '/day' + (load.mileRate ? ' + $' + load.mileRate + '/mi' : '') : '$' + (load.pay || 0).toLocaleString() + ' per pilot'}</div>
       </div>
       <div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.55rem;">Your Profile — Carrier will see this</div>
       <div class="pilot-preview">
