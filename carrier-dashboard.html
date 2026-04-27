@@ -458,7 +458,8 @@ if ('serviceWorker' in navigator) {
         <div class="form-group"><label>Mileage Threshold (mi/day)</label><input type="text" inputmode="numeric" id="pMileThreshold" placeholder="e.g. 400"></div>
         <div class="form-group"><label>Total Miles</label><input type="text" inputmode="numeric" id="pMiles" placeholder="e.g. 190"></div>
         <div class="form-group"><label>Move Date</label><input type="date" id="pDate" style="color-scheme:dark"></div>
-        <div class="form-group"><label>Start Time</label><input type="time" id="pTime" style="color-scheme:dark"></div>
+        <div class="form-group"><label>Start Time (24hr)</label><input type="text" id="pTime" placeholder="e.g. 06:00" maxlength="5" style="font-variant-numeric:tabular-nums;"></div>
+        <div class="form-group"><label>Timezone</label><select id="pTimezone"><option value="ET">ET — Eastern</option><option value="CT">CT — Central</option><option value="MT">MT — Mountain</option><option value="PT">PT — Pacific</option><option value="AKT">AKT — Alaska</option><option value="HT">HT — Hawaii</option></select></div>
       </div>
       <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
 
@@ -1177,6 +1178,7 @@ window.submitLoad = async () => {
       mileThreshold,
       pay: dayRate,
       date, time: document.getElementById('pTime').value,
+      timezone: document.getElementById('pTimezone').value,
       notes: document.getElementById('pNotes').value,
       status: 'active',
       fleetFirst: document.getElementById('pFleetFirst')?.value === 'true',
@@ -1192,7 +1194,7 @@ window.submitLoad = async () => {
     msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
 
     // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pDayRate','pMileRate','pMileThreshold','pNotes'].forEach(id => document.getElementById(id).value = '');
+    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pDayRate','pMileRate','pMileThreshold','pTime','pNotes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');
