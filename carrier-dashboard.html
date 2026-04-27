@@ -958,6 +958,7 @@ async function loadApplications() {
     // Load carrier's own loads first to get load IDs
     const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
     allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log('Loads fetched:', loadsSnap.size, allCarrierLoads.map(l => ({ id: l.id, status: l.status, carrierId: l.carrierId })));
     const myLoadIds = loadsSnap.docs.map(d => d.id);
     const activeLoads = allCarrierLoads.filter(l => (l.status || 'active') === 'active').length;
     const completedLoads = allCarrierLoads.filter(l => l.status === 'completed').length;
@@ -2403,6 +2404,7 @@ window.showPanel = (name, el) => {
   if (name === 'fleet') loadFleet();
   if (name === 'messages') loadCarrierConversations();
   if (name === 'postload') loadTemplates();
+  if (name === 'myloads' || name === 'applicants' || name === 'overview') loadApplications();
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelectorAll('.nav-tab, .mn-item').forEach(t => t.classList.remove('active'));
