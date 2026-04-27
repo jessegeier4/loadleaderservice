@@ -212,6 +212,16 @@ select option{background:var(--mid);}
 .prs-val{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);}
 .prs-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 
+/* CONVERSATIONS / MESSAGES */
+.conv-item{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;cursor:pointer;transition:background .2s;border-bottom:1px solid #1a1a1a;}
+.conv-item:hover,.conv-item.active{background:var(--mid);}
+.conv-av{width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;color:var(--black);flex-shrink:0;overflow:hidden;}
+.conv-name{font-size:.85rem;font-weight:500;margin-bottom:.1rem;}
+.conv-preview{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.msg-bubble{max-width:75%;padding:.55rem .85rem;border-radius:var(--r-card);font-size:.82rem;line-height:1.5;word-break:break-word;}
+.msg-bubble.sent{background:var(--yellow);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
+.msg-bubble.recv{background:var(--mid);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px;}
+
 /* EMPTY */
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;}
@@ -519,7 +529,9 @@ if ('serviceWorker' in navigator) {
     <div class="profile-grid">
       <div>
         <div class="profile-card" style="margin-bottom:1rem;">
-          <div class="profile-avatar" id="profileAvatar">--</div>
+          <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('cAvatarInput').click()" style="cursor:pointer;" title="Click to change photo">--</div>
+          <input type="file" id="cAvatarInput" accept="image/*" style="display:none" onchange="handleCarrierAvatarUpload(this)">
+          <div style="font-size:.65rem;color:var(--muted);margin-bottom:.5rem;">Click photo to change</div>
           <div class="profile-name" id="profileName">Your Company</div>
           <div class="profile-type">🚛 Carrier / Hauler</div>
           <div class="profile-stats">
@@ -922,6 +934,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('welcomeName').textContent = firstName;
     document.getElementById('profileAvatar').textContent = initials;
     document.getElementById('profileName').textContent = userProfile.company || `${firstName} ${lastName}`.trim();
+    if (userProfile.photoURL) setCarrierAvatarPhoto(userProfile.photoURL);
     document.getElementById('pfContact').value = `${firstName} ${lastName}`.trim();
     document.getElementById('pfEmail').value = user.email || '';
     document.getElementById('pfPhone').value = userProfile.phone || '';
@@ -2312,6 +2325,38 @@ window.submitCarrierReview = async () => {
     document.getElementById('carrierReviewModal').style.display = 'none';
     showToast('✓ Review submitted anonymously!');
   } catch(e) { showToast('Could not submit review. Try again.'); }
+};
+
+function setCarrierAvatarPhoto(url) {
+  const profileAv = document.getElementById('profileAvatar');
+  const navAv = document.getElementById('navAvatar');
+  if (profileAv) { profileAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profileAv.style.padding = '0'; }
+  if (navAv) { navAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
+}
+
+window.handleCarrierAvatarUpload = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 150; canvas.height = 150;
+      const ctx = canvas.getContext('2d');
+      const size = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 150, 150);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      try {
+        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        await setDoc(doc(db, 'users', currentUser.uid), { photoURL: dataUrl }, { merge: true });
+        setCarrierAvatarPhoto(dataUrl);
+        showToast('Profile photo updated!');
+      } catch(e) { console.error(e); showToast('Could not save photo. Try again.'); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 };
 
 window.showPanel = (name, el) => {
