@@ -986,8 +986,6 @@ async function loadApplications() {
     const dot = document.getElementById('appTabDot');
     if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
 
-    try {
-
     if (allApplications.length === 0) {
       renderApplications([]);
       renderOverviewApplicants([]);
