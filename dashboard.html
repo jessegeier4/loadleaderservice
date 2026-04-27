@@ -2952,7 +2952,7 @@ window.submitDelivery = async (forceManual) => {
       })
     });
 
-    // Send delivery notification
+    // Send delivery notification email
     await fetch('https://load-leader.onrender.com/api/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2963,6 +2963,21 @@ window.submitDelivery = async (forceManual) => {
         loadId: applicationId
       })
     });
+
+    // In-app + push notification to carrier
+    if (carrierId) {
+      addDoc(collection(db, 'notifications'), {
+        userId: carrierId,
+        type: 'delivery_confirmed',
+        message: `${myName} confirmed delivery for ${loadRoute} — invoice generated`,
+        loadId: applicationId,
+        read: false,
+        createdAt: serverTimestamp()
+      }).catch(() => {});
+      sendPush(carrierId, 'Delivery confirmed', `${myName} delivered ${loadRoute}. Invoice ready.`, { url: '/carrier-dashboard.html#invoices' });
+    }
+    // Push to pilot too — confirmation that everything went through
+    sendPush(user.uid, 'Invoice generated', `Total $${Number(totalPay || pay || 0).toFixed(2)} for ${loadRoute}`, { url: '/dashboard.html#jobs' });
 
     // Prompt for review
     setTimeout(() => {
