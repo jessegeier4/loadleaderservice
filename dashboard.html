@@ -371,6 +371,10 @@ if ('serviceWorker' in navigator) {
         <div class="welcome-sup">🚩 Pilot Dashboard</div>
         <div class="welcome-name">Welcome Back, <span id="welcomeName">Pilot</span></div>
         <div class="welcome-sub" id="welcomeSub">Welcome to LoadLeader — browse the board to find your first load</div>
+        <button id="quickAvailBtn" onclick="toggleQuickAvailability()" style="margin-top:.85rem;background:var(--ok-bg);border:1px solid var(--ok-border);color:var(--ok);padding:.5rem 1rem;border-radius:100px;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;">
+          <span id="quickAvailDot" style="width:8px;height:8px;border-radius:50%;background:var(--ok);"></span>
+          <span id="quickAvailLabel">Available for Work</span>
+        </button>
       </div>
       <div class="welcome-actions">
         <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
@@ -1252,6 +1256,7 @@ onAuthStateChanged(auth, async (user) => {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const data = userDoc.exists() ? userDoc.data() : {};
     window._userProfile = data;
+    if (typeof applyQuickAvailability === 'function') applyQuickAvailability(data.availStatus || 'available');
     const firstName = data.firstName || user.displayName?.split(' ')[0] || 'Pilot';
     const lastName = data.lastName || '';
     const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
@@ -2187,6 +2192,42 @@ window.generateExpenseReport = async () => {
 };
 
 // Logout
+function applyQuickAvailability(status) {
+  const btn = document.getElementById('quickAvailBtn');
+  const lbl = document.getElementById('quickAvailLabel');
+  const dot = document.getElementById('quickAvailDot');
+  if (!btn || !lbl || !dot) return;
+  const map = {
+    available: { label: 'Available for Work', dot: 'var(--ok)', bg: 'var(--ok-bg)', border: 'var(--ok-border)', color: 'var(--ok)' },
+    looking:   { label: 'Actively Looking',   dot: 'var(--info)', bg: 'var(--info-bg)', border: 'var(--info-border)', color: 'var(--info)' },
+    busy:      { label: 'Currently Busy',     dot: 'var(--warn)', bg: 'rgba(251,146,60,0.1)', border: 'rgba(251,146,60,.25)', color: 'var(--warn)' }
+  };
+  const s = map[status] || map.available;
+  lbl.textContent = s.label;
+  dot.style.background = s.dot;
+  btn.style.background = s.bg;
+  btn.style.borderColor = s.border;
+  btn.style.color = s.color;
+}
+
+window.toggleQuickAvailability = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const order = ['available', 'looking', 'busy'];
+  const current = window._userProfile?.availStatus || 'available';
+  const next = order[(order.indexOf(current) + 1) % order.length];
+  applyQuickAvailability(next);
+  if (window._userProfile) window._userProfile.availStatus = next;
+  // Sync the dropdown in profile panel
+  const sel = document.getElementById('availStatus');
+  if (sel) sel.value = next;
+  try {
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'users', user.uid), { availStatus: next });
+    showToast('Status: ' + (next === 'available' ? 'Available for Work' : next === 'looking' ? 'Actively Looking' : 'Currently Busy'));
+  } catch(e) { console.error('Quick avail save:', e); }
+};
+
 window.handleLogout = async () => {
   await signOut(auth);
   window.location.href = 'login.html';

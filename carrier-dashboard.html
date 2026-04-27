@@ -460,6 +460,12 @@ if ('serviceWorker' in navigator) {
       </div>
       <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
 
+      <div id="payEstimate" style="display:none;background:rgba(245,196,0,.06);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.85rem;color:var(--yellow);line-height:1.55;">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.35rem;font-weight:600;">Estimated Pay Per Pilot</div>
+        <div id="payEstimateValue" style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--yellow);"></div>
+        <div id="payEstimateBreakdown" style="font-size:.72rem;color:var(--muted);margin-top:.25rem;text-transform:none;letter-spacing:0;"></div>
+      </div>
+
       <!-- DOT Permit Checker -->
       <div style="background:rgba(251,146,60,0.04);border:1px solid rgba(251,146,60,0.18);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem;">
         <div style="font-weight:600;font-size:.875rem;margin-bottom:.35rem;">🗺️ DOT Permit Checker</div>
@@ -1115,6 +1121,8 @@ async function loadApplications() {
         renderApplications(allApplications);
         renderOverviewApplicants(allApplications.slice(0, 3));
       }
+      // Apply saved filter prefs once data is in
+      if (typeof restoreCarrierFilters === 'function') restoreCarrierFilters();
     } catch(appsErr) {
       console.error('Applications query error:', appsErr);
       renderApplications([]);
@@ -1182,7 +1190,7 @@ function buildAppCard(a) {
       </div>
       <div class="ac-phone-reveal ${isAccepted?'show':''}" id="phone-${a.id}">
         <div class="ac-phone-label">📞 Pilot Phone Number</div>
-        <div class="ac-phone-num">${a.pilotPhone||'Not provided'}</div>
+        <div class="ac-phone-num">${a.pilotPhone ? `<a href="tel:${a.pilotPhone.replace(/[^0-9+]/g,'')}" style="color:var(--green);text-decoration:none;">${a.pilotPhone}</a>` : 'Not provided'}</div>
         <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Contact ${a.pilotName.split(' ')[0]} directly to coordinate</div>
       </div>
       <div class="ac-actions">
@@ -1248,6 +1256,35 @@ window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, 
     showToast('Error updating application. Try again.');
   }
 };
+
+function updatePayEstimate() {
+  const dayRate = parseFloat(document.getElementById('pDayRate')?.value) || 0;
+  const mileRate = parseFloat(document.getElementById('pMileRate')?.value) || 0;
+  const threshold = parseFloat(document.getElementById('pMileThreshold')?.value) || 0;
+  const miles = parseFloat(document.getElementById('pMiles')?.value) || 0;
+  const wrap = document.getElementById('payEstimate');
+  const val = document.getElementById('payEstimateValue');
+  const breakdown = document.getElementById('payEstimateBreakdown');
+  if (!wrap || !val || !breakdown) return;
+  if (!dayRate && !mileRate) { wrap.style.display = 'none'; return; }
+  let perDay = dayRate;
+  let breakdownText = '';
+  if (mileRate && threshold && miles >= threshold) {
+    perDay = miles * mileRate;
+    breakdownText = `Mileage day: ${miles} mi × $${mileRate}/mi`;
+  } else if (mileRate && threshold) {
+    breakdownText = `Day rate (under ${threshold} mi/day mileage threshold)`;
+  } else if (dayRate) {
+    breakdownText = 'Day rate × days logged';
+  }
+  wrap.style.display = 'block';
+  val.textContent = '$' + perDay.toFixed(2) + (mileRate && threshold ? ' / qualifying day' : ' / day');
+  breakdown.textContent = breakdownText;
+}
+['pDayRate','pMileRate','pMileThreshold','pMiles'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updatePayEstimate);
+});
 
 window.submitLoad = async () => {
   const btn = document.getElementById('postLoadBtn');
@@ -2838,15 +2875,16 @@ window.viewInvoice = (idx) => {
 };
 
 window.filterApps = (status, btn) => {
-  document.querySelectorAll('.filter-tabs .ft').forEach(f => f.classList.remove('on'));
-  btn.classList.add('on');
+  document.querySelectorAll('#panel-applicants .filter-tabs .ft').forEach(f => f.classList.remove('on'));
+  if (btn) btn.classList.add('on');
   const filtered = status === 'all' ? allApplications : allApplications.filter(a => a.status === status);
   renderApplications(filtered);
+  try { localStorage.setItem('ll_carrier_appsFilter', status); } catch(_) {}
 };
 
 window.filterLoadStatus = (status, btn) => {
-  document.querySelectorAll('.filter-tabs .ft').forEach(f => f.classList.remove('on'));
-  btn.classList.add('on');
+  document.querySelectorAll('#panel-myloads .filter-tabs .ft').forEach(f => f.classList.remove('on'));
+  if (btn) btn.classList.add('on');
   const list = document.getElementById('myLoadsList');
   if (!list) return;
   const filtered = status === 'all' ? allCarrierLoads : allCarrierLoads.filter(l => (l.status || 'active') === status);
@@ -2855,7 +2893,24 @@ window.filterLoadStatus = (status, btn) => {
   } else {
     list.innerHTML = filtered.map(l => buildLoadCard(l)).join('');
   }
+  try { localStorage.setItem('ll_carrier_loadsFilter', status); } catch(_) {}
 };
+
+// Restore saved filters on initial load (called once allCarrierLoads + allApplications are populated)
+function restoreCarrierFilters() {
+  try {
+    const lf = localStorage.getItem('ll_carrier_loadsFilter');
+    const af = localStorage.getItem('ll_carrier_appsFilter');
+    if (lf) {
+      const btn = document.querySelector(`#panel-myloads .filter-tabs .ft[onclick*="'${lf}'"]`);
+      if (btn) window.filterLoadStatus(lf, btn);
+    }
+    if (af) {
+      const btn = document.querySelector(`#panel-applicants .filter-tabs .ft[onclick*="'${af}'"]`);
+      if (btn) window.filterApps(af, btn);
+    }
+  } catch(_) {}
+}
 
 window.handleLogout = async () => { await signOut(auth); window.location.href = 'login.html'; };
 
