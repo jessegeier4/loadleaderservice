@@ -88,7 +88,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
 @media(max-width:800px){.stats-row{grid-template-columns:1fr 1fr;}}
 @media(max-width:480px){.stats-row{grid-template-columns:1fr;}}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.stat-card:hover{border-color:#444;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0;}
 .stat-card.yellow::before{background:var(--yellow);}
 .stat-card.green::before{background:var(--green);}
@@ -377,22 +378,22 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="stats-row">
-      <div class="stat-card yellow">
+      <div class="stat-card yellow" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1])">
         <div class="sc-label">Active Jobs</div>
         <div class="sc-val" id="statActiveJobs">0</div>
         <div class="sc-sub" id="statActiveJobsSub">No active jobs yet</div>
       </div>
-      <div class="stat-card green">
+      <div class="stat-card green" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[4])">
         <div class="sc-label">Earnings (2026)</div>
         <div class="sc-val" id="statEarnings">$0</div>
         <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
       </div>
-      <div class="stat-card blue">
+      <div class="stat-card blue" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);var cb=document.querySelectorAll('#panel-jobs .job-btn')[3];filterJobs('completed',cb);">
         <div class="sc-label">Jobs Completed</div>
         <div class="sc-val" id="statJobs">0</div>
         <div class="sc-sub" id="statJobsSub">Since joining LoadLeader</div>
       </div>
-      <div class="stat-card orange">
+      <div class="stat-card orange" onclick="showPanel('profile',document.querySelectorAll('.nav-tab')[6])">
         <div class="sc-label">Rating</div>
         <div class="sc-val" id="statRating">—</div>
         <div class="sc-sub" id="statRatingSub">Complete jobs to earn rating</div>
