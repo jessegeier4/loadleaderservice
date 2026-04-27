@@ -1349,11 +1349,14 @@ onAuthStateChanged(auth, async (user) => {
         `${activeJobs.length} active job${activeJobs.length !== 1 ? 's' : ''} · ${pendingApps.length} pending application${pendingApps.length !== 1 ? 's' : ''}`;
     }
 
-    // Show real jobs in overview
+    // Show real jobs in overview (active only — exclude completed and pending)
     if (apps.length > 0) {
       window._allJobs = apps;
       const jobList = document.getElementById('overviewJobs');
-      jobList.innerHTML = apps.slice(0, 3).map(a => buildJobCard(a)).join('');
+      const activeOnly = apps.filter(a => a.status === 'accepted').slice(0, 3);
+      jobList.innerHTML = activeOnly.length
+        ? activeOnly.map(a => buildJobCard(a)).join('')
+        : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active jobs right now</div><a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;">Browse Load Board →</a></div>';
       // Also populate full jobs list
       const fullJobList = document.getElementById('jobsList');
       if (fullJobList && apps.length > 0) {
