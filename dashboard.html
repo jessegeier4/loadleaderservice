@@ -2610,7 +2610,7 @@ window.submitDelivery = async (forceManual) => {
       loadLog.forEach(d => {
         const dayMiles = parseFloat(d.miles) || 0;
         const hitsThreshold = mileRate && mileThreshold ? dayMiles >= mileThreshold : false;
-        totalPay += dayRate + (hitsThreshold ? dayMiles * mileRate : 0);
+        totalPay += hitsThreshold ? dayMiles * mileRate : dayRate;
       });
     } else {
       totalPay = pay || 0;
@@ -2723,9 +2723,10 @@ function buildInvoiceHtml(data) {
         ${data.dayRate && data.days?.length ? data.days.map(d => {
           const dm = parseFloat(d.miles) || 0;
           const hits = data.mileRate && data.mileThreshold ? dm >= data.mileThreshold : false;
-          const dayPay = data.dayRate + (hits ? dm * data.mileRate : 0);
+          const dayPay = hits ? dm * data.mileRate : data.dayRate;
+          const label = hits ? dm + ' mi x $' + data.mileRate + '/mi' : 'day rate';
           return `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.3rem;">` +
-            `<span>Day ${d.day} — ${dm} mi${hits ? ' (mileage applies)' : ' (day rate only)'}</span>` +
+            `<span>Day ${d.day} — ${label}</span>` +
             `<span>$${dayPay.toFixed(2)}</span></div>`;
         }).join('') : ''}
         ${!data.dayRate && !data.mileRate && data.totalPay !== data.pay && data.pay ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Base Pay</span><span>$${Number(data.pay).toFixed(2)}</span></div>` : ''}
