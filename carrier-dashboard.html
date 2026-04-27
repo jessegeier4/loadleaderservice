@@ -1082,13 +1082,11 @@ function buildAppCard(a) {
           <div class="pilot-name">${a.pilotName}</div>
           <div class="pilot-rating">${a.pilotRating > 0 ? stars + ' <span style="color:var(--muted)">' + a.pilotRating + ' rating</span>' : '<span style="color:var(--muted)">No ratings yet</span>'}</div>
           <div class="pilot-meta">${a.pilotState} · Pilot Car Driver</div>
-          <div class="pilot-badges"><span class="pb">✓ Certified</span><span class="pb">✓ Insured</span><span class="pb">✓ CDL</span></div>
         </div>
       </div>
       <div class="pilot-stats">
         <div class="ps-item"><div class="ps-val">${a.pilotJobs || 0}</div><div class="ps-label">Jobs</div></div>
         <div class="ps-item"><div class="ps-val">${a.pilotRating > 0 ? a.pilotRating : '—'}</div><div class="ps-label">Rating</div></div>
-        <div class="ps-item"><div class="ps-val">100%</div><div class="ps-label">On Time</div></div>
       </div>
       ${a.message ? `<div class="pilot-message">${a.message}</div>` : ''}
       <div class="avail-row">
@@ -2324,7 +2322,7 @@ window.submitCarrierReview = async () => {
   const loadId = document.getElementById('carrierReviewLoadId').value;
   const text = document.getElementById('carrierReviewText').value.trim();
   try {
-    const { collection: col, addDoc: add, serverTimestamp: sts } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection: col, addDoc: add, serverTimestamp: sts, getDocs, query, where, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await add(col(db, 'reviews'), {
       targetId,
       loadId,
@@ -2334,9 +2332,15 @@ window.submitCarrierReview = async () => {
       reviewerType: 'carrier',
       createdAt: sts()
     });
+    // Recompute pilot average rating and update their profile
+    const snap = await getDocs(query(col(db, 'reviews'), where('targetId', '==', targetId)));
+    const ratings = [];
+    snap.forEach(d => ratings.push(d.data().rating));
+    const avg = Math.round((ratings.reduce((s, r) => s + r, 0) / ratings.length) * 10) / 10;
+    await updateDoc(doc(db, 'users', targetId), { rating: avg, reviewCount: ratings.length });
     document.getElementById('carrierReviewModal').style.display = 'none';
-    showToast('✓ Review submitted anonymously!');
-  } catch(e) { showToast('Could not submit review. Try again.'); }
+    showToast('Review submitted!');
+  } catch(e) { console.error('Review submit:', e); showToast('Could not submit review. Try again.'); }
 };
 
 function setCarrierAvatarPhoto(url) {
