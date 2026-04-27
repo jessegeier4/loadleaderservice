@@ -1933,6 +1933,26 @@ window.openEditLogDay = (appId, index) => {
   document.getElementById('logDayModal').style.display = 'flex';
 };
 
+function rerenderJobs(apps) {
+  const fullJobList = document.getElementById('jobsList');
+  if (fullJobList) {
+    const activeApps = apps.filter(a => a.status !== 'completed');
+    const doneApps   = apps.filter(a => a.status === 'completed');
+    let jHtml = activeApps.map(a => buildJobCard(a)).join('');
+    if (doneApps.length > 0) {
+      jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);"><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">Finished <span style="color:var(--accent)">Loads</span></div></div>' + doneApps.map(a => buildJobCard(a)).join('');
+    }
+    fullJobList.innerHTML = jHtml;
+  }
+  const overviewJobs = document.getElementById('overviewJobs');
+  if (overviewJobs) {
+    const activeOnly = apps.filter(a => a.status === 'accepted').slice(0, 3);
+    overviewJobs.innerHTML = activeOnly.length
+      ? activeOnly.map(a => buildJobCard(a)).join('')
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active jobs right now</div><a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;">Browse Load Board →</a></div>';
+  }
+}
+
 window.deleteLogDay = async (appId, index) => {
   if (!confirm('Delete this day log entry? This cannot be undone.')) return;
   try {
@@ -1942,16 +1962,7 @@ window.deleteLogDay = async (appId, index) => {
     const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
     window._allJobs = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
-    const fullJobList = document.getElementById('jobsList');
-    if (fullJobList) {
-      const activeApps = window._allJobs.filter(a => a.status !== 'completed');
-      const doneApps = window._allJobs.filter(a => a.status === 'completed');
-      let jHtml = activeApps.map(a => buildJobCard(a)).join('');
-      if (doneApps.length > 0) {
-        jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);"><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">Finished <span style="color:var(--accent)">Loads</span></div></div>' + doneApps.map(a => buildJobCard(a)).join('');
-      }
-      fullJobList.innerHTML = jHtml;
-    }
+    rerenderJobs(window._allJobs);
     showToast('Day log deleted');
   } catch(e) { console.error('Delete log:', e); alert('Could not delete: ' + (e.message || 'unknown error')); }
 };
@@ -1995,16 +2006,7 @@ window.submitLogDay = async () => {
     }
     document.getElementById('logDayModal').style.display = 'none';
     window._allJobs = updatedApps;
-    const fullJobList = document.getElementById('jobsList');
-    if (fullJobList) {
-      const activeApps = updatedApps.filter(a => a.status !== 'completed');
-      const doneApps   = updatedApps.filter(a => a.status === 'completed');
-      let jHtml = activeApps.map(a => buildJobCard(a)).join('');
-      if (doneApps.length > 0) {
-        jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);"><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">Finished <span style="color:var(--accent)">Loads</span></div></div>' + doneApps.map(a => buildJobCard(a)).join('');
-      }
-      fullJobList.innerHTML = jHtml;
-    }
+    rerenderJobs(updatedApps);
   } catch(e) {
     console.error('Log day:', e);
     msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);';
