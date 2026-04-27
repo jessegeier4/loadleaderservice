@@ -850,11 +850,11 @@ if ('serviceWorker' in navigator) {
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Min Pay ($)</label>
-                  <input type="number" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="decimal" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Max Miles</label>
-                  <input type="number" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="numeric" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
               </div>
               <div style="margin-top:.65rem;">
@@ -984,7 +984,7 @@ if ('serviceWorker' in navigator) {
       </div>
       <div>
         <label style="display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;font-weight:600;">Miles with Load <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="number" id="delivMiles" placeholder="e.g. 190" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;">
+        <input type="text" inputmode="numeric" id="delivMiles" placeholder="e.g. 190" style="width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.65rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;">
       </div>
     </div>
     <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:.75rem;margin-bottom:1.1rem;font-size:.78rem;color:var(--green);line-height:1.6;">
@@ -1042,7 +1042,7 @@ if ('serviceWorker' in navigator) {
       </div>
       <div>
         <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Miles Today</label>
-        <input type="number" id="logMiles" placeholder="e.g. 285" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
+        <input type="text" inputmode="numeric" id="logMiles" placeholder="e.g. 285" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
       </div>
       <div>
         <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Notes <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
