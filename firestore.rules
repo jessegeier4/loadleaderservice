@@ -40,7 +40,10 @@ service cloud.firestore {
         resource.data.pilotId == request.auth.uid ||
         resource.data.carrierId == request.auth.uid
       );
-      allow delete: if isSignedIn() && resource.data.pilotId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        resource.data.pilotId == request.auth.uid ||
+        resource.data.carrierId == request.auth.uid
+      );
     }
 
     // ─── INVOICES ───
@@ -52,6 +55,10 @@ service cloud.firestore {
         resource.data.carrierId == request.auth.uid
       );
       allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        resource.data.pilotId == request.auth.uid ||
+        resource.data.carrierId == request.auth.uid
+      );
     }
 
     // ─── SAVED LOADS ───

@@ -626,6 +626,14 @@ if ('serviceWorker' in navigator) {
           <div id="cNotifSaveMsg" style="display:none;padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.5rem;"></div>
           <button class="post-btn" onclick="saveCarrierNotifPrefs()">Save Notification Settings</button>
         </div>
+
+        <!-- DANGER ZONE -->
+        <div style="background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.15);border-radius:10px;padding:1.25rem;margin-top:1.5rem;">
+          <div style="font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--red);">⚠️ Danger Zone — Test Data</div>
+          <p style="font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.85rem;">Permanently delete every load, application, invoice, notification, and template tied to this account. Use only while testing — this cannot be undone.</p>
+          <div id="resetTestMsg" style="display:none;padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.6rem;"></div>
+          <button onclick="resetTestData()" id="resetTestBtn" style="background:var(--red);color:#fff;border:none;padding:.65rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;">Reset My Test Data</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2051,6 +2059,52 @@ window.messageFleetPilot = async (pilotId, pilotName) => {
 // Add to fleet button on accepted pilots
 window.addAcceptedToFleet = async (pilotId, pilotName, pilotState) => {
   await addToFleet(pilotId, pilotName, pilotState);
+};
+
+window.resetTestData = async () => {
+  const confirm1 = confirm('Permanently delete ALL your loads, applications, invoices, notifications, and templates?\n\nThis cannot be undone.');
+  if (!confirm1) return;
+  const confirm2 = prompt('Type DELETE to confirm:');
+  if (confirm2 !== 'DELETE') { alert('Cancelled — you must type DELETE exactly.'); return; }
+
+  const btn = document.getElementById('resetTestBtn');
+  const msg = document.getElementById('resetTestMsg');
+  btn.disabled = true; btn.textContent = 'Wiping...';
+
+  const counts = { loads: 0, applications: 0, invoices: 0, notifications: 0, templates: 0 };
+  const errors = [];
+
+  try {
+    const { collection, query, where, getDocs, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const uid = currentUser.uid;
+
+    const wipe = async (col, field, label) => {
+      try {
+        const snap = await getDocs(query(collection(db, col), where(field, '==', uid)));
+        for (const d of snap.docs) {
+          try { await deleteDoc(doc(db, col, d.id)); counts[label]++; }
+          catch (e) { errors.push(`${col}/${d.id.slice(0,6)}: ${e.code || e.message}`); }
+        }
+      } catch (e) { errors.push(`query ${col}: ${e.code || e.message}`); }
+    };
+
+    await wipe('applications', 'carrierId', 'applications');
+    await wipe('invoices', 'carrierId', 'invoices');
+    await wipe('loads', 'carrierId', 'loads');
+    await wipe('notifications', 'userId', 'notifications');
+    await wipe('loadTemplates', 'carrierId', 'templates');
+
+    const summary = `${counts.loads} loads · ${counts.applications} apps · ${counts.invoices} invoices · ${counts.notifications} notifs · ${counts.templates} templates`;
+    msg.style.cssText = 'display:block;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.25);color:var(--green);padding:.6rem .9rem;border-radius:6px;font-size:.78rem;margin-bottom:.6rem;';
+    msg.innerHTML = `✓ Deleted: ${summary}` + (errors.length ? `<br><span style="color:var(--red);">${errors.length} error${errors.length !== 1 ? 's' : ''}: ${errors.slice(0,3).join('; ')}</span>` : '');
+    btn.disabled = false; btn.textContent = 'Reset My Test Data';
+    setTimeout(() => location.reload(), 1500);
+  } catch (e) {
+    console.error('Reset test data:', e);
+    msg.style.cssText = 'display:block;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.8rem;margin-bottom:.6rem;';
+    msg.textContent = 'Wipe failed: ' + (e.message || 'unknown error');
+    btn.disabled = false; btn.textContent = 'Reset My Test Data';
+  }
 };
 
 window.saveCarrierNotifPrefs = async () => {
