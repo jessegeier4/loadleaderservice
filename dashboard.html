@@ -765,7 +765,14 @@ if ('serviceWorker' in navigator) {
             <textarea id="pfQuickApply" rows="3" placeholder="e.g. Experienced pilot car driver, available immediately. Fully equipped with height pole, CB radio, and all required safety equipment."></textarea>
             <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem;line-height:1.5;">We will fill this in for you on every load you apply to, so you do not have to retype it. You can still edit it before sending.</div>
           </div>
-          <button class="save-btn" onclick="saveEquipment()">Save Equipment Info</button>
+          <div class="form-group" style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.18);border-radius:8px;padding:1rem 1.1rem;">
+            <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500;color:var(--text);font-size:.9rem;">
+              <input type="checkbox" id="pfDirectoryListed" style="width:18px;height:18px;accent-color:var(--ok);flex-shrink:0;">
+              <span>📋 List me in the Pilot Directory</span>
+            </label>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.5;text-transform:none;letter-spacing:0;">When this is on, carriers and brokers can find your profile when they search for pilots in your area — even when you have not applied to a load. Your phone number stays hidden until they message you.</div>
+          </div>
+          <button class="save-btn" onclick="saveEquipment()">Save Profile Info</button>
         </div>
 
         <div class="form-section">
@@ -1285,6 +1292,8 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('pfBio').value = data.bio || '';
     const qaEl = document.getElementById('pfQuickApply');
     if (qaEl) qaEl.value = data.quickApplyMessage || '';
+    const dirEl = document.getElementById('pfDirectoryListed');
+    if (dirEl) dirEl.checked = !!data.directoryListed;
     loadSavedCerts(data);
     initPushNotifications(user);
     setTimeout(refreshPushStatusUI, 500);
@@ -2271,12 +2280,13 @@ window.saveEquipment = async () => {
       equipment: document.getElementById('pfEquipment').value,
       bio: document.getElementById('pfBio').value,
       quickApplyMessage: document.getElementById('pfQuickApply')?.value || '',
+      directoryListed: document.getElementById('pfDirectoryListed')?.checked || false,
       vehicle: document.getElementById('pfVehicle').value,
     });
     const btn = document.querySelectorAll('#panel-profile .save-btn')[1];
     btn.innerHTML = '✓ Saved!';
     btn.style.background = 'var(--green)';
-    setTimeout(() => { btn.innerHTML = 'Save Equipment Info'; btn.style.background = ''; }, 2000);
+    setTimeout(() => { btn.innerHTML = 'Save Profile Info'; btn.style.background = ''; }, 2000);
   } catch(e) {
     alert('Could not save. Try again.');
   }

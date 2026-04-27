@@ -289,6 +289,7 @@ if ('serviceWorker' in navigator) {
     <button class="nav-tab active" onclick="showPanel('overview',this)">Overview</button>
     <button class="nav-tab" onclick="showPanel('myloads',this)">My Loads</button>
     <button class="nav-tab" onclick="showPanel('applicants',this)" id="appTab">Applicants <span class="tab-notif" id="appTabDot" style="display:none"></span></button>
+    <button class="nav-tab" onclick="showPanel('pilotsearch',this)">Pilot Directory</button>
     <button class="nav-tab" onclick="showPanel('postload',this)">Post a Load</button>
     <button class="nav-tab" onclick="showPanel('invoices',this)">Invoices</button>
     <button class="nav-tab" onclick="showPanel('messages',this)" id="msgTab">Messages <span class="tab-notif" id="msgTabDot" style="display:none"></span></button>
@@ -770,8 +771,8 @@ if ('serviceWorker' in navigator) {
   <!-- PILOT SEARCH PANEL -->
   <div class="panel" id="panel-pilotsearch">
     <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">🔍 Find <span>Pilots</span></div>
-      <div style="font-size:.8rem;color:var(--muted);">Search for pilots by state, experience, or name</div>
+      <div class="sec-title">📋 Pilot <span>Directory</span></div>
+      <div style="font-size:.8rem;color:var(--muted);">Browse pilot car drivers who opted in. Reach out before posting a load.</div>
     </div>
 
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
@@ -802,8 +803,8 @@ if ('serviceWorker' in navigator) {
 
     <div id="pilotSearchResults">
       <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <div class="empty-text">Search for pilots by state, name, or rating</div>
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Set a state, name, or minimum rating and click Search to browse the Pilot Directory.</div>
       </div>
     </div>
   </div>
@@ -1721,9 +1722,11 @@ window.searchPilots = async () => {
       const u = d.data();
       if (d.id === currentUser.uid) return;
       if (u.accountType === 'carrier') return;
+      if (!u.directoryListed) return; // only show pilots who opted into the Directory
       const name = `${u.firstName || ''} ${u.lastName || ''}`.trim().toLowerCase();
       if (state && u.state !== state && !(u.stateCoverage || []).includes(state)) return;
       if (search && !name.includes(search) && !(u.coverage || '').toLowerCase().includes(search)) return;
+      if (minRating && (u.rating || 0) < minRating) return;
       pilots.push({ id: d.id, ...u, name: `${u.firstName || ''} ${u.lastName || ''}`.trim() });
     });
 
@@ -1731,24 +1734,35 @@ window.searchPilots = async () => {
     pilots.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
     if (!pilots.length) {
-      results.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">No pilots found matching your search</div></div>';
+      results.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">No pilots match your filters yet. The Directory shows pilots who opt in from their profile — try a wider search, or post a load to attract applicants.</div></div>';
       return;
     }
 
-    results.innerHTML = pilots.map(p => {
+    const availMap = {
+      available: { label: '✓ Available', color: 'var(--green)', bg: 'rgba(74,222,128,.1)', border: 'rgba(74,222,128,.3)' },
+      looking:   { label: '👀 Looking',   color: 'var(--blue)',  bg: 'rgba(96,165,250,.1)', border: 'rgba(96,165,250,.3)' },
+      busy:      { label: '⏸ Busy',       color: 'var(--orange)',bg: 'rgba(251,146,60,.1)', border: 'rgba(251,146,60,.3)' }
+    };
+    results.innerHTML = `<div style="font-size:.72rem;color:var(--muted);margin-bottom:.8rem;">${pilots.length} pilot${pilots.length !== 1 ? 's' : ''} listed</div>` + pilots.map(p => {
       const initials = (p.name || 'P').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
       const stars = p.rating ? '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating)) : '☆☆☆☆☆';
-      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;flex-wrap:wrap;">
-        <div style="width:44px;height:44px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;color:var(--black);flex-shrink:0;">${initials}</div>
+      const avail = availMap[p.availStatus] || null;
+      const photo = p.photoURL ? `<img src="${p.photoURL}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">` : `<div style="width:48px;height:48px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;color:var(--black);flex-shrink:0;">${initials}</div>`;
+      return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem;margin-bottom:.75rem;flex-wrap:wrap;">
+        ${photo}
         <div style="flex:1;min-width:150px;">
-          <div style="font-weight:600;font-size:.9rem;">${p.name || 'Pilot'}</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${p.state || 'Location not set'} · ${p.experience || 'Experience not listed'}</div>
-          <div style="font-size:.78rem;color:var(--yellow);margin-top:.2rem;">${stars} <span style="color:var(--muted)">${p.rating ? p.rating + ' rating' : 'No ratings yet'}</span></div>
-          ${p.coverage ? `<div style="font-size:.72rem;color:#666;margin-top:.1rem;">Covers: ${p.coverage}</div>` : ''}
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <div style="font-weight:600;font-size:.95rem;">${p.name || 'Pilot'}</div>
+            ${avail ? `<span class="badge" style="background:${avail.bg};color:${avail.color};border:1px solid ${avail.border};">${avail.label}</span>` : ''}
+          </div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">${p.state || 'Location not set'}${p.jobCount ? ' · ' + p.jobCount + ' job' + (p.jobCount !== 1 ? 's' : '') + ' completed' : ''}</div>
+          <div style="font-size:.8rem;color:var(--yellow);margin-top:.25rem;">${stars} <span style="color:var(--muted)">${p.rating ? p.rating + ' rating' : 'No ratings yet'}</span></div>
+          ${p.equipment ? `<div style="font-size:.72rem;color:#888;margin-top:.25rem;line-height:1.4;">🛠 ${p.equipment}</div>` : ''}
+          ${p.coverage ? `<div style="font-size:.72rem;color:#888;margin-top:.15rem;line-height:1.4;">📍 ${p.coverage}</div>` : ''}
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',window.navTab('messages'));document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">💬 Message</button>
-          <button onclick="addAcceptedToFleet('${p.id}','${p.name || 'Pilot'}','${p.state || ''}')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.4rem .85rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;">+ Fleet</button>
+          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',window.navTab('messages'));document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#ccc;padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">💬 Message</button>
+          <button onclick="addAcceptedToFleet('${p.id}','${p.name || 'Pilot'}','${p.state || ''}')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">+ Fleet</button>
         </div>
       </div>`;
     }).join('');
