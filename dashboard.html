@@ -413,6 +413,18 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 
+    <!-- AVAILABLE LOADS PREVIEW -->
+    <div class="sec-head">
+      <div class="sec-title">Available <span>Loads</span></div>
+      <a href="loadboard.html" class="sec-link">View load board →</a>
+    </div>
+    <div id="overviewLoads" style="margin-bottom:2rem;">
+      <div class="empty-state" style="padding:1.5rem 1rem;">
+        <div class="empty-icon">🚛</div>
+        <div class="empty-text">Loading...</div>
+      </div>
+    </div>
+
     <!-- UPCOMING PAYOUT (hidden until payment feature launches) -->
     <div class="sec-head" style="display:none;">
       <div class="sec-title">Upcoming <span>Payout</span></div>
@@ -1364,6 +1376,36 @@ onAuthStateChanged(auth, async (user) => {
         });
       }, 300);
     }
+
+    // Available loads preview on overview
+    try {
+      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('status', '==', 'active')));
+      const loads = [];
+      loadsSnap.forEach(d => loads.push({ id: d.id, ...d.data() }));
+      loads.sort((a, b) => (b.postedAt?.seconds || 0) - (a.postedAt?.seconds || 0));
+      const overviewLoadsEl = document.getElementById('overviewLoads');
+      if (!loads.length) {
+        overviewLoadsEl.innerHTML = '<div class="empty-state" style="padding:1.5rem 1rem;"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted right now — check back soon</div></div>';
+      } else {
+        overviewLoadsEl.innerHTML = '<div style="display:grid;gap:.75rem;">' + loads.slice(0, 4).map(l => {
+          const payDisp = l.dayRate
+            ? '$' + l.dayRate + '/day' + (l.mileRate ? ' + $' + l.mileRate + '/mi' : '')
+            : '$' + (l.pay || 0).toLocaleString();
+          return `<a href="loadboard.html" style="text-decoration:none;color:inherit;display:block;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;transition:border-color .15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <div style="font-family:var(--font-display);font-weight:700;font-size:.95rem;letter-spacing:0.04em;">${l.from || ''} <span style="color:var(--text-2);font-weight:400">${l.fromSt || ''}</span> → ${l.to || ''} <span style="color:var(--text-2);font-weight:400">${l.toSt || ''}</span></div>
+                <div style="font-size:.72rem;color:var(--text-2);margin-top:.25rem;">${l.date || '—'} · ${l.miles ? l.miles + ' mi' : ''} · ${l.carrierName || l.carrier || '—'}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--yellow);">${payDisp}</div>
+                <div style="font-size:.65rem;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-top:.15rem;">${l.pilots || 1} pilot${(l.pilots || 1) !== 1 ? 's' : ''} needed</div>
+              </div>
+            </div>
+          </a>`;
+        }).join('') + '</div>';
+      }
+    } catch(loadsErr) { console.warn('Available loads preview:', loadsErr.message); }
 
     // Show real saved loads
     const savedSnap = await getDocs(query(collection(db, 'savedLoads'), where('pilotId', '==', user.uid)));

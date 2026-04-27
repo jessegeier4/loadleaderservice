@@ -613,12 +613,12 @@ if ('serviceWorker' in navigator) {
               </label>
             </div>
 
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;opacity:.5;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
               <div>
-                <div style="font-size:.875rem;font-weight:500;">📱 SMS Text Notifications</div>
-                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">Coming soon</div>
+                <div style="font-size:.875rem;font-weight:500;">🔔 Push Notifications</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;" id="pushStatusText">Get instant alerts on this device when a pilot applies, sends a message, or confirms delivery</div>
               </div>
-              <span style="font-size:.72rem;background:#1a1a1a;border:1px solid #2a2a2a;color:#444;padding:.2rem .6rem;border-radius:100px;">Coming Soon</span>
+              <button onclick="enablePushNotifications()" id="pushEnableBtn" style="background:var(--yellow);color:#0A0A0A;border:none;padding:.45rem 1rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Enable</button>
             </div>
 
           </div>
@@ -924,6 +924,31 @@ function sendPush(userId, title, body, data) {
   }).catch(() => {});
 }
 
+function refreshPushStatusUI() {
+  const btn = document.getElementById('pushEnableBtn');
+  const txt = document.getElementById('pushStatusText');
+  if (!btn || !txt) return;
+  if (!('Notification' in window)) {
+    btn.textContent = 'Unsupported'; btn.disabled = true;
+    txt.textContent = 'This browser does not support push notifications';
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    btn.textContent = '✓ Enabled'; btn.disabled = true;
+    btn.style.background = 'var(--green)';
+    txt.textContent = 'You will get instant alerts on this device';
+  } else if (Notification.permission === 'denied') {
+    btn.textContent = 'Blocked'; btn.disabled = true;
+    txt.textContent = 'Notifications are blocked. Allow them in your browser settings to enable.';
+  }
+}
+
+window.enablePushNotifications = async () => {
+  if (!currentUser) return;
+  await initPushNotifications(currentUser);
+  refreshPushStatusUI();
+};
+
 async function initPushNotifications(user) {
   try {
     if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
@@ -996,6 +1021,7 @@ onAuthStateChanged(auth, async (user) => {
     await loadCarrierConversations();
     loadCarrierNotifications(user.uid);
     initPushNotifications(user);
+    setTimeout(refreshPushStatusUI, 500);
   } catch(e) { console.error(e); }
 });
 
