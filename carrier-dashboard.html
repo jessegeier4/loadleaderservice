@@ -368,6 +368,7 @@ if ('serviceWorker' in navigator) {
       <span class="ft on" onclick="filterLoadStatus('all',this)">All</span>
       <span class="ft" onclick="filterLoadStatus('active',this)">Active</span>
       <span class="ft" onclick="filterLoadStatus('filled',this)">Filled</span>
+      <span class="ft" onclick="filterLoadStatus('completed',this)">Completed</span>
       <span class="ft" onclick="filterLoadStatus('draft',this)">Draft</span>
     </div>
     <div class="load-list" id="myLoadsList">
@@ -903,6 +904,7 @@ const db = getFirestore(app);
 let currentUser = null;
 let userProfile = null;
 let allApplications = [];
+let allCarrierLoads = [];
 
 // Auth check
 // Failsafe: always hide loading screen after 8s
@@ -987,38 +989,13 @@ async function loadApplications() {
     // Render real loads in My Loads panel
     try {
       const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
+      allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       if (!loadsSnap.empty) {
         const loadsList = document.getElementById('myLoadsList');
         const overviewLoads = document.getElementById('overviewLoads');
-        const loadsHtml = loadsSnap.docs.map(d => {
-          const l = d.data();
-          return `<div class="load-row active-load">
-            <div class="load-row-top">
-              <div class="load-row-left">
-                <div class="load-id">${d.id.slice(0,8).toUpperCase()}</div>
-                <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
-              </div>
-              <div class="load-row-right"><span class="badge badge-active">Active</span></div>
-            </div>
-            <div class="load-meta">
-              <div class="lm-item">Width<strong>${l.width||'—'}</strong></div>
-              <div class="lm-item">Height<strong>${l.height||'—'}</strong></div>
-              <div class="lm-item">Pilots<strong>${l.pilots} needed</strong></div>
-              <div class="lm-item">Date<strong>${l.date||'—'}</strong></div>
-              <div class="lm-item">Pay<strong style="color:var(--yellow)">$${l.pay} each</strong></div>
-            </div>
-            <div class="load-row-footer">
-              <div class="applicant-count"><span>Posted to board</span></div>
-              <div class="load-actions">
-                <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
-                <button class="load-btn" onclick="openPermitUpload('${d.id}','${l.from} → ${l.to}')">📄 Permits</button>
-                <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${d.id}')">Delete</button>
-              </div>
-            </div>
-          </div>`;
-        }).join('');
+        const loadsHtml = allCarrierLoads.map(l => buildLoadCard(l)).join('');
         if (loadsList) loadsList.innerHTML = loadsHtml;
-        if (overviewLoads) overviewLoads.innerHTML = loadsSnap.docs.length > 0 ? loadsHtml : overviewLoads.innerHTML;
+        if (overviewLoads) overviewLoads.innerHTML = loadsHtml;
 
         // Update load filter dropdown with real loads
         const loadFilter = document.getElementById('loadFilter');
@@ -2343,6 +2320,37 @@ window.submitCarrierReview = async () => {
   } catch(e) { console.error('Review submit:', e); showToast('Could not submit review. Try again.'); }
 };
 
+function buildLoadCard(l) {
+  const s = l.status || 'active';
+  const statusLabel = s === 'completed' ? 'Completed' : s === 'filled' ? 'Filled' : s === 'draft' ? 'Draft' : 'Active';
+  const badgeClass = s === 'active' ? 'badge-active' : s === 'filled' ? 'badge-pending' : 'badge-draft';
+  const rowClass = s === 'active' ? 'active-load' : s === 'filled' ? 'pending-load' : '';
+  return `<div class="load-row ${rowClass}">
+    <div class="load-row-top">
+      <div class="load-row-left">
+        <div class="load-id">${l.id.slice(0,8).toUpperCase()}</div>
+        <div class="load-route"><div><span class="lr-city">${l.from}</span><span class="lr-st">${l.fromSt}</span></div><span class="lr-arr">→</span><div><span class="lr-city">${l.to}</span><span class="lr-st">${l.toSt}</span></div></div>
+      </div>
+      <div class="load-row-right"><span class="badge ${badgeClass}">${statusLabel}</span></div>
+    </div>
+    <div class="load-meta">
+      <div class="lm-item">Width<strong>${l.width||'—'}</strong></div>
+      <div class="lm-item">Height<strong>${l.height||'—'}</strong></div>
+      <div class="lm-item">Pilots<strong>${l.pilots} needed</strong></div>
+      <div class="lm-item">Date<strong>${l.date||'—'}</strong></div>
+      <div class="lm-item">Pay<strong style="color:var(--yellow)">$${l.pay} each</strong></div>
+    </div>
+    <div class="load-row-footer">
+      <div class="applicant-count"><span>${statusLabel}</span></div>
+      <div class="load-actions">
+        <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+        <button class="load-btn" onclick="openPermitUpload('${l.id}','${l.from} → ${l.to}')">📄 Permits</button>
+        <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${l.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
 function setCarrierAvatarPhoto(url) {
   const profileAv = document.getElementById('profileAvatar');
   const navAv = document.getElementById('navAvatar');
@@ -2395,6 +2403,14 @@ window.filterApps = (status, btn) => {
 window.filterLoadStatus = (status, btn) => {
   document.querySelectorAll('.filter-tabs .ft').forEach(f => f.classList.remove('on'));
   btn.classList.add('on');
+  const list = document.getElementById('myLoadsList');
+  if (!list) return;
+  const filtered = status === 'all' ? allCarrierLoads : allCarrierLoads.filter(l => (l.status || 'active') === status);
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No ' + status + ' loads</div></div>';
+  } else {
+    list.innerHTML = filtered.map(l => buildLoadCard(l)).join('');
+  }
 };
 
 window.handleLogout = async () => { await signOut(auth); window.location.href = 'login.html'; };
