@@ -356,6 +356,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const API_URL = 'https://load-leader.onrender.com/api/ai';
+const PUSH_URL = 'https://load-leader.onrender.com/api/push';
+
+function sendPush(userId, title, body, data) {
+  if (!userId) return;
+  fetch(PUSH_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, title, body, data: data || {} })
+  }).catch(() => {});
+}
 
 let currentUser = null;
 let userProfile = null;
@@ -699,6 +709,7 @@ window.submitApplication=async(loadId)=>{
         read: false,
         createdAt: serverTimestamp()
       }).catch(() => {});
+      sendPush(load.carrierId, 'New pilot application', `${firstName} ${lastName} applied to ${load.from} → ${load.to}`, { loadId, url: '/carrier-dashboard.html#applicants' });
     }
 
     appliedLoads.add(loadId);

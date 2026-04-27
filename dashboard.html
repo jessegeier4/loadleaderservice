@@ -350,7 +350,6 @@ if ('serviceWorker' in navigator) {
           <div style="font-size:1.5rem;margin-bottom:.5rem;">🔔</div>
           <div style="font-size:.82rem;color:#888;line-height:1.6;">No notifications yet.<br>Apply to loads to get started.</div>
         </div>
-        <div style="font-size:.72rem;color:#333;text-align:center;margin-top:.5rem;">Load alerts coming soon</div>
       </div>
     </div>
     <div class="user-chip">
@@ -528,7 +527,7 @@ if ('serviceWorker' in navigator) {
       <div>
         <div class="profile-card" style="margin-bottom:1rem;">
           <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('pAvatarInput').click()" style="cursor:pointer;" title="Click to change photo">--</div>
-          <input type="file" id="pAvatarInput" accept="image/*" style="display:none" onchange="handlePilotAvatarUpload(this)">
+          <input type="file" id="pAvatarInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
           <div style="font-size:.65rem;color:var(--muted);margin-bottom:.5rem;">Click photo to change</div>
           <div class="profile-name" id="profileName">Your Name</div>
           <div class="profile-type">🚩 Pilot Car Driver</div>
@@ -814,12 +813,12 @@ if ('serviceWorker' in navigator) {
               </label>
             </div>
 
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;opacity:.5;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
               <div>
-                <div style="font-size:.875rem;font-weight:500;">📱 SMS Text Notifications</div>
-                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">Get texts for all notifications — coming soon</div>
+                <div style="font-size:.875rem;font-weight:500;">🔔 Push Notifications</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;" id="pushStatusText">Get instant alerts on this device when an application is decided or a message arrives</div>
               </div>
-              <span style="font-size:.72rem;background:#1a1a1a;border:1px solid #2a2a2a;color:#444;padding:.2rem .6rem;border-radius:100px;">Coming Soon</span>
+              <button onclick="enablePushNotifications()" id="pushEnableBtn" style="background:var(--accent);color:#0A0A0A;border:none;padding:.45rem 1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Enable</button>
             </div>
 
           </div>
@@ -1127,6 +1126,71 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ─── PUSH NOTIFICATIONS (FCM) ───
+// Paste your VAPID public key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
+const FCM_VAPID_KEY = '';
+const PUSH_URL = 'https://load-leader.onrender.com/api/push';
+
+function sendPush(userId, title, body, data) {
+  if (!userId) return;
+  fetch(PUSH_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, title, body, data: data || {} })
+  }).catch(() => {});
+}
+
+function refreshPushStatusUI() {
+  const btn = document.getElementById('pushEnableBtn');
+  const txt = document.getElementById('pushStatusText');
+  if (!btn || !txt) return;
+  if (!('Notification' in window)) {
+    btn.textContent = 'Unsupported'; btn.disabled = true;
+    txt.textContent = 'This browser does not support push notifications';
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    btn.textContent = '✓ Enabled'; btn.disabled = true;
+    btn.style.background = 'var(--ok)';
+    txt.textContent = 'You will get instant alerts on this device';
+  } else if (Notification.permission === 'denied') {
+    btn.textContent = 'Blocked'; btn.disabled = true;
+    txt.textContent = 'Notifications are blocked. Allow them in your browser settings to enable.';
+  }
+}
+
+window.enablePushNotifications = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  await initPushNotifications(user);
+  refreshPushStatusUI();
+};
+
+async function initPushNotifications(user) {
+  try {
+    if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+    if (!FCM_VAPID_KEY) { console.log('Push: VAPID key not configured yet'); return; }
+    if (Notification.permission === 'denied') return;
+    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    if (Notification.permission !== 'granted') {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+    }
+    const { getMessaging, getToken, onMessage } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
+    const messaging = getMessaging(app);
+    const token = await getToken(messaging, { vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg });
+    if (token) {
+      const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await setDoc(doc(db, 'users', user.uid), { fcmToken: token, fcmTokenUpdatedAt: new Date().toISOString() }, { merge: true });
+    }
+    onMessage(messaging, (payload) => {
+      const title = payload.notification?.title || payload.data?.title || 'LoadLeader';
+      const body = payload.notification?.body || payload.data?.body || '';
+      if (typeof showToast === 'function') showToast(title + (body ? ' — ' + body : ''));
+    });
+  } catch(e) { console.warn('Push init failed:', e.message || e); }
+}
+
 // Failsafe: always hide loading screen after 8s
 setTimeout(() => {
   const ls = document.getElementById('loadingScreen');
@@ -1192,6 +1256,8 @@ onAuthStateChanged(auth, async (user) => {
     const qaEl = document.getElementById('pfQuickApply');
     if (qaEl) qaEl.value = data.quickApplyMessage || '';
     loadSavedCerts(data);
+    initPushNotifications(user);
+    setTimeout(refreshPushStatusUI, 500);
 
     // Availability
     const availStartEl = document.getElementById('availStart');
@@ -2215,32 +2281,52 @@ async function loadSavedCerts(data) {
 
 // Notification panel toggle moved to regular script
 
-// Avatar upload (preview only for now — Firebase Storage needed for persistence)
-window.handleAvatarUpload = (input) => {
+// Avatar upload — compresses then uploads to Firebase Storage
+window.handleAvatarUpload = async (input) => {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) {
-    const msg = document.getElementById('avatarMsg');
-    msg.textContent = 'File too large — max 2MB';
+  const msg = document.getElementById('avatarMsg');
+  if (file.size > 5 * 1024 * 1024) {
+    msg.textContent = 'File too large — max 5MB';
     msg.style.display = 'block';
     msg.style.color = 'var(--red)';
     return;
   }
-  const reader = new FileReader();
-  reader.onload = e => {
-    const av = document.getElementById('profileAvatar');
-    av.style.backgroundImage = `url(${e.target.result})`;
-    av.style.backgroundSize = 'cover';
-    av.style.backgroundPosition = 'center';
-    av.textContent = '';
-    const navAv = document.getElementById('navAvatar');
-    if (navAv) { navAv.style.backgroundImage = `url(${e.target.result})`; navAv.style.backgroundSize = 'cover'; navAv.textContent = ''; }
-    const msg = document.getElementById('avatarMsg');
-    msg.textContent = '✓ Photo updated (session only — full upload coming soon)';
-    msg.style.display = 'block';
-    msg.style.color = 'var(--muted)';
-  };
-  reader.readAsDataURL(file);
+  msg.textContent = 'Uploading...';
+  msg.style.display = 'block';
+  msg.style.color = 'var(--muted)';
+  try {
+    const compressed = await new Promise(resolve => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = 400;
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const minDim = Math.min(img.width, img.height);
+        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(b => resolve(b), 'image/jpeg', 0.85);
+      };
+      img.src = url;
+    });
+    const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const user = auth.currentUser;
+    const storage = getStorage();
+    const path = `avatars/${user.uid}.jpg`;
+    const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
+    const photoURL = await getDownloadURL(snap.ref);
+    await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
+    setPilotAvatarPhoto(photoURL);
+    msg.textContent = '✓ Photo saved';
+    msg.style.color = 'var(--ok)';
+  } catch(e) {
+    console.error('Avatar upload error:', e);
+    msg.textContent = 'Upload failed. Please try again.';
+    msg.style.color = 'var(--red)';
+  }
 };
 
 // Change password
@@ -2431,6 +2517,7 @@ window.sendMessage = async () => {
         read: false,
         createdAt: serverTimestamp()
       }).catch(() => {});
+      sendPush(activeOtherId, senderName, text.length > 80 ? text.slice(0, 80) + '...' : text, { url: '/carrier-dashboard.html#messages' });
     }
   } catch(e) { console.error('Send message:', e); }
 };
@@ -2992,31 +3079,6 @@ function setPilotAvatarPhoto(url) {
   if (navAv) { navAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
 }
 
-window.handlePilotAvatarUpload = (input) => {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = async () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 150; canvas.height = 150;
-      const ctx = canvas.getContext('2d');
-      const size = Math.min(img.width, img.height);
-      ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 150, 150);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      try {
-        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const user = auth.currentUser;
-        await setDoc(doc(db, 'users', user.uid), { photoURL: dataUrl }, { merge: true });
-        setPilotAvatarPhoto(dataUrl);
-        showToast('Profile photo updated!');
-      } catch(e) { console.error(e); showToast('Could not save photo. Try again.'); }
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
 
 function showToast(msg) {
   let t = document.getElementById('pToast');
