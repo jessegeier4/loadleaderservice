@@ -997,6 +997,37 @@ if ('serviceWorker' in navigator) {
   </div>
 </div>
 
+<!-- LOAD LOG MODAL -->
+<div id="logDayModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-card);width:100%;max-width:440px;padding:1.75rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Log <span style="color:var(--accent)">Day</span> <span id="logDayNum" style="color:var(--accent)"></span></div>
+      <button onclick="document.getElementById('logDayModal').style.display='none'" style="background:none;border:none;color:var(--text-3);font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.85rem;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Date</label>
+        <input type="date" id="logDate" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;color-scheme:dark;">
+      </div>
+      <div>
+        <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Current Stop / End of Day Location</label>
+        <input type="text" id="logStop" placeholder="e.g. Indianapolis, IN" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
+      </div>
+      <div>
+        <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Miles Today</label>
+        <input type="number" id="logMiles" placeholder="e.g. 285" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
+      </div>
+      <div>
+        <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Notes <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <textarea id="logNotes" placeholder="Permit issues, weather delays, special stops..." rows="3" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;resize:vertical;"></textarea>
+      </div>
+    </div>
+    <input type="hidden" id="logAppId">
+    <div id="logDayMsg" style="display:none;padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.75rem;"></div>
+    <button onclick="submitLogDay()" style="width:100%;background:var(--accent);color:#0A0A0A;border:none;padding:.85rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Save Day Log</button>
+  </div>
+</div>
+
 <!-- MOBILE BOTTOM NAV -->
 <div class="mobile-nav">
   <div class="mobile-nav-items">
@@ -1187,7 +1218,19 @@ onAuthStateChanged(auth, async (user) => {
       jobList.innerHTML = apps.slice(0, 3).map(a => buildJobCard(a)).join('');
       // Also populate full jobs list
       const fullJobList = document.getElementById('jobsList');
-      if (fullJobList && apps.length > 0) fullJobList.innerHTML = apps.map(a => buildJobCard(a)).join('');
+      if (fullJobList && apps.length > 0) {
+        const activeApps = apps.filter(a => a.status !== 'completed');
+        const doneApps   = apps.filter(a => a.status === 'completed');
+        let jHtml = activeApps.map(a => buildJobCard(a)).join('');
+        if (doneApps.length > 0) {
+          jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);">' +
+            '<div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">' +
+            'Finished <span style="color:var(--accent)">Loads</span>' +
+            '<span style="font-family:var(--font-body);font-size:.72rem;color:var(--text-2);font-weight:400;letter-spacing:0;text-transform:none;margin-left:.5rem;">' + doneApps.length + ' completed</span></div></div>' +
+            doneApps.map(a => buildJobCard(a)).join('');
+        }
+        fullJobList.innerHTML = jHtml;
+      }
       // Auto-load route weather for all accepted job cards
       setTimeout(() => {
         document.querySelectorAll('[data-weather-load]').forEach(el => {
@@ -1494,11 +1537,26 @@ window.emailInvoice = async () => {
   }
 };
 
+function buildLoadLog(a) {
+  if (!a.loadLog?.length) return '';
+  const rows = a.loadLog.map(e =>
+    '<div style="display:flex;align-items:baseline;gap:.5rem;font-size:.72rem;padding:.3rem 0;border-bottom:1px solid var(--line);">' +
+    '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:42px;font-size:.7rem;flex-shrink:0;">Day ' + e.day + '</span>' +
+    '<span style="color:var(--text);">' + (e.stop || '—') + '</span>' +
+    (e.miles ? '<span style="color:var(--text-2);margin-left:auto;flex-shrink:0;">' + e.miles + ' mi</span>' : '') +
+    '</div>'
+  ).join('');
+  return '<div style="margin-top:.6rem;padding:.55rem .75rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
+    '<div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:.3rem;">Load Log · ' +
+    a.loadLog.length + ' day' + (a.loadLog.length !== 1 ? 's' : '') + '</div>' +
+    rows + '</div>';
+}
+
 // Build job card HTML
 function buildJobCard(a) {
   const isAccepted = a.status === 'accepted';
   const isCompleted = a.status === 'completed';
-  const isPending = a.status === 'pending';
+  const logDayCount = a.loadLog?.length || 0;
   const origin = a.loadRoute?.split('→')[0]?.trim() || '';
   return `
     <div class="job-card ${isAccepted ? 'active-job' : isCompleted ? 'completed-job' : 'pending-job'}">
@@ -1511,19 +1569,21 @@ function buildJobCard(a) {
         <div class="job-meta">
           <div class="job-meta-item">Date <strong>${a.loadDate || '—'}</strong></div>
           <div class="job-meta-item">Carrier <strong>${a.carrier || '—'}</strong></div>
-          ${isAccepted ? '<div class="job-meta-item" style="color:var(--green)">✓ Accepted!</div>' : ''}
-          ${isCompleted ? '<div class="job-meta-item" style="color:var(--muted)">✓ Delivered</div>' : ''}
+          ${isAccepted ? '<div class="job-meta-item" style="color:var(--ok)">✓ Active Run</div>' : ''}
+          ${isCompleted ? '<div class="job-meta-item" style="color:var(--text-2)">✓ Delivered</div>' : ''}
         </div>
+        ${isAccepted ? buildLoadLog(a) : ''}
         ${isAccepted ? `<div id="weather-${a.id}" data-weather-load="${a.id}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>
       <div class="job-right">
         <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
         <span class="badge ${isAccepted ? 'badge-active' : isCompleted ? 'badge-completed' : 'badge-applied'}">
-          ${isAccepted ? 'Accepted' : isCompleted ? 'Completed' : 'Applied'}
+          ${isAccepted ? 'Active' : isCompleted ? 'Completed' : 'Applied'}
         </span>
         <div class="job-actions">
           ${isAccepted ? `
-            <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 View Permits</button>
+            <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 Permits</button>
+            <button class="job-btn" onclick="openLogDay('${a.id || ''}',${logDayCount})">📝 Log Day</button>
             <button class="job-btn primary" onclick="confirmDelivery('${a.id || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `<button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>` : ''}
@@ -1636,6 +1696,67 @@ window.loadRouteWeather = async (loadId, route) => {
 
 // backward compat alias
 window.checkWeather = (loadId, loc) => loadRouteWeather(loadId, loc);
+
+// ── LOAD LOG ──
+window.openLogDay = (appId, currentDayCount) => {
+  document.getElementById('logDayNum').textContent = currentDayCount + 1;
+  document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('logStop').value = '';
+  document.getElementById('logMiles').value = '';
+  document.getElementById('logNotes').value = '';
+  document.getElementById('logAppId').value = appId;
+  const msg = document.getElementById('logDayMsg');
+  if (msg) msg.style.display = 'none';
+  document.getElementById('logDayModal').style.display = 'flex';
+};
+
+window.submitLogDay = async () => {
+  const appId  = document.getElementById('logAppId').value;
+  const date   = document.getElementById('logDate').value;
+  const stop   = document.getElementById('logStop').value.trim();
+  const miles  = parseInt(document.getElementById('logMiles').value) || 0;
+  const notes  = document.getElementById('logNotes').value.trim();
+  const dayNum = parseInt(document.getElementById('logDayNum').textContent) || 1;
+  const msg    = document.getElementById('logDayMsg');
+  const btn    = document.querySelector('#logDayModal button[onclick="submitLogDay()"]');
+
+  if (!stop) {
+    msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);';
+    msg.textContent = 'Please enter the stop or end-of-day location.';
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+  try {
+    const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'applications', appId), {
+      loadLog: arrayUnion({ day: dayNum, date, stop, miles, notes, loggedAt: new Date().toISOString() })
+    });
+    document.getElementById('logDayModal').style.display = 'none';
+    // Refresh job list to show updated log
+    const updatedApps = (window._allJobs || []).map(a => {
+      if (a.id !== appId) return a;
+      const log = a.loadLog || [];
+      return { ...a, loadLog: [...log, { day: dayNum, date, stop, miles, notes }] };
+    });
+    window._allJobs = updatedApps;
+    const fullJobList = document.getElementById('jobsList');
+    if (fullJobList) {
+      const activeApps = updatedApps.filter(a => a.status !== 'completed');
+      const doneApps   = updatedApps.filter(a => a.status === 'completed');
+      let jHtml = activeApps.map(a => buildJobCard(a)).join('');
+      if (doneApps.length > 0) {
+        jHtml += '<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line);"><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">Finished <span style="color:var(--accent)">Loads</span></div></div>' + doneApps.map(a => buildJobCard(a)).join('');
+      }
+      fullJobList.innerHTML = jHtml;
+    }
+  } catch(e) {
+    console.error('Log day:', e);
+    msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);';
+    msg.textContent = 'Could not save log entry. Please try again.';
+    if (btn) { btn.disabled = false; btn.textContent = 'Save Day Log'; }
+  }
+};
 
 // Logout
 window.handleLogout = async () => {
@@ -2228,7 +2349,19 @@ window.setReviewRating = (rating) => {
   });
 };
 
-window.openReviewModal = (targetId, loadId) => {
+window.openReviewModal = async (targetId, loadId) => {
+  // One review per pilot per load
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const user = auth.currentUser;
+    if (user && loadId) {
+      const existing = await getDocs(query(collection(db, 'reviews'), where('reviewerId', '==', user.uid), where('loadId', '==', loadId)));
+      if (!existing.empty) {
+        alert('You have already reviewed this load.');
+        return;
+      }
+    }
+  } catch(e) { /* check failed silently, allow review */ }
   reviewRating = 0;
   document.getElementById('reviewTargetId').value = targetId;
   document.getElementById('reviewLoadId').value = loadId;
@@ -2247,6 +2380,7 @@ window.submitReview = async () => {
     await addDoc(collection(db, 'reviews'), {
       targetId,
       loadId,
+      reviewerId: auth.currentUser?.uid || '',
       rating: reviewRating,
       text,
       anonymous: true,
@@ -2354,6 +2488,33 @@ window.submitDelivery = async (forceManual) => {
         return;
       }
     }
+  }
+
+  // GPS distance check — warn pilot if far from destination
+  if (coords && !forceManual) {
+    try {
+      const dest = pendingDelivery?.loadRoute?.split('→')[1]?.trim() || '';
+      if (dest) {
+        const city = dest.replace(/\s+[A-Z]{2}$/, '').trim();
+        const gr = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=en&format=json');
+        const gd = await gr.json();
+        if (gd.results?.length) {
+          const dlat = gd.results[0].latitude, dlng = gd.results[0].longitude;
+          const R = 3959;
+          const dLat = (dlat - coords.lat) * Math.PI / 180;
+          const dLon = (dlng - coords.lng) * Math.PI / 180;
+          const aa = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(coords.lat*Math.PI/180)*Math.cos(dlat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+          const dist = Math.round(R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa)));
+          if (dist > 100) {
+            const go = confirm('Your GPS shows you are ' + dist + ' miles from ' + dest + '. Confirm delivery from this location?');
+            if (!go) {
+              if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm Delivery'; }
+              return;
+            }
+          }
+        }
+      }
+    } catch(e) { /* distance check failed silently */ }
   }
 
   // Proceed with delivery submission
