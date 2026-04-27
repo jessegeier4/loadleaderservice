@@ -757,9 +757,9 @@ if ('serviceWorker' in navigator) {
             <textarea id="pfBio" rows="3" placeholder="Tell carriers about your experience, routes you know well, etc."></textarea>
           </div>
           <div class="form-group">
-            <label>Quick Apply Default Message</label>
+            <label>Default Message to Carrier</label>
             <textarea id="pfQuickApply" rows="3" placeholder="e.g. Experienced pilot car driver, available immediately. Fully equipped with height pole, CB radio, and all required safety equipment."></textarea>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem;">This message auto-fills when you apply to loads. Save time on every application.</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem;line-height:1.5;">We will fill this in for you on every load you apply to, so you do not have to retype it. You can still edit it before sending.</div>
           </div>
           <button class="save-btn" onclick="saveEquipment()">Save Equipment Info</button>
         </div>
@@ -3007,11 +3007,11 @@ window.submitDelivery = async (forceManual) => {
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Confirm Delivery';
         statusDiv.innerHTML =
-          '<div style="color:var(--warn);font-weight:600;margin-bottom:.4rem;">Unable to get GPS after 2 attempts.</div>' +
-          '<div style="font-size:.78rem;color:var(--text-2);margin-bottom:.65rem;">Please step outside or move to an open area and try again. You can also submit without GPS — the delivery will be marked as manually confirmed.</div>' +
+          '<div style="color:var(--warn);font-weight:600;margin-bottom:.4rem;">Couldn’t find your location.</div>' +
+          '<div style="font-size:.85rem;color:var(--text-2);margin-bottom:.65rem;line-height:1.5;">Step outside or near a window so your phone can get a signal, then try again. You can also submit without location proof.</div>' +
           '<div style="display:flex;gap:.5rem;">' +
-            '<button onclick="submitDelivery()" style="flex:1;background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.5rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Try Again</button>' +
-            '<button onclick="submitDelivery(true)" style="flex:1;background:var(--ok);color:#0A0A0A;border:none;padding:.5rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Submit Without GPS</button>' +
+            '<button onclick="submitDelivery()" style="flex:1;background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.65rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Try Again</button>' +
+            '<button onclick="submitDelivery(true)" style="flex:1;background:var(--ok);color:#0A0A0A;border:none;padding:.65rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Submit Anyway</button>' +
           '</div>';
         statusDiv.style.display = 'block';
         return;
