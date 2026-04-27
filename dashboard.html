@@ -1740,8 +1740,8 @@ function buildLoadLog(a) {
     '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:34px;font-size:.65rem;flex-shrink:0;">D' + e.day + '</span>' +
     '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.stop || '—') + '</span>' +
     (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;font-size:.65rem;">' + e.miles + 'mi</span>' : '') +
-    '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.7rem;cursor:pointer;padding:0 .25rem;flex-shrink:0;line-height:1;" title="Edit">✏️</button>' +
-    '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-3);font-size:.7rem;cursor:pointer;padding:0 .25rem;flex-shrink:0;line-height:1;" title="Delete">🗑️</button>' +
+    '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-2);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Edit</button>' +
+    '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--bad);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Delete</button>' +
     '</div>'
   ).join('');
   return '<div style="margin-top:.5rem;padding:.45rem .65rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
@@ -1955,16 +1955,19 @@ function rerenderJobs(apps) {
 
 window.deleteLogDay = async (appId, index) => {
   if (!confirm('Delete this day log entry? This cannot be undone.')) return;
+  const app = (window._allJobs || []).find(a => a.id === appId);
+  if (!app) { alert('Could not find this job in memory — refresh the page and try again.'); return; }
+  const newLog = (app.loadLog || []).filter((_, i) => i !== index);
   try {
-    const app = (window._allJobs || []).find(a => a.id === appId);
-    if (!app) return;
-    const newLog = (app.loadLog || []).filter((_, i) => i !== index);
     const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
     window._allJobs = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
     rerenderJobs(window._allJobs);
     showToast('Day log deleted');
-  } catch(e) { console.error('Delete log:', e); alert('Could not delete: ' + (e.message || 'unknown error')); }
+  } catch(e) {
+    console.error('Delete log:', e);
+    alert('Could not delete: ' + (e.code || '') + ' ' + (e.message || 'unknown error'));
+  }
 };
 
 window.submitLogDay = async () => {
