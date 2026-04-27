@@ -971,56 +971,61 @@ async function loadApplications() {
     safeSet('cStatCompleted', completedLoads);
     safeSet('profileLoadsPosted', loadsSnap.size);
 
-    // Query applications by loadId (works for all apps regardless of carrierId field)
-    allApplications = [];
-    if (myLoadIds.length > 0) {
-      const chunks = [];
-      for (let i = 0; i < myLoadIds.length; i += 10) chunks.push(myLoadIds.slice(i, i + 10));
-      for (const chunk of chunks) {
-        const appsSnap = await getDocs(query(collection(db, 'applications'), where('loadId', 'in', chunk)));
-        appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
-      }
+    // Render loads immediately — before applications query so a query failure never blocks this
+    const loadsList = document.getElementById('myLoadsList');
+    const overviewLoads = document.getElementById('overviewLoads');
+    if (loadsList) loadsList.innerHTML = allCarrierLoads.length
+      ? allCarrierLoads.map(l => buildLoadCard(l)).join('')
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted yet</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
+    const activeOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active').slice(0, 3);
+    if (overviewLoads) overviewLoads.innerHTML = activeOnly.length
+      ? activeOnly.map(l => buildLoadCard(l)).join('')
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted yet</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
+    const loadFilter = document.getElementById('loadFilter');
+    if (loadFilter && !loadFilter.dataset.populated) {
+      loadFilter.dataset.populated = '1';
+      allCarrierLoads.forEach(l => {
+        const opt = document.createElement('option');
+        opt.value = l.id;
+        opt.textContent = `${l.from} ${l.fromSt} → ${l.to} ${l.toSt}`;
+        loadFilter.appendChild(opt);
+      });
     }
 
-    const pending = allApplications.filter(a => a.status === 'pending').length;
-    const accepted = allApplications.filter(a => a.status === 'accepted').length;
-    safeSet('newAppsCount', pending);
-    safeSet('appCount', pending);
-    safeSet('cStatHired', accepted);
-    safeSet('profilePilotsHired', accepted);
-    safeSet('carrierWelcomeSub', `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`);
-    const dot = document.getElementById('appTabDot');
-    if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
-
-    if (allApplications.length === 0) {
+    // Query applications — isolated so failures don't affect load rendering
+    try {
+      allApplications = [];
+      if (myLoadIds.length > 0) {
+        const chunks = [];
+        for (let i = 0; i < myLoadIds.length; i += 10) chunks.push(myLoadIds.slice(i, i + 10));
+        for (const chunk of chunks) {
+          const appsSnap = await getDocs(query(collection(db, 'applications'), where('loadId', 'in', chunk)));
+          appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
+        }
+      }
+      const pending = allApplications.filter(a => a.status === 'pending').length;
+      const accepted = allApplications.filter(a => a.status === 'accepted').length;
+      safeSet('newAppsCount', pending);
+      safeSet('appCount', pending);
+      safeSet('cStatHired', accepted);
+      safeSet('profilePilotsHired', accepted);
+      safeSet('carrierWelcomeSub', `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`);
+      const dot = document.getElementById('appTabDot');
+      if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
+      if (allApplications.length === 0) {
+        renderApplications([]);
+        renderOverviewApplicants([]);
+      } else {
+        renderApplications(allApplications);
+        renderOverviewApplicants(allApplications.slice(0, 3));
+      }
+    } catch(appsErr) {
+      console.error('Applications query error:', appsErr);
       renderApplications([]);
       renderOverviewApplicants([]);
-    } else {
-      renderApplications(allApplications);
-      renderOverviewApplicants(allApplications.slice(0, 3));
-    }
-
-    // Render loads (already fetched above)
-    if (allCarrierLoads.length > 0) {
-      const loadsList = document.getElementById('myLoadsList');
-      const overviewLoads = document.getElementById('overviewLoads');
-      if (loadsList) loadsList.innerHTML = allCarrierLoads.map(l => buildLoadCard(l)).join('');
-      const activeOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active').slice(0, 3);
-      if (overviewLoads) overviewLoads.innerHTML = activeOnly.length
-        ? activeOnly.map(l => buildLoadCard(l)).join('')
-        : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div></div>';
-      const loadFilter = document.getElementById('loadFilter');
-      if (loadFilter) {
-        allCarrierLoads.forEach(l => {
-          const opt = document.createElement('option');
-          opt.value = l.id;
-          opt.textContent = `${l.from} ${l.fromSt} → ${l.to} ${l.toSt}`;
-          loadFilter.appendChild(opt);
-        });
-      }
     }
   } catch(e) {
-    console.error('Error loading applications:', e);
+    console.error('Error loading carrier data:', e);
     renderApplications([]);
     renderOverviewApplicants([]);
   }
