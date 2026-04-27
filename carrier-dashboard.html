@@ -365,8 +365,7 @@ if ('serviceWorker' in navigator) {
       <button class="btn btn-y" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post New Load</button>
     </div>
     <div class="filter-tabs">
-      <span class="ft on" onclick="filterLoadStatus('all',this)">All</span>
-      <span class="ft" onclick="filterLoadStatus('active',this)">Active</span>
+      <span class="ft on" onclick="filterLoadStatus('active',this)">Active</span>
       <span class="ft" onclick="filterLoadStatus('filled',this)">Filled</span>
       <span class="ft" onclick="filterLoadStatus('completed',this)">Completed</span>
       <span class="ft" onclick="filterLoadStatus('draft',this)">Draft</span>
@@ -411,8 +410,7 @@ if ('serviceWorker' in navigator) {
         <option value="all">All Loads</option>
       </select>
       <div class="filter-tabs" style="margin-bottom:0;">
-        <span class="ft on" onclick="filterApps('all',this)">All</span>
-        <span class="ft" onclick="filterApps('pending',this)">Pending</span>
+        <span class="ft on" onclick="filterApps('pending',this)">Pending</span>
         <span class="ft" onclick="filterApps('accepted',this)">Accepted</span>
         <span class="ft" onclick="filterApps('declined',this)">Declined</span>
       </div>
@@ -960,9 +958,10 @@ async function loadApplications() {
     // Render loads immediately — before applications query so a query failure never blocks this
     const loadsList = document.getElementById('myLoadsList');
     const overviewLoads = document.getElementById('overviewLoads');
-    if (loadsList) loadsList.innerHTML = allCarrierLoads.length
-      ? allCarrierLoads.map(l => buildLoadCard(l)).join('')
-      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted yet</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
+    const activeLoadsOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active');
+    if (loadsList) loadsList.innerHTML = activeLoadsOnly.length
+      ? activeLoadsOnly.map(l => buildLoadCard(l)).join('')
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
     const activeOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active').slice(0, 3);
     if (overviewLoads) overviewLoads.innerHTML = activeOnly.length
       ? activeOnly.map(l => buildLoadCard(l)).join('')
@@ -981,14 +980,8 @@ async function loadApplications() {
     // Query applications — isolated so failures don't affect load rendering
     try {
       allApplications = [];
-      if (myLoadIds.length > 0) {
-        const chunks = [];
-        for (let i = 0; i < myLoadIds.length; i += 10) chunks.push(myLoadIds.slice(i, i + 10));
-        for (const chunk of chunks) {
-          const appsSnap = await getDocs(query(collection(db, 'applications'), where('loadId', 'in', chunk)));
-          appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
-        }
-      }
+      const appsSnap = await getDocs(query(collection(db, 'applications'), where('carrierId', '==', currentUser.uid)));
+      appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
       const pending = allApplications.filter(a => a.status === 'pending').length;
       const accepted = allApplications.filter(a => a.status === 'accepted').length;
       safeSet('newAppsCount', pending);

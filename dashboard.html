@@ -436,8 +436,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem;">
-      <button class="job-btn primary" onclick="filterJobs('all',this)">All</button>
-      <button class="job-btn" onclick="filterJobs('active',this)">In Progress</button>
+      <button class="job-btn primary" onclick="filterJobs('active',this)">In Progress</button>
       <button class="job-btn" onclick="filterJobs('applied',this)">Applied</button>
       <button class="job-btn" onclick="filterJobs('completed',this)">Completed</button>
     </div>
@@ -1061,6 +1060,15 @@ if ('serviceWorker' in navigator) {
       <div>
         <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Notes <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
         <input type="text" id="expNotes" placeholder="e.g. Shell station I-70 mile marker 42" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
+      </div>
+      <div>
+        <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Receipt Photo <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input type="file" id="expReceipt" accept="image/*" onchange="previewExpReceipt(this)" style="display:none;">
+        <button type="button" onclick="document.getElementById('expReceipt').click()" style="background:transparent;border:1px dashed #444;color:#aaa;padding:.55rem 1rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.8rem;cursor:pointer;width:100%;text-align:center;">📷 Attach Photo or Screenshot</button>
+        <div id="expReceiptPreview" style="display:none;margin-top:.5rem;position:relative;">
+          <img id="expReceiptImg" style="width:100%;max-height:140px;object-fit:cover;border-radius:6px;border:1px solid #333;">
+          <button type="button" onclick="clearExpReceipt()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.75rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
       </div>
     </div>
     <input type="hidden" id="expAppId">
@@ -1831,6 +1839,39 @@ window.submitLogDay = async () => {
 
 // ── EXPENSE LOGGING ──
 
+function compressReceiptImage(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 1200;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.75);
+    };
+    img.src = url;
+  });
+}
+
+window.previewExpReceipt = (input) => {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('expReceiptImg').src = e.target.result;
+    document.getElementById('expReceiptPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(input.files[0]);
+};
+
+window.clearExpReceipt = () => {
+  document.getElementById('expReceipt').value = '';
+  document.getElementById('expReceiptPreview').style.display = 'none';
+};
+
 window.openExpenseLog = (appId, route) => {
   document.getElementById('expAppId').value = appId;
   document.getElementById('expRoute').value = route || '';
@@ -1839,6 +1880,7 @@ window.openExpenseLog = (appId, route) => {
   document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('expCategory').value = 'Gas';
   document.getElementById('expMsg').style.display = 'none';
+  clearExpReceipt();
   document.getElementById('expenseModal').style.display = 'flex';
 };
 
@@ -1849,6 +1891,7 @@ window.submitExpense = async () => {
   const date     = document.getElementById('expDate').value;
   const notes    = document.getElementById('expNotes').value.trim();
   const route    = document.getElementById('expRoute').value;
+  const file     = document.getElementById('expReceipt').files[0];
   const msg      = document.getElementById('expMsg');
   const btn      = document.querySelector('#expenseModal button[onclick="submitExpense()"]');
 
@@ -1863,15 +1906,26 @@ window.submitExpense = async () => {
     return;
   }
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  if (btn) { btn.disabled = true; btn.textContent = file ? 'Uploading...' : 'Saving...'; }
   try {
+    let receiptUrl = '';
+    if (file) {
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+      const storage = getStorage();
+      const user = auth.currentUser;
+      const compressed = await compressReceiptImage(file);
+      const path = `receipts/${user.uid}/${appId}/${Date.now()}.jpg`;
+      const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
+      receiptUrl = await getDownloadURL(snap.ref);
+    }
     const { doc, updateDoc, arrayUnion } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    await updateDoc(doc(db, 'applications', appId), {
-      expenseLog: arrayUnion({ category, amount, date, notes, route, loggedAt: new Date().toISOString() })
-    });
+    const entry = { category, amount, date, notes, route, loggedAt: new Date().toISOString() };
+    if (receiptUrl) entry.receiptUrl = receiptUrl;
+    await updateDoc(doc(db, 'applications', appId), { expenseLog: arrayUnion(entry) });
     document.getElementById('expenseModal').style.display = 'none';
     showToast('Expense saved');
   } catch(e) {
+    console.error('Expense save error:', e);
     msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.75rem;';
     msg.textContent = 'Could not save expense. Please try again.';
     if (btn) { btn.disabled = false; btn.textContent = 'Save Expense'; }
@@ -1909,7 +1963,7 @@ window.generateExpenseReport = async () => {
       grand += sub;
       body += `<div style="margin-bottom:1.5rem;">
         <div style="font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #f5c400;padding-bottom:.35rem;margin-bottom:.5rem;">${cat}</div>
-        ${rows.map(e => row(e.date + (e.loadRoute ? ' — ' + e.loadRoute : '') + (e.notes ? ' (' + e.notes + ')' : ''), '$' + e.amount.toFixed(2), false)).join('')}
+        ${rows.map(e => `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.85rem;gap:.5rem;"><span style="flex:1;">${e.date}${e.loadRoute ? ' — ' + e.loadRoute : ''}${e.notes ? ' <span style="color:#888;">(' + e.notes + ')</span>' : ''}${e.receiptUrl ? ' <a href="' + e.receiptUrl + '" target="_blank" style="color:#f5c400;font-size:.75rem;">[receipt]</a>' : ''}</span><span style="font-weight:600;white-space:nowrap;">$${Number(e.amount).toFixed(2)}</span></div>`).join('')}
         ${row(cat + ' Subtotal', '$' + sub.toFixed(2), true)}
       </div>`;
     });
