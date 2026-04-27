@@ -335,7 +335,7 @@ if ('serviceWorker' in navigator) {
     <button class="nav-tab" onclick="showPanel('jobs',this)">My Jobs</button>
     <button class="nav-tab" onclick="showPanel('messages',this)" id="msgTab">Messages <span style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;" id="msgDot"></span></button>
     <button class="nav-tab" onclick="showPanel('following',this)">Following</button>
-    <button class="nav-tab" onclick="showPanel('earnings',this)">Earnings</button>
+    <button class="nav-tab" onclick="showPanel('earnings',this)" style="display:none;">Earnings</button>
     <button class="nav-tab" onclick="showPanel('saved',this)">Saved Loads</button>
     <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
   </div>
@@ -384,7 +384,7 @@ if ('serviceWorker' in navigator) {
         <div class="sc-val" id="statActiveJobs">0</div>
         <div class="sc-sub" id="statActiveJobsSub">No active jobs yet</div>
       </div>
-      <div class="stat-card green" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[4])">
+      <div class="stat-card green" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[4])" style="display:none;">
         <div class="sc-label">Earnings (2026)</div>
         <div class="sc-val" id="statEarnings">$0</div>
         <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
@@ -413,11 +413,11 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 
-    <!-- UPCOMING PAYOUT -->
-    <div class="sec-head">
+    <!-- UPCOMING PAYOUT (hidden until payment feature launches) -->
+    <div class="sec-head" style="display:none;">
       <div class="sec-title">Upcoming <span>Payout</span></div>
     </div>
-    <div id="overviewPayout" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;">
+    <div id="overviewPayout" style="display:none;">
       <div class="empty-state" style="padding:1.5rem 1rem;">
         <div class="empty-icon">💰</div>
         <div class="empty-text">No pending payouts yet — complete a job to get paid</div>
@@ -448,8 +448,8 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
 
-  <!-- EARNINGS PANEL -->
-  <div class="panel" id="panel-earnings">
+  <!-- EARNINGS PANEL (hidden until payment feature launches) -->
+  <div class="panel" id="panel-earnings" style="display:none!important;">
     <div class="sec-head" style="margin-bottom:1.5rem;">
       <div class="sec-title">Earnings & <span>Payouts</span></div>
     </div>
@@ -1040,7 +1040,7 @@ if ('serviceWorker' in navigator) {
     <button class="mn-item" onclick="showPanel('jobs',this)"><span class="mn-icon">🚛</span><span class="mn-label">Jobs</span></button>
     <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></button>
     <button class="mn-item" onclick="showPanel('following',this)"><span class="mn-icon">👥</span><span class="mn-label">Following</span></button>
-    <button class="mn-item" onclick="showPanel('earnings',this)"><span class="mn-icon">💰</span><span class="mn-label">Earnings</span></button>
+    <button class="mn-item" onclick="showPanel('earnings',this)" style="display:none;"><span class="mn-icon">💰</span><span class="mn-label">Earnings</span></button>
     <button class="mn-item" onclick="showPanel('saved',this)"><span class="mn-icon">♡</span><span class="mn-label">Saved</span></button>
     <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">👤</span><span class="mn-label">Profile</span></button>
   </div>
