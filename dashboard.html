@@ -1933,17 +1933,19 @@ window.addCustomCert = () => {
   item.className = 'cert-item';
   item.id = 'cert-' + id;
   item.innerHTML = `
-    <span class="cert-icon">📄</span>
-    <span class="cert-name">${name}</span>
-    <span class="cert-exp" id="exp-${id}">No expiry added</span>
-    <span class="cert-status cert-missing" id="status-${id}">Not uploaded</span>
-    <button class="cert-expand-btn" onclick="toggleCert('${id}')">+ Add</button>
+    <div class="cert-item-top">
+      <span class="cert-icon">📄</span>
+      <span class="cert-name">${name}</span>
+      <span class="cert-status cert-missing" id="status-${id}">Not uploaded</span>
+      <button class="cert-expand-btn" onclick="toggleCert('${id}')">+ Add</button>
+    </div>
+    <span class="cert-exp" id="exp-${id}" style="display:none">No expiry added</span>
     <div class="cert-upload-area" id="upload-${id}">
       <div class="cert-drop" id="drop-${id}">
         <input type="file" accept="image/*,.pdf" onchange="handleCertFile('${id}',this)">
-        <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop</div>
+        <div class="cert-drop-label">📎 Upload File</div>
       </div>
-      <div class="cert-preview" id="preview-${id}" style="display:none">
+      <div class="cert-preview" id="preview-${id}">
         <img id="preview-img-${id}" src="" alt="Certificate">
         <button class="cert-preview-remove" onclick="removeCert('${id}')">✕</button>
       </div>
