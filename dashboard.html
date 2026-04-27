@@ -230,6 +230,19 @@ select option{background:var(--mid);}
 .cert-exp{font-size:.68rem;color:var(--muted);margin-top:.25rem;margin-left:1.85rem;}
 .add-cert-btn{width:100%;background:transparent;border:1px dashed #2a2a2a;color:var(--muted);padding:.65rem;border-radius:7px;font-family:var(--font-body);font-size:.82rem;cursor:pointer;transition:all .2s;margin-top:.6rem;}
 .add-cert-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+.cert-expand-btn{background:transparent;border:1px solid #2a2a2a;color:#555;padding:.2rem .6rem;border-radius:var(--r-chip);font-family:var(--font-body);font-size:.68rem;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.cert-expand-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+.cert-upload-area{display:none;margin-top:.85rem;padding-top:.85rem;border-top:1px solid #1f1f1f;}
+.cert-item.expanded .cert-upload-area{display:block;}
+.cert-drop{position:relative;display:inline-flex;align-items:center;margin-bottom:.65rem;}
+.cert-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.cert-drop-label{background:var(--card);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-size:.78rem;cursor:pointer;white-space:nowrap;}
+.cert-expiry-row{display:flex;align-items:center;gap:.5rem;}
+.cert-expiry-row input[type=date]{flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.45rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:.78rem;outline:none;}
+.cert-save-btn{background:var(--yellow);color:var(--black);border:none;padding:.45rem .95rem;border-radius:5px;font-family:var(--font-body);font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.cert-preview{display:none;margin:.5rem 0;position:relative;width:fit-content;}
+.cert-preview img{max-width:100%;max-height:100px;border-radius:5px;display:block;}
+.cert-preview-remove{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#333;border:1px solid #444;color:#aaa;font-size:.55rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;}
 
 /* REVIEWS */
 .review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.1rem 1.25rem;margin-bottom:.75rem;}
@@ -537,7 +550,6 @@ if ('serviceWorker' in navigator) {
         <!-- Certifications -->
         <div class="form-section">
           <div class="fs-title">Certifications</div>
-          <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Upload a photo of each certificate. Carriers see verified badges on your profile when documents are on file.</p>
           <div class="cert-list" id="certList">
 
             <!-- Pilot Car Cert -->
@@ -552,7 +564,7 @@ if ('serviceWorker' in navigator) {
               <div class="cert-upload-area" id="upload-pilot">
                 <div class="cert-drop" id="drop-pilot">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
-                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                  <div class="cert-drop-label">📎 Upload File</div>
                 </div>
                 <div class="cert-preview" id="preview-pilot">
                   <img id="preview-img-pilot" src="" alt="Certificate">
@@ -577,7 +589,7 @@ if ('serviceWorker' in navigator) {
               <div class="cert-upload-area" id="upload-license">
                 <div class="cert-drop" id="drop-license">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
-                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                  <div class="cert-drop-label">📎 Upload File</div>
                 </div>
                 <div class="cert-preview" id="preview-license">
                   <img id="preview-img-license" src="" alt="Certificate">
@@ -602,7 +614,7 @@ if ('serviceWorker' in navigator) {
               <div class="cert-upload-area" id="upload-insurance">
                 <div class="cert-drop" id="drop-insurance">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
-                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                  <div class="cert-drop-label">📎 Upload File</div>
                 </div>
                 <div class="cert-preview" id="preview-insurance">
                   <img id="preview-img-insurance" src="" alt="Certificate">
@@ -627,7 +639,7 @@ if ('serviceWorker' in navigator) {
               <div class="cert-upload-area" id="upload-osha">
                 <div class="cert-drop" id="drop-osha">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
-                  <div class="cert-drop-label">📎 <span>Click to upload</span> or drag & drop<br>JPG, PNG or PDF · Max 5MB</div>
+                  <div class="cert-drop-label">📎 Upload File</div>
                 </div>
                 <div class="cert-preview" id="preview-osha">
                   <img id="preview-img-osha" src="" alt="Certificate">
@@ -1336,10 +1348,13 @@ window.saveStateCoverage = async () => {
   const selected = Array.from(document.querySelectorAll('#stateCoverageMap div'))
     .filter(el => el.style.background.includes('245'))
     .map(el => el.dataset.state);
+  const coverageText = selected.join(', ');
   try {
     const { doc: fd, updateDoc: ud } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await ud(fd(db, 'users', user.uid), { stateCoverage: selected });
-    showToast('✓ State coverage saved! (' + selected.length + ' states)');
+    await ud(fd(db, 'users', user.uid), { stateCoverage: selected, coverage: coverageText });
+    const pfCov = document.getElementById('pfCoverage');
+    if (pfCov) pfCov.value = coverageText;
+    showToast('Coverage saved! (' + selected.length + ' states)');
   } catch(e) { showToast('Could not save coverage.'); }
 };
 

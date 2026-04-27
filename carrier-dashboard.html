@@ -1493,7 +1493,7 @@ window.searchPilots = async () => {
       if (d.id === currentUser.uid) return;
       if (u.accountType === 'carrier') return;
       const name = `${u.firstName || ''} ${u.lastName || ''}`.trim().toLowerCase();
-      if (state && u.state !== state) return;
+      if (state && u.state !== state && !(u.stateCoverage || []).includes(state)) return;
       if (search && !name.includes(search) && !(u.coverage || '').toLowerCase().includes(search)) return;
       pilots.push({ id: d.id, ...u, name: `${u.firstName || ''} ${u.lastName || ''}`.trim() });
     });
