@@ -1161,7 +1161,7 @@ onAuthStateChanged(auth, async (user) => {
     const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const appsSnap = await getDocs(query(collection(db, 'applications'), where('pilotId', '==', user.uid)));
     const apps = [];
-    appsSnap.forEach(d => apps.push(d.data()));
+    appsSnap.forEach(d => apps.push({ id: d.id, ...d.data() }));
 
     const activeJobs = apps.filter(a => a.status === 'accepted');
     const pendingApps = apps.filter(a => a.status === 'pending');
@@ -1514,7 +1514,7 @@ function buildJobCard(a) {
           ${isAccepted ? '<div class="job-meta-item" style="color:var(--green)">✓ Accepted!</div>' : ''}
           ${isCompleted ? '<div class="job-meta-item" style="color:var(--muted)">✓ Delivered</div>' : ''}
         </div>
-        ${isAccepted ? `<div id="weather-${a.loadId}" data-weather-load="${a.loadId}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
+        ${isAccepted ? `<div id="weather-${a.id}" data-weather-load="${a.id}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>
       <div class="job-right">
         <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
@@ -1524,7 +1524,7 @@ function buildJobCard(a) {
         <div class="job-actions">
           ${isAccepted ? `
             <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 View Permits</button>
-            <button class="job-btn primary" onclick="confirmDelivery('${a.loadId || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
+            <button class="job-btn primary" onclick="confirmDelivery('${a.id || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `<button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>` : ''}
         </div>
