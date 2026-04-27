@@ -50,7 +50,7 @@
 ### Content / copy
 | # | Page | Location | Problem | Fix |
 |---|---|---|---|---|
-| S14 | index.html | `.hs-num` line 224 | Stats show "49 STATES" but other places say "48 STATES" — inconsistency erodes trust (**confirmed live**) | Pick one — likely 48 |
+| S14 | index.html | `.hs-num` line 224 | Stats show "49 STATES" but other places say "48 STATES" — inconsistency erodes trust (**confirmed live**) | Pick one — likely 50 |
 | S15 | loadboard.html | line 251 + #boardNotice | Page title "Find Your Next Run" assumes pilot. Empty state "be the first to post a load" assumes carrier. Same page, conflicting personas. | Detect role (or genericize to "Live Load Board") |
 | S16 | dashboard.html | GPS warning copy | "Unable to get GPS after 2 attempts" — jargon for non-tech users | "Couldn't find your location. Step outside or near a window, or submit without location proof." |
 | S17 | carrier-dashboard.html | line 447 | Form label "Equipment / Load Description" — "equipment" is ambiguous to non-trucking-savvy carriers | Change to "What are you hauling? (e.g., CAT 988H Loader, Steel Coils)" |
