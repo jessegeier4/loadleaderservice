@@ -418,7 +418,9 @@ async function fetchLoads() {
           length: data.length || '',
           miles: data.miles || 0,
           pilots: data.pilots || 1,
-          pay: data.pay || 0,
+          pay: data.pay || data.dayRate || 0,
+          dayRate: data.dayRate || 0,
+          mileRate: data.mileRate || 0,
           date: data.date || '',
           status: data.status === 'active' ? 'open' : (data.status || 'open'),
           carrier: data.carrierName || 'Carrier',
@@ -505,7 +507,7 @@ function renderLoads() {
         ${l.permitsUploaded ? '<div style="grid-column:1/-1;"><span style="font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border);padding:.15rem .55rem;border-radius:var(--r-chip);">Permits Ready</span></div>' : ''}
       </div>
       <div class="card-bottom">
-        <div><div class="pay-label">Per Pilot</div><div class="pay-amount">$${l.pay.toLocaleString()}</div></div>
+        <div><div class="pay-label">Per Pilot</div><div class="pay-amount">${l.dayRate ? '$' + l.dayRate + '/day' + (l.mileRate ? ' + $' + l.mileRate + '/mi' : '') : '$' + l.pay.toLocaleString()}</div></div>
         <div class="card-actions">
           <button class="save-btn ${savedLoads.has(l.id)?'saved':''}" onclick="toggleSave('${l.id}',this)" title="Save">${savedLoads.has(l.id)?'♥':'♡'}</button>
           ${appliedLoads.has(l.id)
@@ -603,7 +605,7 @@ window.openApplyModal=(loadId)=>{
           <div class="mls-item">Date<strong>${load.date}</strong></div>
           <div class="mls-item">Carrier<strong>${load.carrier}</strong></div>
         </div>
-        <div class="mls-pay">$${load.pay.toLocaleString()} <span style="font-family:var(--font-body);font-size:.72rem;color:var(--text-2);font-weight:400;letter-spacing:0">per pilot</span></div>
+        <div class="mls-pay">${load.dayRate ? '$' + load.dayRate + '/day' + (load.mileRate ? ' + $' + load.mileRate + '/mi' : '') : '$' + load.pay.toLocaleString() + ' per pilot'}</div>
       </div>
       <div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.55rem;">Your Profile — Carrier will see this</div>
       <div class="pilot-preview">
@@ -671,7 +673,9 @@ window.submitApplication=async(loadId)=>{
       carrierId:load.carrierId||'',
       carrier:load.carrier,
       loadRoute:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
-      loadPay:load.pay,
+      loadPay: load.dayRate || load.pay,
+      loadDayRate: load.dayRate || 0,
+      loadMileRate: load.mileRate || 0,
       loadDate:load.date,
       appliedAt:serverTimestamp()
     });

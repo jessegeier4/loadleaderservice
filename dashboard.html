@@ -1616,7 +1616,7 @@ function buildJobCard(a) {
         ${isAccepted ? `<div id="weather-${a.id}" data-weather-load="${a.id}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>
       <div class="job-right">
-        <div><div class="job-pay-label">Your Pay</div><div class="job-pay">$${a.loadPay || 0}</div></div>
+        <div><div class="job-pay-label">Your Pay</div><div class="job-pay">${a.loadDayRate ? '$' + a.loadDayRate + '/day' + (a.loadMileRate ? ' + $' + a.loadMileRate + '/mi' : '') : '$' + (a.loadPay || 0)}</div></div>
         <span class="badge ${isAccepted ? 'badge-active' : isCompleted ? 'badge-completed' : 'badge-applied'}">
           ${isAccepted ? 'Active' : isCompleted ? 'Completed' : 'Applied'}
         </span>
@@ -1624,7 +1624,7 @@ function buildJobCard(a) {
           ${isAccepted ? `
             <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 Permits</button>
             <button class="job-btn" onclick="openLogDay('${a.id || ''}',${logDayCount})">📝 Log Day</button>
-            <button class="job-btn primary" onclick="confirmDelivery('${a.id || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0})">✅ Confirm Delivery</button>
+            <button class="job-btn primary" onclick="confirmDelivery('${a.id || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0},${a.loadDayRate || 0},${a.loadMileRate || 0})">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `<button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>` : ''}
         </div>
@@ -2483,9 +2483,9 @@ const origOnAuthChanged = window.__origAuth;
 // Store pending delivery info
 let pendingDelivery = null;
 
-window.confirmDelivery = async (applicationId, loadRoute, carrierId, carrierEmail, pay) => {
+window.confirmDelivery = async (applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate, mileRate) => {
   // Show delivery details modal first
-  pendingDelivery = { applicationId, loadRoute, carrierId, carrierEmail, pay };
+  pendingDelivery = { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate: dayRate || 0, mileRate: mileRate || 0 };
   document.getElementById('deliveryModal').style.display = 'flex';
 };
 
@@ -2496,7 +2496,7 @@ const tryGps = (timeout) => new Promise((resolve, reject) => {
 
 window.submitDelivery = async (forceManual) => {
   if (!pendingDelivery) return;
-  const { applicationId, loadRoute, carrierId, carrierEmail, pay } = pendingDelivery;
+  const { applicationId, loadRoute, carrierId, carrierEmail, pay, dayRate, mileRate } = pendingDelivery;
   const truckNum = document.getElementById('delivTruck').value.trim();
   const trailerNum = document.getElementById('delivTrailer').value.trim();
   const miles = document.getElementById('delivMiles').value.trim();
@@ -2580,7 +2580,7 @@ window.submitDelivery = async (forceManual) => {
 
   try {
     const { latitude, longitude } = coords ? { latitude: coords.lat, longitude: coords.lng } : { latitude: null, longitude: null };
-    const { doc, updateDoc, addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { doc, updateDoc, addDoc, collection, serverTimestamp, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const user = auth.currentUser;
     const myName = `${window._userProfile?.firstName || ''} ${window._userProfile?.lastName || ''}`.trim() || 'Pilot';
 
@@ -2600,6 +2600,18 @@ window.submitDelivery = async (forceManual) => {
     // Generate invoice number
     const invoiceNum = 'LL-INV-' + Date.now().toString().slice(-6);
 
+    // Fetch day logs from application
+    const appSnap = await getDoc(doc(db, 'applications', applicationId));
+    const loadLog = appSnap.data()?.loadLog || [];
+
+    // Calculate pay from rates if set
+    const numDays = loadLog.length;
+    const totalMilesNum = parseFloat(miles) || 0;
+    const dayTotal = dayRate ? numDays * dayRate : 0;
+    const mileTotal = mileRate ? totalMilesNum * mileRate : 0;
+    const calcTotal = dayTotal + mileTotal;
+    const totalPay = calcTotal > 0 ? calcTotal : (pay || 0);
+
     // Build invoice data
     const invoiceData = {
       invoiceNum,
@@ -2612,6 +2624,10 @@ window.submitDelivery = async (forceManual) => {
       pilotId: user.uid,
       carrierId,
       pay,
+      dayRate: dayRate || 0,
+      mileRate: mileRate || 0,
+      days: loadLog,
+      totalPay,
       truckNum: truckNum || '—',
       trailerNum: trailerNum || '—',
       miles: miles || '—',
@@ -2699,7 +2715,9 @@ function buildInvoiceHtml(data) {
       </div>
       ${daysHtml}${extrasHtml}
       <div style="background:linear-gradient(135deg,#111100,#0a0a0a);border:1px solid rgba(245,196,0,.2);border-radius:8px;padding:1.25rem;margin-bottom:1rem;">
-        ${data.totalPay !== data.pay && data.pay ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Base Pay</span><span>$${Number(data.pay).toFixed(2)}</span></div>` : ''}
+        ${data.dayRate && data.days?.length ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Day Rate (${data.days.length} day${data.days.length !== 1 ? 's' : ''} x $${data.dayRate}/day)</span><span>$${(data.days.length * data.dayRate).toFixed(2)}</span></div>` : ''}
+        ${data.mileRate && parseFloat(data.miles) ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Mileage (${data.miles} mi x $${data.mileRate}/mi)</span><span>$${(parseFloat(data.miles) * data.mileRate).toFixed(2)}</span></div>` : ''}
+        ${!data.dayRate && !data.mileRate && data.totalPay !== data.pay && data.pay ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Base Pay</span><span>$${Number(data.pay).toFixed(2)}</span></div>` : ''}
         <div style="text-align:center;"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
         <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${Number(data.totalPay || data.pay || 0).toFixed(2)}</div></div>
       </div>

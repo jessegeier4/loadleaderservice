@@ -453,7 +453,8 @@ if ('serviceWorker' in navigator) {
       <div class="form-section-title" style="margin-top:1.25rem;">🚩 Escort Requirements</div>
       <div class="form-grid">
         <div class="form-group"><label>Pilots Needed</label><select id="pPilots"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div class="form-group"><label>Pay Per Pilot ($)</label><input type="text" inputmode="numeric" id="pPay" placeholder="e.g. 550"></div>
+        <div class="form-group"><label>Day Rate ($/day)</label><input type="text" inputmode="decimal" id="pDayRate" placeholder="e.g. 350"></div>
+        <div class="form-group"><label>Mileage Rate ($/mi)</label><input type="text" inputmode="decimal" id="pMileRate" placeholder="e.g. 1.50"></div>
         <div class="form-group"><label>Total Miles</label><input type="text" inputmode="numeric" id="pMiles" placeholder="e.g. 190"></div>
         <div class="form-group"><label>Move Date</label><input type="date" id="pDate" style="color-scheme:dark"></div>
         <div class="form-group"><label>Start Time</label><input type="time" id="pTime" style="color-scheme:dark"></div>
@@ -1145,7 +1146,8 @@ window.submitLoad = async () => {
   const destState = document.getElementById('pDestState').value;
   const width = document.getElementById('pWidth').value.trim();
   const height = document.getElementById('pHeight').value.trim();
-  const pay = document.getElementById('pPay').value.trim();
+  const dayRate = parseFloat(document.getElementById('pDayRate').value) || 0;
+  const mileRate = parseFloat(document.getElementById('pMileRate').value) || 0;
   const date = document.getElementById('pDate').value;
 
   if (!originCity || !destCity || !originState || !destState) {
@@ -1168,7 +1170,9 @@ window.submitLoad = async () => {
       type: document.getElementById('pType').value,
       equipment: document.getElementById('pEquipment').value,
       pilots: parseInt(document.getElementById('pPilots').value),
-      pay: parseFloat(pay) || 0,
+      dayRate,
+      mileRate,
+      pay: dayRate,
       date, time: document.getElementById('pTime').value,
       notes: document.getElementById('pNotes').value,
       status: 'active',
@@ -1185,7 +1189,7 @@ window.submitLoad = async () => {
     msgBox.textContent = `✓ Load posted! ${originCity} ${originState} → ${destCity} ${destState} is now live on the board.`;
 
     // Clear form
-    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pPay','pNotes'].forEach(id => document.getElementById(id).value = '');
+    ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pDayRate','pMileRate','pNotes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('pDate').value = '';
 
     showToast('✓ Load posted to board successfully!');
@@ -1545,7 +1549,8 @@ window.saveAsTemplate = async () => {
       weight: document.getElementById('pWeight').value,
       loadType: document.getElementById('pLoadType').value,
       pilots: document.getElementById('pPilots').value,
-      pay: document.getElementById('pPay').value,
+      dayRate: document.getElementById('pDayRate').value,
+      mileRate: document.getElementById('pMileRate').value,
       miles: document.getElementById('pMiles').value,
       notes: document.getElementById('pNotes').value,
       createdAt: serverTimestamp()
@@ -1567,7 +1572,8 @@ function loadTemplate(t) {
   setVal('pWeight', t.weight);
   setVal('pLoadType', t.loadType);
   setVal('pPilots', t.pilots);
-  setVal('pPay', t.pay);
+  setVal('pDayRate', t.dayRate || t.pay);
+  setVal('pMileRate', t.mileRate);
   setVal('pMiles', t.miles);
   setVal('pNotes', t.notes);
   showToast('✓ Template loaded!');
@@ -2354,7 +2360,7 @@ function buildLoadCard(l) {
       <div class="lm-item">Height<strong>${l.height||'—'}</strong></div>
       <div class="lm-item">Pilots<strong>${l.pilots} needed</strong></div>
       <div class="lm-item">Date<strong>${l.date||'—'}</strong></div>
-      <div class="lm-item">Pay<strong style="color:var(--yellow)">$${l.pay} each</strong></div>
+      <div class="lm-item">Pay<strong style="color:var(--yellow)">${l.dayRate ? '$' + l.dayRate + '/day' : ''}${l.dayRate && l.mileRate ? ' + ' : ''}${l.mileRate ? '$' + l.mileRate + '/mi' : ''}${!l.dayRate && !l.mileRate ? '$' + (l.pay||0) + ' each' : ''}</strong></div>
     </div>
     <div class="load-row-footer">
       <div class="applicant-count"><span>${statusLabel}</span></div>
