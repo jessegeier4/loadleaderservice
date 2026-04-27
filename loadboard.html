@@ -668,6 +668,7 @@ window.submitApplication=async(loadId)=>{
       availFrom:document.getElementById('availFrom').value,
       availTo:document.getElementById('availTo').value,
       status:'pending',
+      carrierId:load.carrierId||'',
       carrier:load.carrier,
       loadRoute:`${load.from} ${load.fromSt} → ${load.to} ${load.toSt}`,
       loadPay:load.pay,

@@ -952,31 +952,40 @@ onAuthStateChanged(auth, async (user) => {
 
 async function loadApplications() {
   try {
-    // Load apps for this carrier
-    const appsSnap = await getDocs(query(collection(db, 'applications'), where('carrierId', '==', currentUser.uid)));
+    const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    // Load carrier's own loads first to get load IDs
+    const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
+    allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const myLoadIds = loadsSnap.docs.map(d => d.id);
+    const activeLoads = allCarrierLoads.filter(l => (l.status || 'active') === 'active').length;
+    const completedLoads = allCarrierLoads.filter(l => l.status === 'completed').length;
+    safeSet('cStatLoads', activeLoads);
+    safeSet('cStatCompleted', completedLoads);
+    safeSet('profileLoadsPosted', loadsSnap.size);
+
+    // Query applications by loadId (works for all apps regardless of carrierId field)
     allApplications = [];
-    appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
+    if (myLoadIds.length > 0) {
+      const chunks = [];
+      for (let i = 0; i < myLoadIds.length; i += 10) chunks.push(myLoadIds.slice(i, i + 10));
+      for (const chunk of chunks) {
+        const appsSnap = await getDocs(query(collection(db, 'applications'), where('loadId', 'in', chunk)));
+        appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
+      }
+    }
 
     const pending = allApplications.filter(a => a.status === 'pending').length;
     const accepted = allApplications.filter(a => a.status === 'accepted').length;
-
-    const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     safeSet('newAppsCount', pending);
     safeSet('appCount', pending);
     safeSet('cStatHired', accepted);
     safeSet('profilePilotsHired', accepted);
+    safeSet('carrierWelcomeSub', `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`);
     const dot = document.getElementById('appTabDot');
     if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
 
-    // Load carrier's own loads
     try {
-      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
-      const loadCount = loadsSnap.size;
-      const activeLoads = loadsSnap.docs.filter(d => d.data().status === 'active').length;
-      safeSet('cStatLoads', activeLoads);
-      safeSet('profileLoadsPosted', loadCount);
-      safeSet('carrierWelcomeSub', `${activeLoads} active load${activeLoads !== 1 ? 's' : ''} · ${pending} new application${pending !== 1 ? 's' : ''}`);
-    } catch(e) { console.error(e); }
 
     if (allApplications.length === 0) {
       renderApplications([]);
@@ -986,30 +995,23 @@ async function loadApplications() {
       renderOverviewApplicants(allApplications.slice(0, 3));
     }
 
-    // Render real loads in My Loads panel
-    try {
-      const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
-      allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (!loadsSnap.empty) {
-        const loadsList = document.getElementById('myLoadsList');
-        const overviewLoads = document.getElementById('overviewLoads');
-        const loadsHtml = allCarrierLoads.map(l => buildLoadCard(l)).join('');
-        if (loadsList) loadsList.innerHTML = loadsHtml;
-        if (overviewLoads) overviewLoads.innerHTML = loadsHtml;
-
-        // Update load filter dropdown with real loads
-        const loadFilter = document.getElementById('loadFilter');
-        if (loadFilter) {
-          loadsSnap.docs.forEach(d => {
-            const l = d.data();
-            const opt = document.createElement('option');
-            opt.value = d.id;
-            opt.textContent = `${l.from} ${l.fromSt} → ${l.to} ${l.toSt}`;
-            loadFilter.appendChild(opt);
-          });
-        }
+    // Render loads (already fetched above)
+    if (allCarrierLoads.length > 0) {
+      const loadsList = document.getElementById('myLoadsList');
+      const overviewLoads = document.getElementById('overviewLoads');
+      const loadsHtml = allCarrierLoads.map(l => buildLoadCard(l)).join('');
+      if (loadsList) loadsList.innerHTML = loadsHtml;
+      if (overviewLoads) overviewLoads.innerHTML = loadsHtml;
+      const loadFilter = document.getElementById('loadFilter');
+      if (loadFilter) {
+        allCarrierLoads.forEach(l => {
+          const opt = document.createElement('option');
+          opt.value = l.id;
+          opt.textContent = `${l.from} ${l.fromSt} → ${l.to} ${l.toSt}`;
+          loadFilter.appendChild(opt);
+        });
       }
-    } catch(e) { console.error('Load fetch error:', e); }
+    }
   } catch(e) {
     console.error('Error loading applications:', e);
     renderApplications([]);
@@ -2261,6 +2263,20 @@ window.uploadPermits = async () => {
   }
 };
 
+window.markLoadComplete = async (loadId) => {
+  try {
+    await updateDoc(doc(db, 'loads', loadId), { status: 'completed' });
+    const load = allCarrierLoads.find(l => l.id === loadId);
+    if (load) load.status = 'completed';
+    const list = document.getElementById('myLoadsList');
+    if (list) list.innerHTML = allCarrierLoads.map(l => buildLoadCard(l)).join('');
+    const completed = allCarrierLoads.filter(l => l.status === 'completed').length;
+    const el = document.getElementById('cStatCompleted');
+    if (el) el.textContent = completed;
+    showToast('Load marked as completed!');
+  } catch(e) { console.error(e); showToast('Could not update load. Try again.'); }
+};
+
 window.deleteLoad = async (loadId) => {
   if (!confirm('Are you sure you want to delete this load? This cannot be undone.')) return;
   try {
@@ -2345,6 +2361,7 @@ function buildLoadCard(l) {
       <div class="load-actions">
         <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
         <button class="load-btn" onclick="openPermitUpload('${l.id}','${l.from} → ${l.to}')">📄 Permits</button>
+        ${s !== 'completed' ? `<button class="load-btn" style="color:var(--green);border-color:rgba(74,222,128,.2);" onclick="markLoadComplete('${l.id}')">✓ Complete</button>` : ''}
         <button class="load-btn" style="color:var(--red);border-color:rgba(248,113,113,.2);" onclick="deleteLoad('${l.id}')">Delete</button>
       </div>
     </div>
