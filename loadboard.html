@@ -131,9 +131,14 @@ select.filter-input option{background:var(--surface-2);}
 .modal-close:hover{color:var(--text);}
 .modal-body{padding:1.25rem 1.75rem 1.75rem;}
 .modal-load-summary{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-card);padding:.9rem 1.1rem;margin-bottom:1.25rem;}
-.mls-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;}
-.mls-arr{color:var(--accent);}
+.mls-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;}
+.mls-route > div{min-width:0;word-break:break-word;}
+.mls-arr{color:var(--accent);flex-shrink:0;}
 .mls-details{display:flex;gap:1.1rem;flex-wrap:wrap;}
+@media(max-width:480px){
+  .mls-route{font-size:.85rem;gap:.4rem;}
+  .modal-load-summary{padding:.75rem .9rem;}
+}
 .mls-item{font-size:.72rem;color:var(--text-2);}
 .mls-item strong{color:var(--text-2);font-weight:600;display:block;}
 .mls-pay{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--accent);letter-spacing:0.04em;margin-top:.4rem;}
@@ -640,13 +645,6 @@ window.openApplyModal=(loadId)=>{
         </div>
       </div>
       <div class="modal-form-group">
-        <label class="modal-label">Availability</label>
-        <div class="avail-row">
-          <div><label class="modal-label" style="font-size:.62rem">From</label><input type="date" id="availFrom" class="modal-input" style="color-scheme:dark"></div>
-          <div><label class="modal-label" style="font-size:.62rem">Until</label><input type="date" id="availTo" class="modal-input" style="color-scheme:dark"></div>
-        </div>
-      </div>
-      <div class="modal-form-group">
         <label class="modal-label">Message to Carrier <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
         <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type...">${quickMsg}</textarea>
       </div>
@@ -685,8 +683,6 @@ window.submitApplication=async(loadId)=>{
       pilotJobs: 0,
       pilotState:userProfile?.state||'',
       message:document.getElementById('applyMessage').value.trim(),
-      availFrom:document.getElementById('availFrom').value,
-      availTo:document.getElementById('availTo').value,
       status:'pending',
       carrierId:load.carrierId||'',
       carrier:load.carrier,
