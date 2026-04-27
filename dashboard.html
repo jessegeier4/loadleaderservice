@@ -389,7 +389,7 @@ if ('serviceWorker' in navigator) {
         <div class="sc-val" id="statEarnings">$0</div>
         <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
       </div>
-      <div class="stat-card blue" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);var cb=document.querySelectorAll('#panel-jobs .job-btn')[3];filterJobs('completed',cb);">
+      <div class="stat-card blue" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);var cb=document.querySelector('#panel-jobs .job-btn:last-child');if(cb)filterJobs('completed',cb);">
         <div class="sc-label">Jobs Completed</div>
         <div class="sc-val" id="statJobs">0</div>
         <div class="sc-sub" id="statJobsSub">Since joining LoadLeader</div>
