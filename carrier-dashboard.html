@@ -953,7 +953,7 @@ onAuthStateChanged(auth, async (user) => {
 async function loadApplications() {
   try {
     // Load apps for this carrier
-    const appsSnap = await getDocs(query(collection(db, 'applications')));
+    const appsSnap = await getDocs(query(collection(db, 'applications'), where('carrierId', '==', currentUser.uid)));
     allApplications = [];
     appsSnap.forEach(d => allApplications.push({ id: d.id, ...d.data() }));
 
