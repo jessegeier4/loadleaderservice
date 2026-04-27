@@ -176,6 +176,7 @@ textarea.modal-input{min-height:88px;resize:vertical;line-height:1.5;}
 
 /* CHAT */
 .chat-bubble{position:fixed;bottom:1.5rem;right:1.5rem;z-index:1000;}
+@media(max-width:600px){.chat-bubble{bottom:1rem;right:1rem;} .chat-toggle{width:44px;height:44px;font-size:1rem;}}
 .chat-toggle{width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,205,17,.3);transition:transform var(--dur-hover) var(--ease);font-size:1.2rem;position:relative;}
 .chat-toggle:hover{transform:scale(1.06);}
 .chat-win{position:absolute;bottom:62px;right:0;width:340px;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-card);box-shadow:var(--shadow-pop);overflow:hidden;flex-direction:column;display:none;}
@@ -266,7 +267,7 @@ if ('serviceWorker' in navigator) {
   <div class="ai-bar-wrap">
     <span class="ai-bar-label">AI Search</span>
     <span class="ai-tag">AI</span>
-    <input class="ai-input" id="aiInput" type="text" placeholder='e.g. "Wide load from Ohio heading west, $500+"'/>
+    <input class="ai-input" id="aiInput" type="text" placeholder="e.g. Ohio to Texas, $500+"/>
     <button class="ai-btn" id="aiBtn" onclick="runAISearch()">Search</button>
   </div>
   <div class="ai-result-bar" id="aiResult"></div>
