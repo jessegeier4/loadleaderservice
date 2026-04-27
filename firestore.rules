@@ -12,6 +12,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isSignedIn();
       allow write: if isOwner(userId);
+      // Anyone signed in can update rating + reviewCount fields only (so review submission
+      // can recompute the average — rule restricts which fields can change).
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']);
     }
 
     // ─── LOADS ───
@@ -98,10 +102,11 @@ service cloud.firestore {
     }
 
     // ─── REVIEWS ───
-    // Anyone signed in can read reviews. Pilot creates anonymous review on a carrier.
+    // Anyone signed in can read reviews. Both pilots and carriers can create
+    // reviews — verified by reviewerId matching their auth uid.
     match /reviews/{reviewId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.pilotId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.reviewerId == request.auth.uid;
     }
 
     // ─── PERMITS ───

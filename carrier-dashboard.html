@@ -2492,6 +2492,7 @@ window.submitCarrierReview = async () => {
     await add(col(db, 'reviews'), {
       targetId,
       loadId,
+      reviewerId: currentUser.uid,
       rating: carrierReviewRating,
       text,
       anonymous: true,
