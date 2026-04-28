@@ -1397,27 +1397,48 @@ window.openPilotCertsModal = async (pilotId, pilotName) => {
   }
 };
 
-// Fetches cert bytes via the Storage SDK (subject to Storage rules — NOT a token URL),
-// renders via blob URL with noopener so the file does not leak a window.opener back to
-// the dashboard. Blob URL is revoked after a generous timeout so the new tab works.
+// Fetches a download URL for the cert and opens it in a new tab.
+//
+// Tradeoff vs getBytes(): getDownloadURL produces a token-signed URL that, once issued,
+// is valid for the token's lifetime regardless of subsequent rule changes. getBytes()
+// rules-checks every read but requires explicit CORS configuration on the Storage
+// bucket via gsutil — without that, getBytes() hangs on the CORS preflight forever.
+// LoadLeader's bucket is on default Firebase config (no custom CORS), so getBytes()
+// hangs. Switched to getDownloadURL(): the rule check still happens at URL retrieval,
+// so a carrier with a declined connection cannot get a URL in the first place. They
+// could screenshot a cert they previously viewed regardless, so the practical privacy
+// is unchanged.
 window.viewCertFile = async (btn) => {
   const path = btn.dataset.path;
-  const contentType = btn.dataset.type || 'application/octet-stream';
   if (!path) return;
   const original = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Loading…';
+  let timedOut = false;
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    btn.disabled = false;
+    btn.textContent = original;
+    alert('The certificate is taking too long to load. Try again, or ask the pilot to re-upload.');
+  }, 20000);
   try {
-    const { getStorage, ref: sref, getBytes } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
-    const bytes = await getBytes(sref(getStorage(), path));
-    const blob = new Blob([bytes], { type: contentType });
-    const url = URL.createObjectURL(blob);
+    const { getStorage, ref: sref, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+    const url = await getDownloadURL(sref(getStorage(), path));
+    if (timedOut) return;
+    clearTimeout(timeout);
     const win = window.open(url, '_blank', 'noopener,noreferrer');
     if (!win) alert('Pop-up blocked. Allow pop-ups to view the certificate.');
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
   } catch (e) {
+    clearTimeout(timeout);
+    if (timedOut) return;
     console.error('View cert:', e);
-    alert('Could not open certificate. ' + (e.code === 'storage/unauthorized' ? 'You no longer have permission to view this pilot’s certs.' : 'Try again.'));
+    if (e.code === 'storage/unauthorized') {
+      alert('You no longer have permission to view this pilot certificates.');
+    } else if (e.code === 'storage/object-not-found') {
+      alert('Certificate file not found. The pilot may need to re-upload.');
+    } else {
+      alert('Could not open certificate. ' + (e.message || 'Try again.'));
+    }
   }
   btn.disabled = false;
   btn.textContent = original;

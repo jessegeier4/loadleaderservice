@@ -10,9 +10,12 @@ rules_version = '2';
 // can do firestore.exists() lookups, but cannot query — that is why the connections
 // collection is keyed by deterministic path components.
 //
-// IMPORTANT: cert reads must NOT use getDownloadURL() — that produces a token-signed
-// URL that bypasses these rules. The carrier-side viewer reads bytes via getBytes()
-// (which goes through rules) and renders via blob URL.
+// Cert reads use getDownloadURL() — that call IS rules-checked at URL retrieval
+// time, so a denied carrier cannot get a URL. Once issued the URL is valid for the
+// token's lifetime (a few hours). We initially tried getBytes() for stricter per-read
+// rule enforcement, but it hangs on CORS preflight without explicit gsutil CORS
+// config on the bucket. Privacy is still acceptable: a carrier could screenshot any
+// cert they once viewed regardless, and re-fetching the URL re-checks the rule.
 
 service firebase.storage {
   match /b/{bucket}/o {
