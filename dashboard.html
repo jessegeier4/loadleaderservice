@@ -2455,50 +2455,37 @@ async function loadSavedCerts(data) {
 
 // Notification panel toggle moved to regular script
 
-// Avatar upload — compresses then uploads to Firebase Storage
 window.handleAvatarUpload = async (input) => {
   const file = input.files[0];
   if (!file) return;
   const msg = document.getElementById('avatarMsg');
-  if (file.size > 5 * 1024 * 1024) {
-    msg.textContent = 'File too large — max 5MB';
-    msg.style.display = 'block';
-    msg.style.color = 'var(--red)';
-    return;
-  }
-  msg.textContent = 'Uploading...';
+  msg.textContent = 'Saving...';
   msg.style.display = 'block';
   msg.style.color = 'var(--muted)';
   try {
-    const compressed = await new Promise(resolve => {
+    const photoURL = await new Promise(resolve => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const size = 400;
-        canvas.width = size; canvas.height = size;
+        canvas.width = 150; canvas.height = 150;
         const ctx = canvas.getContext('2d');
         const minDim = Math.min(img.width, img.height);
-        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, size, size);
+        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 150, 150);
         URL.revokeObjectURL(url);
-        canvas.toBlob(b => resolve(b), 'image/jpeg', 0.85);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
       };
       img.src = url;
     });
-    const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
     const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const user = auth.currentUser;
-    const storage = getStorage();
-    const path = `avatars/${user.uid}.jpg`;
-    const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
-    const photoURL = await getDownloadURL(snap.ref);
     await setDoc(doc(db, 'users', user.uid), { photoURL }, { merge: true });
     setPilotAvatarPhoto(photoURL);
     msg.textContent = '✓ Photo saved';
     msg.style.color = 'var(--ok)';
   } catch(e) {
     console.error('Avatar upload error:', e);
-    msg.textContent = 'Upload failed. Please try again.';
+    msg.textContent = 'Could not save photo. Try again.';
     msg.style.color = 'var(--red)';
   }
 };

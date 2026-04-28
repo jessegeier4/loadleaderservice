@@ -2782,29 +2782,23 @@ function setCarrierAvatarPhoto(url) {
 window.handleCarrierAvatarUpload = async (input) => {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { showToast('File too large — max 5MB'); return; }
-  showToast('Uploading photo...');
+  showToast('Saving photo...');
   try {
-    const compressed = await new Promise(resolve => {
+    const photoURL = await new Promise(resolve => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = 400; canvas.height = 400;
+        canvas.width = 150; canvas.height = 150;
         const ctx = canvas.getContext('2d');
         const minDim = Math.min(img.width, img.height);
-        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 400, 400);
+        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 150, 150);
         URL.revokeObjectURL(url);
-        canvas.toBlob(b => resolve(b), 'image/jpeg', 0.85);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
       };
       img.src = url;
     });
-    const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
     const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const storage = getStorage();
-    const path = `avatars/${currentUser.uid}.jpg`;
-    const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
-    const photoURL = await getDownloadURL(snap.ref);
     await setDoc(doc(db, 'users', currentUser.uid), { photoURL }, { merge: true });
     setCarrierAvatarPhoto(photoURL);
     showToast('✓ Photo saved');
