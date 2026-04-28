@@ -307,7 +307,13 @@ select option{background:var(--mid);}
 .mn-item.active{color:var(--yellow);}
 .mn-icon{font-size:1.25rem;}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
-@media(max-width:600px){.mobile-nav{display:block;}.dash-wrap{padding-bottom:5rem;}}
+@media(max-width:600px){
+  .mobile-nav{display:block;}
+  .dash-wrap{padding-bottom:5rem;}
+  #msgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
+  #msgLayout > div:first-child{max-height:220px;overflow-y:auto;}
+  #msgLayout > div:last-child{min-height:380px;}
+}
 </style>
 <script>
 // Remove any service workers completely

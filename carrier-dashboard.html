@@ -249,7 +249,13 @@ select option{background:var(--mid);}
 .mn-item.active{color:var(--yellow);}
 .mn-icon{font-size:1.25rem;}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
-@media(max-width:600px){.mobile-nav{display:block;}}
+@media(max-width:600px){
+  .mobile-nav{display:block;}
+  .dash-wrap{padding-bottom:5rem;}
+  #cMsgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
+  #cMsgLayout > div:first-child{max-height:220px;overflow-y:auto;}
+  #cMsgLayout > div:last-child{min-height:380px;}
+}
 
 /* UTILS */
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
@@ -665,7 +671,7 @@ if ('serviceWorker' in navigator) {
       <div class="sec-title">💬 <span>Messages</span></div>
       <button class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;" onclick="showCarrierNewMsgModal()">+ New Message</button>
     </div>
-    <div style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:500px;">
+    <div id="cMsgLayout" style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:500px;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
         <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;">Conversations</div>
         <div id="cConvList">
