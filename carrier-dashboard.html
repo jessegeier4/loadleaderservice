@@ -288,7 +288,7 @@ if ('serviceWorker' in navigator) {
 }
 if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
   const vp = document.querySelector('meta[name="viewport"]');
-  if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0';
+  if (vp) vp.content = 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0';
 }
 </script>
 </head>
@@ -349,16 +349,16 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <div class="welcome-sub" id="carrierWelcomeSub"></div>
       </div>
       <div class="welcome-actions">
-        <button class="btn btn-y" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
-        <button class="btn btn-o" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">Review Applicants</button>
+        <button class="btn btn-y" onclick="showPanel('postload')">+ Post a Load</button>
+        <button class="btn btn-o" onclick="showPanel('applicants')">Review Applicants</button>
       </div>
     </div>
 
     <div class="stats-row">
-      <div class="stat-card yellow" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])"><div class="sc-label">Active Loads</div><div class="sc-val" id="cStatLoads">0</div><div class="sc-sub">Currently posted</div></div>
-      <div class="stat-card blue" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])"><div class="sc-label">New Applications</div><div class="sc-val" id="newAppsCount">0</div><div class="sc-sub">Awaiting review</div></div>
-      <div class="stat-card green" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])"><div class="sc-label">Pilots Hired</div><div class="sc-val" id="cStatHired">0</div><div class="sc-sub">All time</div></div>
-      <div class="stat-card orange" onclick="showPanel('myloads',document.querySelectorAll('.nav-tab')[1])"><div class="sc-label">Loads Completed</div><div class="sc-val" id="cStatCompleted">0</div><div class="sc-sub">This year</div></div>
+      <div class="stat-card yellow" onclick="showPanel('myloads')"><div class="sc-label">Active Loads</div><div class="sc-val" id="cStatLoads">0</div><div class="sc-sub">Currently posted</div></div>
+      <div class="stat-card blue" onclick="showPanel('applicants')"><div class="sc-label">New Applications</div><div class="sc-val" id="newAppsCount">0</div><div class="sc-sub">Awaiting review</div></div>
+      <div class="stat-card green" onclick="showPanel('applicants')"><div class="sc-label">Pilots Hired</div><div class="sc-val" id="cStatHired">0</div><div class="sc-sub">All time</div></div>
+      <div class="stat-card orange" onclick="showPanel('myloads')"><div class="sc-label">Loads Completed</div><div class="sc-val" id="cStatCompleted">0</div><div class="sc-sub">This year</div></div>
     </div>
 
     <div class="sec-head">
@@ -373,7 +373,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div class="empty-state">
         <div class="empty-icon">🚛</div>
         <div class="empty-text">No loads posted yet</div>
-        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post Your First Load</button>
+        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel('postload')">+ Post Your First Load</button>
       </div>
     </div>
 
@@ -388,7 +388,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
   <div class="panel" id="panel-myloads">
     <div class="sec-head" style="margin-bottom:1.25rem;">
       <div class="sec-title">My <span>Loads</span></div>
-      <button class="btn btn-y" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post New Load</button>
+      <button class="btn btn-y" onclick="showPanel('postload')">+ Post New Load</button>
     </div>
     <div class="filter-tabs">
       <span class="ft on" onclick="filterLoadStatus('active',this)">Active</span>
@@ -400,7 +400,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div class="empty-state">
         <div class="empty-icon">📋</div>
         <div class="empty-text">No loads posted yet — post your first load to start receiving pilot applications</div>
-        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
+        <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload')">+ Post a Load</button>
       </div>
     </div>
   </div>
@@ -973,7 +973,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, serverTimestamp, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
@@ -987,6 +987,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Escape Firestore-sourced strings before innerHTML / attribute interpolation.
+// Use for any user-controlled value (names, message bodies, file names, URLs, etc.).
+window.escapeHtml = (s) => String(s ?? '').replace(/[&<>"'`=\/]/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'
+}[c]));
 
 // ─── PUSH NOTIFICATIONS (FCM) ───
 // Paste your VAPID public key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
@@ -1110,7 +1116,6 @@ async function loadApplications() {
     // Load carrier's own loads first to get load IDs
     const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
     allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log('Loads fetched:', loadsSnap.size, allCarrierLoads.map(l => ({ id: l.id, status: l.status, carrierId: l.carrierId })));
     const myLoadIds = loadsSnap.docs.map(d => d.id);
     const activeLoads = allCarrierLoads.filter(l => (l.status || 'active') === 'active').length;
     const completedLoads = allCarrierLoads.filter(l => l.status === 'completed').length;
@@ -1192,7 +1197,7 @@ function renderApplications(apps) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
       <div class="empty-icon">👥</div>
       <div class="empty-text">No applications yet — pilots will appear here when they apply to your loads.</div>
-      <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload',document.querySelectorAll('.nav-tab')[3])">+ Post a Load</button>
+      <button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;" onclick="showPanel('postload')">+ Post a Load</button>
     </div>`;
     return;
   }
@@ -1206,56 +1211,78 @@ function buildAppCard(a) {
   const isDeclined = a.status === 'declined';
 
   return `
-    <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" id="card-${a.id}">
+    <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" id="card-${escapeHtml(a.id)}">
       <div class="ac-top">
-        <div class="ac-load-ref">${a.loadId} · ${a.loadDate}</div>
+        <div class="ac-load-ref">${escapeHtml(a.loadId)} · ${escapeHtml(a.loadDate)}</div>
         <span class="badge ${isAccepted?'badge-active':isDeclined?'badge-draft':'badge-pending'}">${isAccepted?'Accepted':isDeclined?'Declined':'Pending'}</span>
       </div>
       <div class="pilot-info">
-        <div class="pilot-av">${initials}</div>
+        <div class="pilot-av">${escapeHtml(initials)}</div>
         <div>
-          <div class="pilot-name">${a.pilotName}</div>
-          <div class="pilot-rating">${a.pilotRating > 0 ? stars + ' <span style="color:var(--muted)">' + a.pilotRating + ' rating</span>' : '<span style="color:var(--muted)">No ratings yet</span>'}</div>
-          <div class="pilot-meta">${a.pilotState} · Pilot Car Driver</div>
+          <div class="pilot-name">${escapeHtml(a.pilotName)}</div>
+          <div class="pilot-rating">${a.pilotRating > 0 ? stars + ' <span style="color:var(--muted)">' + escapeHtml(a.pilotRating) + ' rating</span>' : '<span style="color:var(--muted)">No ratings yet</span>'}</div>
+          <div class="pilot-meta">${escapeHtml(a.pilotState)} · Pilot Car Driver</div>
         </div>
       </div>
       <div class="pilot-stats">
-        <div class="ps-item"><div class="ps-val">${a.pilotJobs || 0}</div><div class="ps-label">Jobs</div></div>
-        <div class="ps-item"><div class="ps-val">${a.pilotRating > 0 ? a.pilotRating : '—'}</div><div class="ps-label">Rating</div></div>
+        <div class="ps-item"><div class="ps-val">${escapeHtml(a.pilotJobs || 0)}</div><div class="ps-label">Jobs</div></div>
+        <div class="ps-item"><div class="ps-val">${a.pilotRating > 0 ? escapeHtml(a.pilotRating) : '—'}</div><div class="ps-label">Rating</div></div>
       </div>
-      ${a.message ? `<div class="pilot-message">${a.message}</div>` : ''}
+      ${a.message ? `<div class="pilot-message">${escapeHtml(a.message)}</div>` : ''}
       <div class="avail-row">
-        <div class="avail-item"><div class="avail-label">Route</div><div class="avail-val" style="font-size:.72rem">${a.loadRoute}</div></div>
-        <div class="avail-item"><div class="avail-label">Pay</div><div class="avail-val" style="color:var(--yellow)">$${a.loadPay}</div></div>
+        <div class="avail-item"><div class="avail-label">Route</div><div class="avail-val" style="font-size:.72rem">${escapeHtml(a.loadRoute)}</div></div>
+        <div class="avail-item"><div class="avail-label">Pay</div><div class="avail-val" style="color:var(--yellow)">$${escapeHtml(a.loadPay)}</div></div>
       </div>
-      <div class="ac-phone-reveal ${isAccepted?'show':''}" id="phone-${a.id}">
+      <div class="ac-phone-reveal ${isAccepted?'show':''}" id="phone-${escapeHtml(a.id)}">
         <div class="ac-phone-label">📞 Pilot Phone Number</div>
-        <div class="ac-phone-num">${a.pilotPhone ? `<a href="tel:${a.pilotPhone.replace(/[^0-9+]/g,'')}" style="color:var(--green);text-decoration:none;">${a.pilotPhone}</a>` : 'Not provided'}</div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Contact ${a.pilotName.split(' ')[0]} directly to coordinate</div>
+        <div class="ac-phone-num">${a.pilotPhone ? `<a href="tel:${escapeHtml(String(a.pilotPhone).replace(/[^0-9+]/g,''))}" style="color:var(--green);text-decoration:none;">${escapeHtml(a.pilotPhone)}</a>` : 'Not provided'}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Contact ${escapeHtml(String(a.pilotName||'').split(' ')[0])} directly to coordinate</div>
       </div>
       <div class="ac-actions">
         ${isAccepted
           ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button>
-             <button class="ac-btn" style="background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="openCarrierReview('${a.pilotId}','${a.loadId}')">⭐ Review</button>
-             <button class="ac-btn" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="addAcceptedToFleet('${a.pilotId}','${a.pilotName}','${a.pilotState}')">+ Fleet</button>
-             <button class="ac-btn" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);color:var(--blue);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="repeatHire('${a.pilotId}','${a.pilotName}','${a.pilotEmail}')">↩ Re-hire</button>
-             <button class="ac-btn" style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,.25);color:var(--red);flex:0;padding:.6rem .85rem;font-size:.75rem;" onclick="openRemovePilot('${a.id}','${a.pilotName}','${a.pilotEmail}','${(a.loadRoute||'').replace(/'/g,'')}')">✕ Remove</button>`
+             <button class="ac-btn" style="background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnReview(this.dataset.appId)">⭐ Review</button>
+             <button class="ac-btn" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnAddToFleet(this.dataset.appId)">+ Fleet</button>
+             <button class="ac-btn" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);color:var(--blue);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnRepeatHire(this.dataset.appId)">↩ Re-hire</button>
+             <button class="ac-btn" style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,.25);color:var(--red);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnRemove(this.dataset.appId)">✕ Remove</button>`
           : isDeclined
-          ? `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">Reconsider</button><button class="ac-btn declined-state" disabled>✗ Declined</button>`
-          : `<button class="ac-btn accept" onclick="decisionApp('${a.id}','accepted','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}','${a.pilotPhone}')">✓ Accept Pilot</button>
-             <button class="ac-btn decline" onclick="decisionApp('${a.id}','declined','${a.pilotEmail}','${a.pilotName}','${a.loadRoute}','${a.loadPay}','${a.carrier}')">✗ Decline</button>`
+          ? `<button class="ac-btn accept" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'accepted')">Reconsider</button><button class="ac-btn declined-state" disabled>✗ Declined</button>`
+          : `<button class="ac-btn accept" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'accepted')">✓ Accept Pilot</button>
+             <button class="ac-btn decline" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'declined')">✗ Decline</button>`
         }
       </div>
     </div>`;
 }
 
+// Lookup-based wrappers — buttons only carry the appId (alphanumeric Firestore ID),
+// the rest is read from allApplications so user-controlled fields (name/email/route)
+// never travel through onclick attribute parsing.
+window.appBtnDecide = (appId, decision) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (!a) return;
+  decisionApp(appId, decision, a.pilotEmail, a.pilotName, a.loadRoute, a.loadPay, a.carrier, a.pilotPhone);
+};
+window.appBtnReview = (appId) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (a) openCarrierReview(a.pilotId, a.loadId);
+};
+window.appBtnAddToFleet = (appId) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (a) addAcceptedToFleet(a.pilotId, a.pilotName, a.pilotState);
+};
+window.appBtnRepeatHire = (appId) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (a) repeatHire(a.pilotId, a.pilotName, a.pilotEmail);
+};
+window.appBtnRemove = (appId) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (a) openRemovePilot(a.id, a.pilotName, a.pilotEmail, a.loadRoute || '');
+};
+
 window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, carrier, pilotPhone) => {
   const card = document.getElementById('card-' + appId);
   try {
-    // Update Firestore if real app
-    if (!appId.startsWith('demo')) {
-      await updateDoc(doc(db, 'applications', appId), { status: decision, decidedAt: serverTimestamp() });
-    }
+    await updateDoc(doc(db, 'applications', appId), { status: decision, decidedAt: serverTimestamp() });
 
     // Update local data
     const app = allApplications.find(a => a.id === appId);
@@ -1396,7 +1423,7 @@ window.submitLoad = async () => {
 
     showToast(editId ? '✓ Load updated' : '✓ Load posted to board successfully!');
     loadApplications();
-    if (editId) { showPanel('myloads', document.querySelectorAll('.nav-tab')[1]); return; }
+    if (editId) { showPanel('myloads'); return; }
 
     // Check for pilots with matching load alerts and notify them
     try {
@@ -1483,7 +1510,7 @@ window.submitLoad = async () => {
       document.getElementById('fleetFirstInfo').style.display = 'none';
     }
 
-    setTimeout(() => showPanel('myloads', document.querySelectorAll('.nav-tab')[1]), 2000);
+    setTimeout(() => showPanel('myloads'), 2000);
   } catch(e) {
     btn.disabled = false;
     btn.innerHTML = '🚛 Post Load to Board';
@@ -1772,22 +1799,23 @@ window.searchPilots = async () => {
       const initials = (p.name || 'P').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
       const stars = p.rating ? '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating)) : '☆☆☆☆☆';
       const avail = availMap[p.availStatus] || null;
-      const photo = p.photoURL ? `<img src="${p.photoURL}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">` : `<div style="width:48px;height:48px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;color:var(--black);flex-shrink:0;">${initials}</div>`;
+      const safePhoto = (typeof p.photoURL === 'string' && (p.photoURL.startsWith('data:image/') || p.photoURL.startsWith('https://'))) ? escapeHtml(p.photoURL) : '';
+      const photo = safePhoto ? `<img src="${safePhoto}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">` : `<div style="width:48px;height:48px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;color:var(--black);flex-shrink:0;">${escapeHtml(initials)}</div>`;
       return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem;margin-bottom:.75rem;flex-wrap:wrap;">
         ${photo}
         <div style="flex:1;min-width:150px;">
           <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
-            <div style="font-weight:600;font-size:.95rem;">${p.name || 'Pilot'}</div>
+            <div style="font-weight:600;font-size:.95rem;">${escapeHtml(p.name || 'Pilot')}</div>
             ${avail ? `<span class="badge" style="background:${avail.bg};color:${avail.color};border:1px solid ${avail.border};">${avail.label}</span>` : ''}
           </div>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">${p.state || 'Location not set'}${p.jobCount ? ' · ' + p.jobCount + ' job' + (p.jobCount !== 1 ? 's' : '') + ' completed' : ''}</div>
-          <div style="font-size:.8rem;color:var(--yellow);margin-top:.25rem;">${stars} <span style="color:var(--muted)">${p.rating ? p.rating + ' rating' : 'No ratings yet'}</span></div>
-          ${p.equipment ? `<div style="font-size:.72rem;color:#888;margin-top:.25rem;line-height:1.4;">🛠 ${p.equipment}</div>` : ''}
-          ${p.coverage ? `<div style="font-size:.72rem;color:#888;margin-top:.15rem;line-height:1.4;">📍 ${p.coverage}</div>` : ''}
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">${escapeHtml(p.state || 'Location not set')}${p.jobCount ? ' · ' + escapeHtml(p.jobCount) + ' job' + (p.jobCount !== 1 ? 's' : '') + ' completed' : ''}</div>
+          <div style="font-size:.8rem;color:var(--yellow);margin-top:.25rem;">${stars} <span style="color:var(--muted)">${p.rating ? escapeHtml(p.rating) + ' rating' : 'No ratings yet'}</span></div>
+          ${p.equipment ? `<div style="font-size:.72rem;color:#888;margin-top:.25rem;line-height:1.4;">🛠 ${escapeHtml(p.equipment)}</div>` : ''}
+          ${p.coverage ? `<div style="font-size:.72rem;color:#888;margin-top:.15rem;line-height:1.4;">📍 ${escapeHtml(p.coverage)}</div>` : ''}
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <button onclick="cSelectRecipient('${p.id}','${p.name || 'Pilot'}');showPanel('messages',window.navTab('messages'));document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#ccc;padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">💬 Message</button>
-          <button onclick="addAcceptedToFleet('${p.id}','${p.name || 'Pilot'}','${p.state || ''}')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">+ Fleet</button>
+          <button data-pid="${escapeHtml(p.id)}" data-pname="${escapeHtml(p.name || 'Pilot')}" onclick="cSelectRecipient(this.dataset.pid, this.dataset.pname);showPanel('messages',window.navTab('messages'));document.getElementById('cNewMsgModal').style.display='flex';" style="background:var(--mid);border:1px solid #2a2a2a;color:#ccc;padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">💬 Message</button>
+          <button data-pid="${escapeHtml(p.id)}" data-pname="${escapeHtml(p.name || 'Pilot')}" data-pstate="${escapeHtml(p.state || '')}" onclick="addAcceptedToFleet(this.dataset.pid, this.dataset.pname, this.dataset.pstate)" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,.2);color:var(--yellow);padding:.5rem .9rem;border-radius:5px;font-family:sans-serif;font-size:.78rem;cursor:pointer;font-weight:500;">+ Fleet</button>
         </div>
       </div>`;
     }).join('');
@@ -1810,7 +1838,7 @@ async function loadTemplates() {
       const t = d.data();
       const btn = document.createElement('button');
       btn.style.cssText = 'background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);padding:.3rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;display:flex;align-items:center;gap:.35rem;';
-      btn.innerHTML = `📋 ${t.name} <span onclick="event.stopPropagation();deleteTemplate('${d.id}')" style="color:#555;margin-left:.2rem;font-size:.8rem;">✕</span>`;
+      btn.innerHTML = `📋 ${escapeHtml(t.name)} <span data-tid="${escapeHtml(d.id)}" onclick="event.stopPropagation();deleteTemplate(this.dataset.tid)" style="color:#555;margin-left:.2rem;font-size:.8rem;">✕</span>`;
       btn.onclick = () => loadTemplate(t);
       btns.appendChild(btn);
     });
@@ -1974,10 +2002,26 @@ window.handleBulkUpload = async (input) => {
   const file = input.files[0];
   if (!file) return;
   document.getElementById('bulkFileName').textContent = file.name;
+  const result = document.getElementById('bulkUploadResult');
+  // Bound the request before parsing — guards against accidental huge files and against
+  // a malicious CSV creating millions of Firestore writes.
+  const MAX_BYTES = 1_000_000;       // 1 MB
+  const MAX_ROWS = 200;
+  if (file.size > MAX_BYTES) {
+    result.style.cssText = 'display:block;color:var(--red);';
+    result.textContent = 'File too large (max 1 MB).';
+    return;
+  }
   const text = await file.text();
   const lines = text.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
-  const loads = lines.slice(1).filter(l => l.trim()).map(line => {
+  const dataRows = lines.slice(1).filter(l => l.trim());
+  if (dataRows.length > MAX_ROWS) {
+    result.style.cssText = 'display:block;color:var(--red);';
+    result.textContent = `Too many rows (${dataRows.length}). Max ${MAX_ROWS} per upload.`;
+    return;
+  }
+  const loads = dataRows.map(line => {
     const vals = line.split(',').map(v => v.trim().replace(/"/g,''));
     const obj = {};
     headers.forEach((h, i) => obj[h] = vals[i] || '');
@@ -1985,12 +2029,11 @@ window.handleBulkUpload = async (input) => {
   });
 
   if (!loads.length) {
-    document.getElementById('bulkUploadResult').style.cssText = 'display:block;color:var(--red);';
-    document.getElementById('bulkUploadResult').textContent = 'No loads found in CSV file.';
+    result.style.cssText = 'display:block;color:var(--red);';
+    result.textContent = 'No loads found in CSV file.';
     return;
   }
 
-  const result = document.getElementById('bulkUploadResult');
   result.style.cssText = 'display:block;color:var(--muted);';
   result.textContent = `Found ${loads.length} loads. Uploading...`;
 
@@ -2022,7 +2065,7 @@ window.handleBulkUpload = async (input) => {
     result.textContent = '✓ ' + posted + ' loads posted successfully!';
     input.value = '';
     document.getElementById('bulkFileName').textContent = 'No file chosen';
-    setTimeout(() => showPanel('myloads', document.querySelectorAll('.nav-tab')[1]), 2000);
+    setTimeout(() => showPanel('myloads'), 2000);
   } catch(e) {
     result.style.cssText = 'display:block;color:var(--red);';
     result.textContent = 'Upload failed: ' + e.message;
@@ -2255,11 +2298,11 @@ async function loadCarrierConversations() {
       const otherName = c.participantNames?.[otherId] || 'Pilot';
       const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
       const hasUnread = c.unread?.[currentUser.uid] > 0;
-      return `<div class="conv-item ${cActiveConvId === c.id ? 'active' : ''}" onclick="openCarrierConversation('${c.id}','${otherId}','${otherName}')">
-        <div class="conv-av">${initials}</div>
+      return `<div class="conv-item ${cActiveConvId === c.id ? 'active' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" onclick="openCarrierConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
+        <div class="conv-av">${escapeHtml(initials)}</div>
         <div style="flex:1;min-width:0;">
-          <div class="conv-name">${otherName}</div>
-          <div class="conv-preview">${c.lastMessage || 'No messages yet'}</div>
+          <div class="conv-name">${escapeHtml(otherName)}</div>
+          <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
         </div>
         ${hasUnread ? '<div class="conv-unread-dot" style="width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;"></div>' : ''}
       </div>`;
@@ -2310,7 +2353,7 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
         container.innerHTML = msgs.map(m => {
           const isMine = m.senderId === currentUser.uid;
           return `<div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
-            <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${m.text}</div>
+            <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${escapeHtml(m.text)}</div>
             <div style="font-size:.62rem;color:#444;margin-top:.2rem;${isMine ? 'text-align:right' : ''}">${m.sentAt ? new Date(m.sentAt.toMillis()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}</div>
           </div>`;
         }).join('');
@@ -2483,7 +2526,7 @@ window.cClearAllNotifs = async (userId) => {
   try {
     const { collection, query, where, getDocs, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDocs(query(collection(db, 'notifications'), where('userId', '==', userId)));
-    snap.forEach(async d => await deleteDoc(doc(db, 'notifications', d.id)));
+    await Promise.all(snap.docs.map(d => deleteDoc(doc(db, 'notifications', d.id))));
     const list = document.getElementById('cNotifList');
     if (list) list.innerHTML = '<div style="text-align:center;padding:1.5rem 0;font-size:.82rem;color:var(--muted);">All caught up!</div>';
     const badge = document.getElementById('cNotifBadge');
@@ -2528,7 +2571,7 @@ window.openPermitUpload = async (loadId, route) => {
           const p = d.data();
           return `<div style="display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--mid);border-radius:6px;margin-bottom:.4rem;">
             <span style="font-size:1rem;">📄</span>
-            <div style="flex:1;font-size:.82rem;">${p.fileName}</div>
+            <div style="flex:1;font-size:.82rem;">${escapeHtml(p.fileName)}</div>
             <span style="font-size:.68rem;color:var(--green);">✓ Uploaded</span>
           </div>`;
         }).join('') + '<div style="height:.5rem;"></div>';
@@ -2545,7 +2588,7 @@ window.handlePermitFiles = (input) => {
   list.innerHTML = pendingPermitFiles.map((f, i) => `
     <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;background:var(--mid);border-radius:6px;">
       <span>📄</span>
-      <div style="flex:1;font-size:.82rem;">${f.name}</div>
+      <div style="flex:1;font-size:.82rem;">${escapeHtml(f.name)}</div>
       <span style="font-size:.72rem;color:var(--muted);">${(f.size/1024).toFixed(0)}KB</span>
       <button onclick="removePendingPermit(${i})" style="background:none;border:none;color:#555;cursor:pointer;font-size:.9rem;">✕</button>
     </div>`).join('');
@@ -2558,7 +2601,7 @@ window.removePendingPermit = (index) => {
   list.innerHTML = pendingPermitFiles.map((f, i) => `
     <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;background:var(--mid);border-radius:6px;">
       <span>📄</span>
-      <div style="flex:1;font-size:.82rem;">${f.name}</div>
+      <div style="flex:1;font-size:.82rem;">${escapeHtml(f.name)}</div>
       <span style="font-size:.72rem;color:var(--muted);">${(f.size/1024).toFixed(0)}KB</span>
       <button onclick="removePendingPermit(${i})" style="background:none;border:none;color:#555;cursor:pointer;font-size:.9rem;">✕</button>
     </div>`).join('');
@@ -2648,7 +2691,7 @@ window.editLoad = (loadId) => {
   banner.style.display = 'flex';
   document.getElementById('postEditLoadNum').textContent = '#' + (l.loadNum || l.id.slice(0,8).toUpperCase());
   document.getElementById('postLoadBtn').innerHTML = '💾 Update Load';
-  showPanel('postload', document.querySelectorAll('.nav-tab')[3]);
+  showPanel('postload');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -2681,7 +2724,7 @@ window.repostLoad = (loadId) => {
   document.getElementById('pEditLoadId').value = '';
   document.getElementById('postEditBanner').style.display = 'none';
   document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
-  showPanel('postload', document.querySelectorAll('.nav-tab')[3]);
+  showPanel('postload');
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showToast('Load fields copied — set a new date and post');
 };
@@ -2798,7 +2841,7 @@ function buildLoadCard(l) {
     <div class="load-row-footer">
       <div class="applicant-count"><span>${statusLabel}</span></div>
       <div class="load-actions">
-        <button class="load-btn primary" onclick="showPanel('applicants',document.querySelectorAll('.nav-tab')[2])">View Applicants</button>
+        <button class="load-btn primary" onclick="showPanel('applicants')">View Applicants</button>
         ${s !== 'completed' ? `<button class="load-btn" onclick="editLoad('${l.id}')">✏️ Edit</button>` : ''}
         <button class="load-btn" onclick="openPermitUpload('${l.id}','${l.from} → ${l.to}')">📄 Permits</button>
         ${s !== 'completed' ? `<button class="load-btn" style="color:var(--green);border-color:rgba(74,222,128,.2);" onclick="markLoadComplete('${l.id}')">✓ Complete</button>` : ''}
@@ -2810,10 +2853,12 @@ function buildLoadCard(l) {
 }
 
 function setCarrierAvatarPhoto(url) {
+  const safeUrl = (typeof url === 'string' && (url.startsWith('data:image/') || url.startsWith('https://'))) ? escapeHtml(url) : '';
+  if (!safeUrl) return;
   const profileAv = document.getElementById('profileAvatar');
   const navAv = document.getElementById('navAvatar');
-  if (profileAv) { profileAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profileAv.style.padding = '0'; }
-  if (navAv) { navAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
+  if (profileAv) { profileAv.innerHTML = `<img src="${safeUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profileAv.style.padding = '0'; }
+  if (navAv) { navAv.innerHTML = `<img src="${safeUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
 }
 
 window.handleCarrierAvatarUpload = async (input) => {
@@ -2849,7 +2894,8 @@ window.handleCarrierAvatarUpload = async (input) => {
 window.navTab = (panelName) => document.querySelector(`.nav-tab[onclick*="showPanel('${panelName}'"]`);
 
 window.showPanel = (name, el) => {
-  if (window.innerWidth <= 600) window.scrollTo({ top: 0, behavior: 'instant' });
+  // Tear down chat listener when leaving Messages so onSnapshot stops billing reads on hidden panels.
+  if (name !== 'messages' && cConvUnsubscribe) { cConvUnsubscribe(); cConvUnsubscribe = null; cActiveConvId = null; }
   if (name === 'fleet') loadFleet();
   if (name === 'messages') loadCarrierConversations();
   if (name === 'postload') loadTemplates();
@@ -2861,6 +2907,11 @@ window.showPanel = (name, el) => {
   // If caller didn't pass a button, look it up by name so the highlight still updates
   if (!el) el = window.navTab(name);
   if (el) el.classList.add('active');
+  if (window.innerWidth <= 600) {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
 };
 
 async function loadCarrierInvoices() {
@@ -2906,8 +2957,9 @@ async function loadCarrierInvoices() {
 window.viewInvoice = (idx) => {
   const inv = (window._carrierInvoices || [])[idx];
   if (!inv) return;
-  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${label}</div><div style="font-weight:600;">${val || '—'}</div></div>`;
-  const daysHtml = inv.days?.length ? `<div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Day Logs</div>${inv.days.map(d => `<div style="display:flex;gap:.75rem;padding:.4rem 0;border-bottom:1px solid #1a1a1a;font-size:.8rem;"><span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${d.day}</span><span style="color:#888;">${d.date}</span>${d.miles ? `<span style="color:#888;">${d.miles} mi</span>` : ''}${d.notes ? `<span style="color:#aaa;flex:1;">${d.notes}</span>` : ''}</div>`).join('')}</div>` : '';
+  const e = escapeHtml;
+  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${e(label)}</div><div style="font-weight:600;">${val ? e(val) : '—'}</div></div>`;
+  const daysHtml = inv.days?.length ? `<div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Day Logs</div>${inv.days.map(d => `<div style="display:flex;gap:.75rem;padding:.4rem 0;border-bottom:1px solid #1a1a1a;font-size:.8rem;"><span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${e(d.day)}</span><span style="color:#888;">${e(d.date)}</span>${d.miles ? `<span style="color:#888;">${e(d.miles)} mi</span>` : ''}${d.notes ? `<span style="color:#aaa;flex:1;">${e(d.notes)}</span>` : ''}</div>`).join('')}</div>` : '';
   let payLines = '';
   if (inv.dayRate && inv.days?.length) {
     inv.days.forEach(d => {
@@ -2915,20 +2967,20 @@ window.viewInvoice = (idx) => {
       const hits = inv.mileRate && inv.mileThreshold ? dm >= inv.mileThreshold : false;
       const dayPay = hits ? dm * inv.mileRate : inv.dayRate;
       const label = hits ? `${dm} mi x $${inv.mileRate}/mi` : 'day rate';
-      payLines += `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.3rem;"><span>Day ${d.day} — ${label}</span><span>$${dayPay.toFixed(2)}</span></div>`;
+      payLines += `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.3rem;"><span>Day ${e(d.day)} — ${e(label)}</span><span>$${dayPay.toFixed(2)}</span></div>`;
     });
   }
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${inv.invoiceNum}</title><style>body{margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;}@media print{body{background:#fff;} button{display:none;}}</style></head><body>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${e(inv.invoiceNum)}</title><style>body{margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;}@media print{body{background:#fff;} button{display:none;}}</style></head><body>
     <div style="max-width:600px;margin:0 auto;background:#0a0a0a;color:#f0ede6;padding:2rem;border-radius:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #f5c400;">
         <div style="font-family:'Arial Black',sans-serif;font-size:1.6rem;font-weight:900;color:#f5c400;letter-spacing:2px;">LOADLEADER</div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${inv.invoiceNum}</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${e(inv.invoiceNum)}</div></div>
       </div>
       <div style="background:#1a1a1a;border-radius:8px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
         ${row('Load #', inv.loadNum)} ${row('Date', inv.date)}
         ${row('Pick Up', inv.pickup || inv.route?.split('→')[0]?.trim())} ${row('Delivery', inv.delivery || inv.route?.split('→')[1]?.trim())}
         ${row('Driver', inv.pilotName)} ${row('Miles', inv.miles ? inv.miles + ' mi' : '')}
-        ${inv.truckingCompany ? `<div style="grid-column:1/-1;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">Trucking Company</div><div style="font-weight:600;">${inv.truckingCompany}</div></div>` : ''}
+        ${inv.truckingCompany ? `<div style="grid-column:1/-1;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">Trucking Company</div><div style="font-weight:600;">${e(inv.truckingCompany)}</div></div>` : ''}
         ${row('Truck #', inv.truckNum)} ${row('Trailer #', inv.trailerNum)}
       </div>
       ${daysHtml}
@@ -2937,13 +2989,17 @@ window.viewInvoice = (idx) => {
         <div style="text-align:center;margin-top:.5rem;"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
         <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${Number(inv.totalPay || inv.pay || 0).toFixed(2)}</div></div>
       </div>
-      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${inv.date}</div>
+      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${e(inv.date)}</div>
       <button onclick="window.print()" style="margin-top:1.5rem;display:block;width:100%;padding:.75rem;background:#f5c400;border:none;font-weight:700;font-size:1rem;cursor:pointer;border-radius:4px;color:#000;">Print / Save as PDF</button>
     </div>
   </body></html>`;
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
+  // Render via blob URL so we can pass noopener,noreferrer (severs window.opener access)
+  // without losing the ability to populate the new tab.
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!win) alert('Pop-up blocked. Allow pop-ups to view the invoice.');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 };
 
 window.filterApps = (status, btn) => {

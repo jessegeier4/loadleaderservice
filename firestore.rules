@@ -12,10 +12,20 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isSignedIn();
       allow write: if isOwner(userId);
-      // Anyone signed in can update rating + reviewCount fields only (so review submission
-      // can recompute the average — rule restricts which fields can change).
+      // Cross-user update is intentionally narrow — only rating + reviewCount, with
+      // bounds-checking to prevent obvious tanking/inflation attacks (rating in 0-5,
+      // reviewCount only increases). This is NOT a full fix — any signed-in user can still
+      // submit a single bogus rating overwrite. The proper fix is to forbid client-side
+      // rating writes entirely and recompute server-side via a Cloud Function on
+      // reviews/{id} create. Tracked separately.
       allow update: if isSignedIn()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount'])
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 0
+        && request.resource.data.rating <= 5
+        && request.resource.data.reviewCount is int
+        && request.resource.data.reviewCount >= 0
+        && (resource.data.reviewCount == null || request.resource.data.reviewCount >= resource.data.reviewCount);
     }
 
     // ─── LOADS ───
@@ -76,10 +86,26 @@ service cloud.firestore {
     }
 
     // ─── NOTIFICATIONS ───
-    // Each user reads their own. Anyone signed in can create (so the system can write to anyone).
+    // Each user reads their own. Anyone signed in can create FOR ANOTHER USER (the system flow:
+    // pilot applies → notification for carrier; carrier accepts → notification for pilot).
+    // Bounds prevent obvious abuse: type must be one of the known values, message length capped,
+    // userId must differ from sender (no self-spam loops), createdAt must be a server timestamp.
     match /notifications/{notifId} {
       allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow create: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.userId is string
+        && request.resource.data.userId != request.auth.uid
+        && request.resource.data.type in [
+          'new_application','application_accepted','application_declined',
+          'pilot_removed','declined',
+          'new_message','message',
+          'invoice','delivery_confirmed',
+          'load_alert','fleet_load',
+          'review','generic'
+        ]
+        && request.resource.data.message is string
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.read == false;
     }
 
     // ─── CONVERSATIONS ───

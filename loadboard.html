@@ -363,6 +363,11 @@ const db = getFirestore(app);
 const API_URL = 'https://load-leader.onrender.com/api/ai';
 const PUSH_URL = 'https://load-leader.onrender.com/api/push';
 
+// Escape Firestore-sourced strings before innerHTML / attribute interpolation.
+window.escapeHtml = (s) => String(s ?? '').replace(/[&<>"'`=\/]/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'
+}[c]));
+
 function sendPush(userId, title, body, data) {
   if (!userId) return;
   fetch(PUSH_URL, {
@@ -390,8 +395,8 @@ onAuthStateChanged(auth, async (user) => {
       if (logoLink) logoLink.href = dashUrl;
       document.getElementById('navRight').innerHTML = `
         <a href="${dashUrl}" class="user-chip">
-          <div class="user-av">${initials}</div>
-          <span class="user-n">${firstName}</span>
+          <div class="user-av">${escapeHtml(initials)}</div>
+          <span class="user-n">${escapeHtml(firstName)}</span>
         </a>
         <a href="${dashUrl}" class="btn-sm btn-yellow">Dashboard</a>`;
       const appsSnap = await getDocs(query(collection(db,'applications'),where('pilotId','==',user.uid)));
@@ -415,10 +420,7 @@ async function fetchLoads() {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-2);"><span class="spinner spinner-white"></span> Loading board...</div>';
   try {
     const snap = await getDocs(collection(db, 'loads'));
-    console.log('Total docs from Firestore:', snap.size);
-    snap.docs.forEach(d => console.log('Load:', d.id, 'status:', d.data().status));
     const activeDocs = snap.docs.filter(d => d.data().status === 'active' || d.data().status === 'Active' || !d.data().status);
-    console.log('Active loads:', activeDocs.length);
     if (snap.empty || activeDocs.length === 0) {
       LOADS = [];
       document.getElementById('boardNotice').style.display = 'block';
@@ -505,10 +507,12 @@ function renderLoads() {
   if (!page.length) { grid.innerHTML=LOADS.length === 0
     ? '<div class="no-results" style="padding:4rem 2rem;"><div style="font-size:2rem;margin-bottom:.75rem;opacity:.3">🚛</div><div style="color:var(--text-2);font-size:.875rem;margin-bottom:1rem;">No loads posted yet.</div><a href="carrier-dashboard.html" style="background:var(--accent);color:#0A0A0A;padding:.6rem 1.25rem;border-radius:var(--r-btn);text-decoration:none;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Post the First Load</a></div>'
     : '<div class="no-results">No loads match your filters.</div>'; return; }
-  grid.innerHTML = page.map((l,i) => `
+  grid.innerHTML = page.map((l,i) => {
+    const lid = escapeHtml(l.id);
+    return `
     <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
       <div class="card-top">
-        <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:8px;color:var(--text-3);opacity:.5;margin-left:.4rem;letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>
+        <div class="load-id">${l.loadNum ? `LOAD #${escapeHtml(l.loadNum)}` : ''}<span style="font-size:8px;color:var(--text-3);opacity:.5;margin-left:.4rem;letter-spacing:1px;">${escapeHtml(String(l.id).slice(0,8).toUpperCase())}</span></div>
         <div class="badges" style="display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end;">
           ${l.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay</span>' : ''}
           ${l.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);">💬 Text</span>' : ''}
@@ -520,31 +524,31 @@ function renderLoads() {
         </div>
       </div>
       <div class="route">
-        <div><span class="route-city">${l.from}</span><span class="route-st">${l.fromSt}</span></div>
+        <div><span class="route-city">${escapeHtml(l.from)}</span><span class="route-st">${escapeHtml(l.fromSt)}</span></div>
         <span class="route-arrow">→</span>
-        <div><span class="route-city">${l.to}</span><span class="route-st">${l.toSt}</span></div>
+        <div><span class="route-city">${escapeHtml(l.to)}</span><span class="route-st">${escapeHtml(l.toSt)}</span></div>
       </div>
       <div class="card-grid">
-        <div><div class="cg-label">Width</div><div class="cg-val">${l.width}</div></div>
-        <div><div class="cg-label">Height</div><div class="cg-val">${l.height}</div></div>
-        ${l.length ? `<div><div class="cg-label">Length</div><div class="cg-val">${l.length}</div></div>` : ''}
-        <div><div class="cg-label">Miles</div><div class="cg-val">${l.miles} mi</div></div>
-        <div><div class="cg-label">Pilots</div><div class="cg-val">${l.pilots} needed</div></div>
-        <div><div class="cg-label">Type</div><div class="cg-val">${l.type}</div></div>
-        <div><div class="cg-label">Date</div><div class="cg-val">${l.date}</div></div>
+        <div><div class="cg-label">Width</div><div class="cg-val">${escapeHtml(l.width)}</div></div>
+        <div><div class="cg-label">Height</div><div class="cg-val">${escapeHtml(l.height)}</div></div>
+        ${l.length ? `<div><div class="cg-label">Length</div><div class="cg-val">${escapeHtml(l.length)}</div></div>` : ''}
+        <div><div class="cg-label">Miles</div><div class="cg-val">${escapeHtml(l.miles)} mi</div></div>
+        <div><div class="cg-label">Pilots</div><div class="cg-val">${escapeHtml(l.pilots)} needed</div></div>
+        <div><div class="cg-label">Type</div><div class="cg-val">${escapeHtml(l.type)}</div></div>
+        <div><div class="cg-label">Date</div><div class="cg-val">${escapeHtml(l.date)}</div></div>
         ${l.permitsUploaded ? '<div style="grid-column:1/-1;"><span style="font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border);padding:.15rem .55rem;border-radius:var(--r-chip);">Permits Ready</span></div>' : ''}
       </div>
       <div class="card-bottom">
-        <div><div class="pay-label">Per Pilot</div><div class="pay-amount">${l.dayRate ? '$' + l.dayRate + '/day' + (l.mileRate ? ' + $' + l.mileRate + '/mi' : '') : '$' + l.pay.toLocaleString()}</div>${l.mileRate && l.mileThreshold ? '<div style="font-size:.62rem;color:var(--text-3);margin-top:.15rem;">mileage kicks in over ' + l.mileThreshold + ' mi/day</div>' : ''}</div>
+        <div><div class="pay-label">Per Pilot</div><div class="pay-amount">${l.dayRate ? '$' + escapeHtml(l.dayRate) + '/day' + (l.mileRate ? ' + $' + escapeHtml(l.mileRate) + '/mi' : '') : '$' + Number(l.pay || 0).toLocaleString()}</div>${l.mileRate && l.mileThreshold ? '<div style="font-size:.62rem;color:var(--text-3);margin-top:.15rem;">mileage kicks in over ' + escapeHtml(l.mileThreshold) + ' mi/day</div>' : ''}</div>
         <div class="card-actions">
-          <button class="save-btn ${savedLoads.has(l.id)?'saved':''}" onclick="toggleSave('${l.id}',this)" title="Save">${savedLoads.has(l.id)?'♥':'♡'}</button>
+          <button class="save-btn ${savedLoads.has(l.id)?'saved':''}" data-lid="${lid}" onclick="toggleSave(this.dataset.lid,this)" title="Save">${savedLoads.has(l.id)?'♥':'♡'}</button>
           ${appliedLoads.has(l.id)
             ? `<button class="apply-btn applied" disabled>Applied</button>`
-            : `<button class="apply-btn" onclick="openApplyModal('${l.id}')">Apply Now</button>`
+            : `<button class="apply-btn" data-lid="${lid}" onclick="openApplyModal(this.dataset.lid)">Apply Now</button>`
           }
         </div>
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
   renderPagination(total);
 }
 
@@ -591,7 +595,7 @@ window.openApplyModal=(loadId)=>{
 
   if (!currentUser) {
     content.innerHTML=`
-      <div class="modal-head"><div class="modal-title">Apply for <span>${load.loadNum ? 'Load #' + load.loadNum : load.id.slice(0,8).toUpperCase()}</span></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
+      <div class="modal-head"><div class="modal-title">Apply for <span>${load.loadNum ? 'Load #' + escapeHtml(load.loadNum) : escapeHtml(String(load.id).slice(0,8).toUpperCase())}</span></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
       <div class="modal-body">
         <div class="login-prompt">
           <div class="login-prompt-icon">🚩</div>
@@ -610,44 +614,45 @@ window.openApplyModal=(loadId)=>{
   const lastName=userProfile?.lastName||'';
   const initials=(firstName[0]+(lastName[0]||'')).toUpperCase();
   const quickMsg = userProfile?.quickApplyMessage || '';
+  const lid = escapeHtml(load.id);
 
   content.innerHTML=`
     <div class="modal-head">
       <div>
         <div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.25rem;">Apply for Load</div>
-        <div class="modal-title">${load.from} <span>→</span> ${load.to}</div>
+        <div class="modal-title">${escapeHtml(load.from)} <span>→</span> ${escapeHtml(load.to)}</div>
       </div>
       <button class="modal-close" onclick="closeApplyModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-load-summary">
         <div class="mls-route">
-          <div><span style="font-family:var(--font-display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:0.04em;">${load.from}</span><span style="color:var(--text-2);font-size:.78rem;margin-left:.15rem">${load.fromSt}</span></div>
+          <div><span style="font-family:var(--font-display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:0.04em;">${escapeHtml(load.from)}</span><span style="color:var(--text-2);font-size:.78rem;margin-left:.15rem">${escapeHtml(load.fromSt)}</span></div>
           <span class="mls-arr">→</span>
-          <div><span style="font-family:var(--font-display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:0.04em;">${load.to}</span><span style="color:var(--text-2);font-size:.78rem;margin-left:.15rem">${load.toSt}</span></div>
+          <div><span style="font-family:var(--font-display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:0.04em;">${escapeHtml(load.to)}</span><span style="color:var(--text-2);font-size:.78rem;margin-left:.15rem">${escapeHtml(load.toSt)}</span></div>
         </div>
         <div class="mls-details">
-          <div class="mls-item">Width<strong>${load.width || '—'}</strong></div>
-          <div class="mls-item">Height<strong>${load.height || '—'}</strong></div>
-          ${load.length ? `<div class="mls-item">Length<strong>${load.length}</strong></div>` : ''}
-          <div class="mls-item">Miles<strong>${load.miles || '—'} mi</strong></div>
-          <div class="mls-item">Date<strong>${load.date || '—'}</strong></div>
-          <div class="mls-item">Carrier<strong>${load.carrier}</strong></div>
-          ${load.type ? `<div class="mls-item">Type<strong>${load.type}</strong></div>` : ''}
-          ${load.equipment ? `<div class="mls-item" style="grid-column:1/-1;">Equipment<strong>${load.equipment}</strong></div>` : ''}
+          <div class="mls-item">Width<strong>${escapeHtml(load.width || '—')}</strong></div>
+          <div class="mls-item">Height<strong>${escapeHtml(load.height || '—')}</strong></div>
+          ${load.length ? `<div class="mls-item">Length<strong>${escapeHtml(load.length)}</strong></div>` : ''}
+          <div class="mls-item">Miles<strong>${escapeHtml(load.miles || '—')} mi</strong></div>
+          <div class="mls-item">Date<strong>${escapeHtml(load.date || '—')}</strong></div>
+          <div class="mls-item">Carrier<strong>${escapeHtml(load.carrier)}</strong></div>
+          ${load.type ? `<div class="mls-item">Type<strong>${escapeHtml(load.type)}</strong></div>` : ''}
+          ${load.equipment ? `<div class="mls-item" style="grid-column:1/-1;">Equipment<strong>${escapeHtml(load.equipment)}</strong></div>` : ''}
           ${load.permitsUploaded ? '<div class="mls-item" style="grid-column:1/-1;color:var(--ok);">✓ Permits Uploaded</div>' : ''}
           ${(load.quickPay || load.textOnly) ? `<div class="mls-item" style="grid-column:1/-1;display:flex;gap:.4rem;flex-wrap:wrap;">${load.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay (within 7 days)</span>' : ''}${load.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);">💬 Text Only</span>' : ''}</div>` : ''}
         </div>
-        ${load.notes ? `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:6px;padding:.65rem .85rem;margin-top:.65rem;font-size:.78rem;color:var(--text-2);line-height:1.5;"><div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:.25rem;">Special Instructions</div>${load.notes}</div>` : ''}
-        <div class="mls-pay">${load.dayRate ? '$' + load.dayRate + '/day' + (load.mileRate ? ' + $' + load.mileRate + '/mi' : '') : '$' + (load.pay || 0).toLocaleString() + ' per pilot'}</div>
+        ${load.notes ? `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:6px;padding:.65rem .85rem;margin-top:.65rem;font-size:.78rem;color:var(--text-2);line-height:1.5;"><div style="font-family:var(--font-display);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:.25rem;">Special Instructions</div>${escapeHtml(load.notes)}</div>` : ''}
+        <div class="mls-pay">${load.dayRate ? '$' + escapeHtml(load.dayRate) + '/day' + (load.mileRate ? ' + $' + escapeHtml(load.mileRate) + '/mi' : '') : '$' + Number(load.pay || 0).toLocaleString() + ' per pilot'}</div>
       </div>
       <div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.55rem;">Your Profile — Carrier will see this</div>
       <div class="pilot-preview">
-        <div class="pp-avatar">${initials}</div>
+        <div class="pp-avatar">${escapeHtml(initials)}</div>
         <div>
-          <div class="pp-name">${firstName} ${lastName}</div>
+          <div class="pp-name">${escapeHtml(firstName)} ${escapeHtml(lastName)}</div>
           <div style="color:var(--accent);font-size:.78rem;" id="pilotRatingDisplay">★☆☆☆☆ <span style="color:var(--text-2)">No ratings yet</span></div>
-          <div class="pp-meta">${userProfile?.state||'Location not set'} · Pilot Car Driver</div>
+          <div class="pp-meta">${escapeHtml(userProfile?.state||'Location not set')} · Pilot Car Driver</div>
           <div class="pp-badges">
             <span class="pp-badge">Certified</span>
             <span class="pp-badge">Insured</span>
@@ -657,15 +662,15 @@ window.openApplyModal=(loadId)=>{
       </div>
       <div class="modal-form-group">
         <label class="modal-label">Message to Carrier <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type...">${quickMsg}</textarea>
+        <textarea id="applyMessage" class="modal-input" placeholder="Introduce yourself, mention your experience with this route or load type...">${escapeHtml(quickMsg)}</textarea>
       </div>
       <div class="check-row">
         <input type="checkbox" id="confirmAvail" checked>
-        <label for="confirmAvail">I confirm I am available on <strong>${load.date}</strong> and meet all requirements for this load</label>
+        <label for="confirmAvail">I confirm I am available on <strong>${escapeHtml(load.date)}</strong> and meet all requirements for this load</label>
       </div>
       <div id="applyMsgBox" style="display:none;padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.65rem;"></div>
-      ${quickMsg ? `<div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:.4rem;cursor:pointer;" onclick="document.getElementById('applyMessage').value=this.dataset.msg" data-msg="${quickMsg.replace(/"/g,'&quot;')}">Quick Apply message loaded — tap to reset</div>` : ''}
-      <button class="modal-submit" id="applySubmitBtn" onclick="submitApplication('${load.id}')">Submit Application</button>
+      ${quickMsg ? `<div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:.4rem;cursor:pointer;" onclick="document.getElementById('applyMessage').value=this.dataset.msg" data-msg="${escapeHtml(quickMsg)}">Quick Apply message loaded — tap to reset</div>` : ''}
+      <button class="modal-submit" id="applySubmitBtn" data-lid="${lid}" onclick="submitApplication(this.dataset.lid)">Submit Application</button>
       <div class="modal-note">Your phone number is only shared with the carrier if they accept you.</div>
     </div>`;
 };
@@ -729,12 +734,12 @@ window.submitApplication=async(loadId)=>{
         <div class="success-state" style="padding:.5rem 0;">
           <div style="font-size:2.2rem;margin-bottom:.4rem;">🎉</div>
           <div class="success-title" style="margin-bottom:.5rem;">Application <span>Submitted!</span></div>
-          <div style="font-size:.82rem;color:var(--text-2);line-height:1.5;margin-bottom:.85rem;">Sent to <strong style="color:var(--text)">${load.carrier}</strong> for <strong style="color:var(--text)">${load.from} → ${load.to}</strong>. You will get an email and a push notification when they respond.</div>
+          <div style="font-size:.82rem;color:var(--text-2);line-height:1.5;margin-bottom:.85rem;">Sent to <strong style="color:var(--text)">${escapeHtml(load.carrier)}</strong> for <strong style="color:var(--text)">${escapeHtml(load.from)} → ${escapeHtml(load.to)}</strong>. You will get an email and a push notification when they respond.</div>
           <div class="success-actions" style="gap:.5rem;">
             <a href="dashboard.html" class="success-btn" style="background:var(--accent);color:#0A0A0A;">View My Applications</a>
             <button class="success-btn" style="background:transparent;border:1px solid var(--line-strong);color:var(--text);" onclick="closeApplyModal()">Browse More</button>
           </div>
-          <button id="followCarrierBtn" onclick="followCarrierFromModal(this)" data-id="${load.carrierId}" data-name="${load.carrier}" style="margin-top:.85rem;width:100%;background:transparent;border:1px solid var(--accent-border);color:var(--accent);padding:.55rem 1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">+ Follow ${load.carrier}</button>
+          <button id="followCarrierBtn" onclick="followCarrierFromModal(this)" data-id="${escapeHtml(load.carrierId || '')}" data-name="${escapeHtml(load.carrier || '')}" style="margin-top:.85rem;width:100%;background:transparent;border:1px solid var(--accent-border);color:var(--accent);padding:.55rem 1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">+ Follow ${escapeHtml(load.carrier)}</button>
         </div>
       </div>`;
     renderLoads();
@@ -758,7 +763,7 @@ window.followCarrierFromModal = async (btn) => {
     const { collection, addDoc, getDocs, query, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const existing = await getDocs(query(collection(db,'follows'),where('followerId','==',currentUser.uid),where('followingId','==',carrierId)));
     if (!existing.empty) {
-      btn.innerHTML = '✓ Already Following ' + carrierName;
+      btn.textContent = '✓ Already Following ' + carrierName;
       btn.style.color = 'var(--ok)';
       btn.style.borderColor = 'var(--ok-border)';
       return;
@@ -770,7 +775,7 @@ window.followCarrierFromModal = async (btn) => {
       followingType: 'carrier',
       createdAt: serverTimestamp()
     });
-    btn.innerHTML = '✓ Following ' + carrierName;
+    btn.textContent = '✓ Following ' + carrierName;
     btn.style.color = 'var(--ok)';
     btn.style.borderColor = 'var(--ok-border)';
   } catch(e) {
@@ -788,8 +793,8 @@ window.runAISearch=async()=>{
   try{
     const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:[{role:'user',content:`System: Load board AI for LoadLeader. Available loads: ${JSON.stringify(LOADS.slice(0,8))}. Answer in 2-3 sentences, plain text.\n\nSearch: ${q}`}],max_tokens:300})});
-    const d=await r.json();box.innerHTML='⚡ '+(d.text||'Try the filters above.');
-  }catch(e){box.innerHTML='AI search unavailable. Use filters above.';}
+    const d=await r.json();box.textContent='⚡ '+(d.text||'Try the filters above.');
+  }catch(e){box.textContent='AI search unavailable. Use filters above.';}
   btn.disabled=false;btn.innerHTML='Search';
 };
 

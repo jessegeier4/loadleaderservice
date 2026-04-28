@@ -340,7 +340,7 @@ if ('serviceWorker' in navigator) {
 }
 if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
   const vp = document.querySelector('meta[name="viewport"]');
-  if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0';
+  if (vp) vp.content = 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0';
 }
 </script>
 </head>
@@ -402,27 +402,27 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       </div>
       <div class="welcome-actions">
         <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
-        <button class="btn btn-o" onclick="showPanel('profile',document.querySelectorAll('.nav-tab')[4])">Edit Profile</button>
+        <button class="btn btn-o" onclick="showPanel('profile')">Edit Profile</button>
       </div>
     </div>
 
     <div class="stats-row">
-      <div class="stat-card yellow" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1])">
+      <div class="stat-card yellow" onclick="showPanel('jobs')">
         <div class="sc-label">Active Jobs</div>
         <div class="sc-val" id="statActiveJobs">0</div>
         <div class="sc-sub" id="statActiveJobsSub">No active jobs yet</div>
       </div>
-      <div class="stat-card green" onclick="showPanel('earnings',document.querySelectorAll('.nav-tab')[4])" style="display:none;">
+      <div class="stat-card green" onclick="showPanel('earnings')" style="display:none;">
         <div class="sc-label">Earnings (2026)</div>
         <div class="sc-val" id="statEarnings">$0</div>
         <div class="sc-sub" id="statEarningsSub">Apply to loads to start earning</div>
       </div>
-      <div class="stat-card blue" onclick="showPanel('jobs',document.querySelectorAll('.nav-tab')[1]);var cb=document.querySelector('#panel-jobs .job-btn:last-child');if(cb)filterJobs('completed',cb);">
+      <div class="stat-card blue" onclick="showPanel('jobs');var cb=document.querySelector('#panel-jobs .job-btn:last-child');if(cb)filterJobs('completed',cb);">
         <div class="sc-label">Jobs Completed</div>
         <div class="sc-val" id="statJobs">0</div>
         <div class="sc-sub" id="statJobsSub">Since joining LoadLeader</div>
       </div>
-      <div class="stat-card orange" onclick="showPanel('profile',document.querySelectorAll('.nav-tab')[6])">
+      <div class="stat-card orange" onclick="showPanel('profile')">
         <div class="sc-label">Rating</div>
         <div class="sc-val" id="statRating">—</div>
         <div class="sc-sub" id="statRatingSub">Complete jobs to earn rating</div>
@@ -1187,6 +1187,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Escape Firestore-sourced strings before innerHTML / attribute interpolation.
+// Use for any user-controlled value (names, message bodies, file names, URLs, etc.).
+window.escapeHtml = (s) => String(s ?? '').replace(/[&<>"'`=\/]/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'
+}[c]));
+
 // ─── PUSH NOTIFICATIONS (FCM) ───
 // Paste your VAPID public key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
 const FCM_VAPID_KEY = 'BO8XAw-a9tLwIvqSMn7KsiqtRmRxIaWRa5NevQkYUDjB3gPBDNERb_FPLp4QIzKdTmsqWYxDQrXpjGHLfFcwwyY';
@@ -1500,10 +1506,10 @@ window.viewPermits = async (loadId) => {
           <div style="display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:var(--mid);border-radius:8px;margin-bottom:.5rem;">
             <span style="font-size:1.25rem;">📄</span>
             <div style="flex:1;">
-              <div style="font-size:.875rem;font-weight:500;">${p.fileName}</div>
+              <div style="font-size:.875rem;font-weight:500;">${escapeHtml(p.fileName)}</div>
               <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem;">${(p.fileSize/1024).toFixed(0)}KB · ${new Date(p.uploadedAt?.toMillis?.() || Date.now()).toLocaleDateString()}</div>
             </div>
-            <a href="${p.fileData}" download="${p.fileName}" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Download</a>
+            <a href="${(p.fileData || '').startsWith('data:') ? escapeHtml(p.fileData) : '#'}" download="${escapeHtml(p.fileName)}" style="background:var(--yellow);color:var(--black);padding:.4rem .85rem;border-radius:5px;text-decoration:none;font-size:.78rem;font-weight:700;">Download</a>
           </div>`).join('')}
         <button onclick="closeApplyModal()" style="width:100%;background:transparent;border:1px solid #2a2a2a;color:var(--white);padding:.75rem;border-radius:7px;font-family:sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;margin-top:.75rem;">Close</button>
       </div>`;
@@ -1807,44 +1813,65 @@ function buildJobCard(a) {
   const isCompleted = a.status === 'completed';
   const logDayCount = a.loadLog?.length || 0;
   const origin = a.loadRoute?.split('→')[0]?.trim() || '';
+  const aid = escapeHtml(a.id || '');
   return `
     <div class="job-card ${isAccepted ? 'active-job' : isCompleted ? 'completed-job' : 'pending-job'}">
       <div class="job-left">
         <div class="job-route">
-          <div><span class="job-city">${origin}</span></div>
+          <div><span class="job-city">${escapeHtml(origin)}</span></div>
           <span class="job-arr">→</span>
-          <div><span class="job-city">${a.loadRoute?.split('→')[1]?.trim() || 'Destination'}</span></div>
+          <div><span class="job-city">${escapeHtml(a.loadRoute?.split('→')[1]?.trim() || 'Destination')}</span></div>
         </div>
         <div class="job-meta">
-          <div class="job-meta-item">Date <strong>${a.loadDate || '—'}</strong></div>
-          <div class="job-meta-item">Carrier <strong>${a.carrier || '—'}</strong></div>
+          <div class="job-meta-item">Date <strong>${escapeHtml(a.loadDate || '—')}</strong></div>
+          <div class="job-meta-item">Carrier <strong>${escapeHtml(a.carrier || '—')}</strong></div>
           ${isAccepted ? '<div class="job-meta-item" style="color:var(--ok)">✓ Active Run</div>' : ''}
           ${isCompleted ? '<div class="job-meta-item" style="color:var(--text-2)">✓ Delivered</div>' : ''}
         </div>
         ${(a.loadQuickPay || a.loadTextOnly) ? `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem;">${a.loadQuickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);font-size:.65rem;">💸 Quick Pay</span>' : ''}${a.loadTextOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);font-size:.65rem;">💬 Text Only</span>' : ''}</div>` : ''}
         ${isAccepted ? buildLoadLog(a) : ''}
-        ${isAccepted ? `<div id="weather-${a.id}" data-weather-load="${a.id}" data-weather-route="${(a.loadRoute||'').replace(/"/g,'')}" style="margin-top:.5rem;"></div>` : ''}
+        ${isAccepted ? `<div id="weather-${aid}" data-weather-load="${aid}" data-weather-route="${escapeHtml(a.loadRoute||'')}" style="margin-top:.5rem;"></div>` : ''}
       </div>
       <div class="job-right">
-        <div><div class="job-pay-label">Your Pay</div><div class="job-pay">${a.loadDayRate ? '$' + a.loadDayRate + '/day' + (a.loadMileRate ? ' + $' + a.loadMileRate + '/mi' : '') : '$' + (a.loadPay || 0)}</div></div>
+        <div><div class="job-pay-label">Your Pay</div><div class="job-pay">${a.loadDayRate ? '$' + escapeHtml(a.loadDayRate) + '/day' + (a.loadMileRate ? ' + $' + escapeHtml(a.loadMileRate) + '/mi' : '') : '$' + escapeHtml(a.loadPay || 0)}</div></div>
         <span class="badge ${isAccepted ? 'badge-active' : isCompleted ? 'badge-completed' : 'badge-applied'}">
           ${isAccepted ? 'Active' : isCompleted ? 'Completed' : 'Applied'}
         </span>
         <div class="job-actions">
           ${isAccepted ? `
-            <button class="job-btn" onclick="viewPermits('${a.loadId || ''}')">📄 Permits</button>
-            <button class="job-btn" onclick="openLogDay('${a.id || ''}',${logDayCount})">📝 Log Day</button>
-            <button class="job-btn" onclick="openExpenseLog('${a.id || ''}','${(a.loadRoute || '').replace(/'/g,'')}')">🧾 Log Expense</button>
-            <button class="job-btn primary" onclick="confirmDelivery('${a.id || ''}','${a.loadRoute || ''}','${a.carrierId || ''}','${a.carrierEmail || ''}',${a.loadPay || 0},${a.loadDayRate || 0},${a.loadMileRate || 0},${a.loadMileThreshold || 0})">✅ Confirm Delivery</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnViewPermits(this.dataset.aid)">📄 Permits</button>
+            <button class="job-btn" data-aid="${aid}" data-count="${logDayCount}" onclick="openLogDay(this.dataset.aid, Number(this.dataset.count))">📝 Log Day</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Log Expense</button>
+            <button class="job-btn primary" data-aid="${aid}" onclick="jobBtnConfirmDelivery(this.dataset.aid)">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `
-            <button class="job-btn" onclick="openExpenseLog('${a.id || ''}','${(a.loadRoute || '').replace(/'/g,'')}')">🧾 Log Expense</button>
-            <button class="job-btn" onclick="openReviewModal('${a.carrierId || ''}','${a.loadId || ''}')">⭐ Review Carrier</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Log Expense</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnReviewCarrier(this.dataset.aid)">⭐ Review Carrier</button>
           ` : ''}
         </div>
       </div>
     </div>`;
 }
+
+// Lookup wrappers — buttons carry only the alphanumeric appId; user-controlled
+// route/email/carrierId values are read from window._allJobs by id, so they
+// never travel through onclick attribute parsing.
+window.jobBtnViewPermits = (appId) => {
+  const a = (window._allJobs || []).find(x => x.id === appId);
+  if (a) viewPermits(a.loadId || '');
+};
+window.jobBtnLogExpense = (appId) => {
+  const a = (window._allJobs || []).find(x => x.id === appId);
+  if (a) openExpenseLog(a.id || '', a.loadRoute || '');
+};
+window.jobBtnConfirmDelivery = (appId) => {
+  const a = (window._allJobs || []).find(x => x.id === appId);
+  if (a) confirmDelivery(a.id || '', a.loadRoute || '', a.carrierId || '', a.carrierEmail || '', a.loadPay || 0, a.loadDayRate || 0, a.loadMileRate || 0, a.loadMileThreshold || 0);
+};
+window.jobBtnReviewCarrier = (appId) => {
+  const a = (window._allJobs || []).find(x => x.id === appId);
+  if (a) openReviewModal(a.carrierId || '', a.loadId || '');
+};
 
 // ── ROUTE WEATHER WITH SUNRISE / SUNSET ──
 const STATE_COORDS = {
@@ -2186,40 +2213,48 @@ window.generateExpenseReport = async () => {
     const grouped = {};
     cats.forEach(c => { grouped[c] = all.filter(e => e.category === c); });
 
-    const row = (label, val, bold) => `<div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.85rem;${bold ? 'font-weight:700;' : ''}"><span>${label}</span><span>${val}</span></div>`;
+    const e = escapeHtml;
+    const row = (label, val, bold) => `<div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.85rem;${bold ? 'font-weight:700;' : ''}"><span>${e(label)}</span><span>${e(val)}</span></div>`;
     let body = '';
     let grand = 0;
     cats.forEach(cat => {
       const rows = grouped[cat];
       if (!rows.length) return;
-      const sub = rows.reduce((s, e) => s + e.amount, 0);
+      const sub = rows.reduce((s, ex) => s + ex.amount, 0);
       grand += sub;
       body += `<div style="margin-bottom:1.5rem;">
-        <div style="font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #f5c400;padding-bottom:.35rem;margin-bottom:.5rem;">${cat}</div>
-        ${rows.map(e => `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.85rem;gap:.5rem;"><span style="flex:1;">${e.date}${e.loadRoute ? ' — ' + e.loadRoute : ''}${e.notes ? ' <span style="color:#888;">(' + e.notes + ')</span>' : ''}${e.receiptUrl ? ' <a href="' + e.receiptUrl + '" target="_blank" style="color:#f5c400;font-size:.75rem;">[receipt]</a>' : ''}</span><span style="font-weight:600;white-space:nowrap;">$${Number(e.amount).toFixed(2)}</span></div>`).join('')}
+        <div style="font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #f5c400;padding-bottom:.35rem;margin-bottom:.5rem;">${e(cat)}</div>
+        ${rows.map(ex => {
+          const safeReceipt = (typeof ex.receiptUrl === 'string' && (ex.receiptUrl.startsWith('https://') || ex.receiptUrl.startsWith('data:image/'))) ? e(ex.receiptUrl) : '';
+          return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.85rem;gap:.5rem;"><span style="flex:1;">${e(ex.date)}${ex.loadRoute ? ' — ' + e(ex.loadRoute) : ''}${ex.notes ? ' <span style="color:#888;">(' + e(ex.notes) + ')</span>' : ''}${safeReceipt ? ' <a href="' + safeReceipt + '" target="_blank" rel="noopener noreferrer" style="color:#f5c400;font-size:.75rem;">[receipt]</a>' : ''}</span><span style="font-weight:600;white-space:nowrap;">$${Number(ex.amount).toFixed(2)}</span></div>`;
+        }).join('')}
         ${row(cat + ' Subtotal', '$' + sub.toFixed(2), true)}
       </div>`;
     });
 
     const name = window._userProfile ? (window._userProfile.firstName || '') + ' ' + (window._userProfile.lastName || '') : 'Pilot';
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LoadLeader Expense Report ${year}</title>
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LoadLeader Expense Report ${e(year)}</title>
     <style>body{font-family:Arial,sans-serif;max-width:700px;margin:2rem auto;color:#111;padding:1rem;}
     @media print{body{margin:0;} button{display:none;}}</style></head><body>
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #f5c400;padding-bottom:1rem;margin-bottom:1.5rem;">
       <div><div style="font-size:1.6rem;font-weight:900;letter-spacing:2px;">LOADLEADER</div><div style="font-size:.8rem;color:#888;">Pilot Expense Report</div></div>
-      <div style="text-align:right;"><div style="font-size:1.1rem;font-weight:700;">Tax Year ${year}</div><div style="font-size:.8rem;color:#888;">${name.trim()}</div></div>
+      <div style="text-align:right;"><div style="font-size:1.1rem;font-weight:700;">Tax Year ${e(year)}</div><div style="font-size:.8rem;color:#888;">${e(name.trim())}</div></div>
     </div>
     ${body}
     <div style="border-top:3px solid #111;padding-top:1rem;margin-top:1rem;display:flex;justify-content:space-between;font-size:1.1rem;font-weight:900;">
-      <span>Total Expenses ${year}</span><span>$${grand.toFixed(2)}</span>
+      <span>Total Expenses ${e(year)}</span><span>$${grand.toFixed(2)}</span>
     </div>
     <div style="margin-top:2rem;font-size:.72rem;color:#888;text-align:center;">Generated by LoadLeader — loadleaderservice.com — for tax purposes only</div>
     <button onclick="window.print()" style="margin-top:1.5rem;display:block;width:100%;padding:.75rem;background:#f5c400;border:none;font-weight:700;font-size:1rem;cursor:pointer;border-radius:4px;">Print / Save as PDF</button>
     </body></html>`;
 
-    const win = window.open('', '_blank');
-    win.document.write(html);
-    win.document.close();
+    // Render via blob URL so we can pass noopener,noreferrer (window.opener access severed)
+    // without losing the ability to populate the new tab. Blob URL is its own origin.
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!win) alert('Pop-up blocked. Allow pop-ups to view the expense report.');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
   } catch(e) {
     console.error('Expense report error:', e);
     alert('Could not generate expense report. Please try again.');
@@ -2635,17 +2670,26 @@ window.showWithdrawInfo = () => {
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
+// Lookup a nav tab by panel name — robust to reordering, replaces fragile querySelectorAll('.nav-tab')[N].
+window.navTab = (panelName) => document.querySelector(`.nav-tab[onclick*="showPanel('${panelName}'"]`);
+
 window.showPanel = (name, el) => {
-  if (window.innerWidth <= 600) window.scrollTo({ top: 0, behavior: 'instant' });
+  // Tear down chat listener when leaving Messages so onSnapshot stops billing reads on hidden panels.
+  if (name !== 'messages' && convUnsubscribe) { convUnsubscribe(); convUnsubscribe = null; activeConvId = null; }
   if (name === 'following') loadFollowing('following');
   if (name === 'messages') loadConversations();
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.mn-item').forEach(t => t.classList.remove('active'));
+  // If caller didn't pass a button, look it up by name so the highlight still updates
+  if (!el) el = window.navTab(name);
   if (el) el.classList.add('active');
-  if (name === 'messages') loadConversations();
-  if (name === 'following') loadFollowing();
+  if (window.innerWidth <= 600) {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
 };
 
 // ── MESSAGING ──
@@ -2655,7 +2699,7 @@ let convUnsubscribe = null;
 
 async function loadConversations() {
   try {
-    const { collection, query, where, getDocs, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDocs(query(
       collection(db, 'conversations'),
       where('participants', 'array-contains', auth.currentUser.uid)
@@ -2675,11 +2719,11 @@ async function loadConversations() {
       const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const hasUnread = c.unread?.[auth.currentUser.uid] > 0;
       if (hasUnread) totalUnread++;
-      return `<div class="conv-item ${activeConvId === c.id ? 'active' : ''}" onclick="openConversation('${c.id}','${otherId}','${otherName}')">
-        <div class="conv-av">${initials}</div>
+      return `<div class="conv-item ${activeConvId === c.id ? 'active' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" onclick="openConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
+        <div class="conv-av">${escapeHtml(initials)}</div>
         <div style="flex:1;min-width:0;">
-          <div class="conv-name">${otherName}</div>
-          <div class="conv-preview">${c.lastMessage || 'No messages yet'}</div>
+          <div class="conv-name">${escapeHtml(otherName)}</div>
+          <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
         </div>
         ${hasUnread ? '<div class="conv-unread-dot"></div>' : ''}
       </div>`;
@@ -2711,7 +2755,7 @@ window.openConversation = async (convId, otherId, otherName) => {
   document.getElementById('msgInput').focus();
 
   try {
-    const { collection, query, where, onSnapshot, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection, query, where, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     if (convUnsubscribe) convUnsubscribe();
     convUnsubscribe = onSnapshot(
       query(collection(db, 'messages'), where('conversationId', '==', convId)),
@@ -2727,7 +2771,7 @@ window.openConversation = async (convId, otherId, otherName) => {
         container.innerHTML = msgs.map(m => {
           const isMine = m.senderId === auth.currentUser.uid;
           return `<div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
-            <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${m.text}</div>
+            <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${escapeHtml(m.text)}</div>
             <div class="msg-time ${isMine ? 'sent' : ''}">${m.sentAt ? new Date(m.sentAt.toMillis()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : ''}</div>
           </div>`;
         }).join('');
@@ -2795,11 +2839,11 @@ window.searchUsers = async (query) => {
       }
     });
     document.getElementById('searchResults').innerHTML = results.slice(0, 5).map(u => `
-      <div onclick="selectRecipient('${u.id}','${u.name}')" style="display:flex;align-items:center;gap:.75rem;padding:.75rem;cursor:pointer;border-radius:6px;transition:background .2s;" onmouseover="this.style.background='var(--mid)'" onmouseout="this.style.background='transparent'">
-        <div style="width:34px;height:34px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;color:var(--black);">${u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+      <div data-uid="${escapeHtml(u.id)}" data-uname="${escapeHtml(u.name)}" onclick="selectRecipient(this.dataset.uid, this.dataset.uname)" style="display:flex;align-items:center;gap:.75rem;padding:.75rem;cursor:pointer;border-radius:6px;transition:background .2s;" onmouseover="this.style.background='var(--mid)'" onmouseout="this.style.background='transparent'">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;color:var(--black);">${escapeHtml(u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2))}</div>
         <div>
-          <div style="font-size:.85rem;font-weight:500;">${u.name}</div>
-          <div style="font-size:.72rem;color:var(--muted);">${u.type || 'User'}</div>
+          <div style="font-size:.85rem;font-weight:500;">${escapeHtml(u.name)}</div>
+          <div style="font-size:.72rem;color:var(--muted);">${escapeHtml(u.type || 'User')}</div>
         </div>
       </div>`).join('');
   } catch(e) { console.error('Search users:', e); }
@@ -2851,7 +2895,7 @@ window.startNewConversation = async () => {
     document.getElementById('newMsgModal').style.display = 'none';
     document.getElementById('newMsgText').value = '';
     selectedRecipient = null;
-    showPanel('messages', document.querySelectorAll('.nav-tab')[2]);
+    showPanel('messages');
     await loadConversations();
     openConversation(convId, recipient.id, recipient.name || 'User');
   } catch(e) { console.error('Start conversation:', e); }
@@ -2876,28 +2920,27 @@ async function loadFollowing(tab = 'following') {
     }
     const list = document.getElementById('followingList');
     if (snap.empty) {
-      list.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">${tab === 'following' ? "You're not following anyone yet" : "Nobody is following you yet"}</div></div>`;
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">${tab === 'following' ? 'You are not following anyone yet' : 'Nobody is following you yet'}</div></div>`;
       return;
     }
-    const items = [];
-    for (const d of snap.docs) {
+    const items = await Promise.all(snap.docs.map(async d => {
       const data = d.data();
       const otherId = tab === 'following' ? data.followingId : data.followerId;
       const userDoc = await getDoc(doc(db, 'users', otherId));
       const userData = userDoc.exists() ? userDoc.data() : {};
       const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User';
       const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      items.push({ id: d.id, otherId, name, initials, type: userData.accountType, followId: d.id });
-    }
+      return { id: d.id, otherId, name, initials, type: userData.accountType, followId: d.id };
+    }));
     list.innerHTML = items.map(u => `
       <div class="follow-card">
-        <div class="follow-av">${u.initials}</div>
+        <div class="follow-av">${escapeHtml(u.initials)}</div>
         <div>
-          <div style="font-weight:600;font-size:.875rem;">${u.name}</div>
+          <div style="font-weight:600;font-size:.875rem;">${escapeHtml(u.name)}</div>
           <div style="font-size:.72rem;color:var(--muted);">${u.type === 'carrier' ? '🚛 Carrier' : '🚩 Pilot'}</div>
         </div>
-        <button onclick="openMsgWithUser('${u.otherId}','${u.name}')" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.3rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;margin-left:auto;margin-right:.5rem;">Message</button>
-        ${tab === 'following' ? `<button class="unfollow-btn" onclick="unfollowUser('${u.followId}')">Unfollow</button>` : ''}
+        <button data-uid="${escapeHtml(u.otherId)}" data-uname="${escapeHtml(u.name)}" onclick="openMsgWithUser(this.dataset.uid, this.dataset.uname)" style="background:var(--mid);border:1px solid #2a2a2a;color:#aaa;padding:.3rem .75rem;border-radius:5px;font-family:sans-serif;font-size:.75rem;cursor:pointer;margin-left:auto;margin-right:.5rem;">Message</button>
+        ${tab === 'following' ? `<button class="unfollow-btn" data-fid="${escapeHtml(u.followId)}" onclick="unfollowUser(this.dataset.fid)">Unfollow</button>` : ''}
       </div>`).join('');
   } catch(e) { console.error('Load following:', e); }
 }
@@ -2930,7 +2973,7 @@ window.unfollowUser = async (followId) => {
 };
 
 window.openMsgWithUser = async (userId, userName) => {
-  showPanel('messages', document.querySelectorAll('.nav-tab')[2]);
+  showPanel('messages');
   selectedRecipient = { id: userId, name: userName };
   document.getElementById('newMsgSearch').value = userName;
   await startNewConversation();
@@ -3264,7 +3307,7 @@ window.submitDelivery = async (forceManual) => {
     }, 500);
 
     // Refresh jobs
-    showPanel('jobs', document.querySelectorAll('.nav-tab')[1]);
+    showPanel('jobs');
 
   } catch(e) {
     console.error('Delivery confirmation error:', e);
@@ -3273,34 +3316,35 @@ window.submitDelivery = async (forceManual) => {
 };
 
 function buildInvoiceHtml(data) {
-  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${label}</div><div style="font-weight:600;">${val || '—'}</div></div>`;
+  const e = escapeHtml;
+  const row = (label, val) => `<div><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">${e(label)}</div><div style="font-weight:600;">${val ? e(val) : '—'}</div></div>`;
   const daysHtml = data.days?.length ? `
     <div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;">
       <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Day Logs</div>
       ${data.days.map(d => `<div style="display:flex;gap:.75rem;padding:.4rem 0;border-bottom:1px solid #1a1a1a;font-size:.8rem;">
-        <span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${d.day}</span>
-        <span style="color:#888;">${d.date}</span>
-        ${d.miles ? `<span style="color:#888;">${d.miles} mi</span>` : ''}
-        ${d.notes ? `<span style="color:#aaa;flex:1;">${d.notes}</span>` : ''}
+        <span style="color:#f5c400;font-weight:700;min-width:44px;">Day ${e(d.day)}</span>
+        <span style="color:#888;">${e(d.date)}</span>
+        ${d.miles ? `<span style="color:#888;">${e(d.miles)} mi</span>` : ''}
+        ${d.notes ? `<span style="color:#aaa;flex:1;">${e(d.notes)}</span>` : ''}
       </div>`).join('')}
     </div>` : '';
   const extrasHtml = (data.overnights > 0 || data.nogo > 0) ? `
     <div style="background:#111;border-radius:6px;padding:1rem;margin-bottom:1rem;">
       <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.65rem;">Extras</div>
-      ${data.overnights > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #1a1a1a;font-size:.82rem;"><span>Overnight stays (${data.overnights} x $${data.overnightRate})</span><span style="color:#f5c400;">$${(data.overnights * data.overnightRate).toFixed(2)}</span></div>` : ''}
-      ${data.nogo > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;font-size:.82rem;"><span>No-go days (${data.nogo} x $${data.nogoRate})</span><span style="color:#f5c400;">$${(data.nogo * data.nogoRate).toFixed(2)}</span></div>` : ''}
+      ${data.overnights > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #1a1a1a;font-size:.82rem;"><span>Overnight stays (${Number(data.overnights)} x $${Number(data.overnightRate)})</span><span style="color:#f5c400;">$${(data.overnights * data.overnightRate).toFixed(2)}</span></div>` : ''}
+      ${data.nogo > 0 ? `<div style="display:flex;justify-content:space-between;padding:.35rem 0;font-size:.82rem;"><span>No-go days (${Number(data.nogo)} x $${Number(data.nogoRate)})</span><span style="color:#f5c400;">$${(data.nogo * data.nogoRate).toFixed(2)}</span></div>` : ''}
     </div>` : '';
   return `
     <div style="font-family:'Arial',sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#f0ede6;padding:2rem;border-radius:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #f5c400;">
         <div style="font-family:'Arial Black',sans-serif;font-size:1.6rem;font-weight:900;color:#f5c400;letter-spacing:2px;">LOADLEADER</div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${data.invoiceNum}</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:#f5c400;">INVOICE</div><div style="font-size:.82rem;color:#888;">#${e(data.invoiceNum)}</div></div>
       </div>
       <div style="background:#1a1a1a;border-radius:8px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
         ${row('Load #', data.loadNum)} ${row('Date', data.date)}
         ${row('Pick Up', data.route?.split('→')[0]?.trim())} ${row('Delivery', data.route?.split('→')[1]?.trim())}
         ${row('Driver', data.pilotName)} ${row('Carrier / Broker', data.carrierName)}
-        ${data.truckingCompany ? `<div style="grid-column:1/-1;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">Trucking Company</div><div style="font-weight:600;">${data.truckingCompany}</div></div>` : ''}
+        ${data.truckingCompany ? `<div style="grid-column:1/-1;"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:#666;margin-bottom:.25rem;">Trucking Company</div><div style="font-weight:600;">${e(data.truckingCompany)}</div></div>` : ''}
         ${row('Truck #', data.truckNum)} ${row('Trailer #', data.trailerNum)}
         ${row('Miles', data.miles ? data.miles + ' mi' : '')}
       </div>
@@ -3312,14 +3356,14 @@ function buildInvoiceHtml(data) {
           const dayPay = hits ? dm * data.mileRate : data.dayRate;
           const label = hits ? dm + ' mi x $' + data.mileRate + '/mi' : 'day rate';
           return `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.3rem;">` +
-            `<span>Day ${d.day} — ${label}</span>` +
+            `<span>Day ${e(d.day)} — ${e(label)}</span>` +
             `<span>$${dayPay.toFixed(2)}</span></div>`;
         }).join('') : ''}
         ${!data.dayRate && !data.mileRate && data.totalPay !== data.pay && data.pay ? `<div style="display:flex;justify-content:space-between;font-size:.82rem;color:#888;margin-bottom:.4rem;"><span>Base Pay</span><span>$${Number(data.pay).toFixed(2)}</span></div>` : ''}
         <div style="text-align:center;"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.4rem;">Total Pay</div>
         <div style="font-family:'Arial Black',sans-serif;font-size:2.5rem;color:#f5c400;font-weight:900;">$${Number(data.totalPay || data.pay || 0).toFixed(2)}</div></div>
       </div>
-      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${data.date}</div>
+      <div style="font-size:.72rem;color:#444;text-align:center;">Generated by LoadLeader · loadleaderservice.com · ${e(data.date)}</div>
     </div>`;
 }
 
@@ -3345,10 +3389,10 @@ window.filterJobsTab = (type, btn) => {
           <div style="padding:.85rem 1.25rem;border-bottom:1px solid #111;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--green-bg);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--green);font-weight:700;flex-shrink:0;">${i+1}</div>
             <div style="flex:1;">
-              <div style="font-size:.875rem;font-weight:500;">${a.loadRoute || 'Route'}</div>
-              <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem;">${a.loadDate || ''} · ${a.carrier || ''}</div>
+              <div style="font-size:.875rem;font-weight:500;">${escapeHtml(a.loadRoute || 'Route')}</div>
+              <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem;">${escapeHtml(a.loadDate || '')} · ${escapeHtml(a.carrier || '')}</div>
             </div>
-            <div style="font-size:.9rem;font-weight:700;color:var(--yellow);">$${a.loadPay || 0}</div>
+            <div style="font-size:.9rem;font-weight:700;color:var(--yellow);">$${escapeHtml(a.loadPay || 0)}</div>
             <span style="font-size:.65rem;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:var(--green);padding:.15rem .55rem;border-radius:100px;font-weight:600;">✓ Delivered</span>
           </div>`).join('')}
       </div>`;
@@ -3366,10 +3410,12 @@ window.filterJobsTab = (type, btn) => {
 window.filterJobs = window.filterJobsTab;
 
 function setPilotAvatarPhoto(url) {
+  const safeUrl = (typeof url === 'string' && (url.startsWith('data:image/') || url.startsWith('https://'))) ? escapeHtml(url) : '';
+  if (!safeUrl) return;
   const profileAv = document.getElementById('profileAvatar');
   const navAv = document.getElementById('navAvatar');
-  if (profileAv) { profileAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profileAv.style.padding = '0'; }
-  if (navAv) { navAv.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
+  if (profileAv) { profileAv.innerHTML = `<img src="${safeUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profileAv.style.padding = '0'; }
+  if (navAv) { navAv.innerHTML = `<img src="${safeUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; navAv.style.overflow = 'hidden'; navAv.style.padding = '0'; }
 }
 
 
