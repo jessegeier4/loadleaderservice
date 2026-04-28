@@ -621,33 +621,6 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
               </div>
             </div>
 
-            <!-- Driver License -->
-            <div class="cert-item" id="cert-license">
-              <div class="cert-item-top">
-                <span class="cert-icon">🚗</span>
-                <span class="cert-name">Driver License (CDL)</span>
-                <span class="cert-actions">
-                  <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
-                  <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
-                </span>
-              </div>
-              <span class="cert-exp" id="exp-license" style="display:none">No expiry added</span>
-              <div class="cert-upload-area" id="upload-license">
-                <div class="cert-drop" id="drop-license">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
-                  <div class="cert-drop-label">📎 Upload File</div>
-                </div>
-                <div class="cert-preview" id="preview-license">
-                  <img id="preview-img-license" src="" alt="Certificate">
-                  <button class="cert-preview-remove" onclick="removeCert('license')">✕</button>
-                </div>
-                <div class="cert-expiry-row">
-                  <input type="date" id="expiry-license" placeholder="Expiry date" style="color-scheme:dark">
-                  <button class="cert-save-btn" onclick="saveCert('license','Driver License / CDL')">Save</button>
-                </div>
-              </div>
-            </div>
-
             <!-- Insurance -->
             <div class="cert-item" id="cert-insurance">
               <div class="cert-item-top">
@@ -2488,7 +2461,7 @@ window.addCustomCert = () => {
 
 // Load saved certs on profile load
 async function loadSavedCerts(data) {
-  const certIds = ['pilot','license','insurance','osha'];
+  const certIds = ['pilot','insurance','osha'];
   certIds.forEach(id => {
     const cert = data['cert_' + id];
     if (cert) {

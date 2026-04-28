@@ -1,0 +1,78 @@
+rules_version = '2';
+
+// LoadLeader Firebase Storage rules.
+//
+// Threat model: pilots upload PII (CDL, insurance, OSHA cards). Carriers should
+// only see certs of pilots they have an active hiring relationship with.
+//
+// The relationship check uses the Firestore `connections/{pilotId}/carriers/{carrierId}`
+// document, written by the client when an application is created/decided. Storage rules
+// can do firestore.exists() lookups, but cannot query — that is why the connections
+// collection is keyed by deterministic path components.
+//
+// IMPORTANT: cert reads must NOT use getDownloadURL() — that produces a token-signed
+// URL that bypasses these rules. The carrier-side viewer reads bytes via getBytes()
+// (which goes through rules) and renders via blob URL.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function hasActiveRelationship(pilotId) {
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/connections/$(pilotId)/carriers/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/connections/$(pilotId)/carriers/$(request.auth.uid)).data.status in ['pending', 'accepted', 'completed'];
+    }
+
+    // ─── PILOT CERTIFICATES ───
+    // certs/{pilotId}/{certType}.{ext}   e.g. certs/abc123/insurance.pdf
+    // Read: owner OR carrier with an active connection (pending/accepted/completed).
+    // Write: owner only, size cap 5 MB, content-type allowlist (image or PDF).
+    // Delete: owner only.
+    match /certs/{pilotId}/{file} {
+      allow read: if isOwner(pilotId) || hasActiveRelationship(pilotId);
+      allow write: if isOwner(pilotId)
+        && request.resource.size < 5 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
+      allow delete: if isOwner(pilotId);
+    }
+
+    // ─── EXPENSE RECEIPTS ───
+    // receipts/{pilotId}/{appId}/{file}  e.g. receipts/abc/xyz/1714123456.jpg
+    // Pilot-only read/write under their own UID prefix. Note: existing receipts code
+    // uses getDownloadURL() which produces token-signed URLs that bypass rules — those
+    // URLs effectively make any specific receipt URL public to anyone with the link.
+    // Tracked separately; the rule below still restricts uploads and direct API reads.
+    match /receipts/{userId}/{appId}/{file} {
+      allow read, write, delete: if isOwner(userId);
+    }
+
+    // ─── DEFAULT DENY ───
+    // Anything not matched above is rejected. Add a new match block when introducing
+    // a new Storage path.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// ─── DEPLOYMENT ───
+// 1. Make sure firebase.json has a "storage" section pointing at this file:
+//      "storage": { "rules": "storage.rules" }
+//    If you haven't run `firebase init storage` yet, do it once (accept defaults).
+// 2. Deploy: `firebase deploy --only storage`
+//
+// Or via the Firebase Console:
+// - https://console.firebase.google.com/project/load-leader/storage/rules
+// - Paste the rules above (everything before this comment block)
+// - Click Publish
+//
+// After deploying, test:
+// - Pilot can upload to certs/{their-uid}/insurance.pdf
+// - Pilot can read their own cert
+// - Carrier with no application for this pilot CANNOT read the cert (Storage 403)
+// - Carrier with an accepted application CAN read the cert
+// - Pilot CANNOT upload a 6 MB file (rejected)
+// - Pilot CANNOT upload an .exe (rejected by content-type allowlist)

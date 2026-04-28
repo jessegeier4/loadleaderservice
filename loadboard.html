@@ -346,7 +346,7 @@ if ('serviceWorker' in navigator) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, addDoc, setDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
@@ -689,7 +689,7 @@ window.submitApplication=async(loadId)=>{
   try{
     const firstName=userProfile?.firstName||currentUser.displayName?.split(' ')[0]||'Pilot';
     const lastName=userProfile?.lastName||'';
-    await addDoc(collection(db,'applications'),{
+    const appRef = await addDoc(collection(db,'applications'),{
       loadId,
       pilotId:currentUser.uid,
       pilotName:`${firstName} ${lastName}`.trim(),
@@ -713,6 +713,21 @@ window.submitApplication=async(loadId)=>{
       loadDate:load.date,
       appliedAt:serverTimestamp()
     });
+
+    // Upsert the connection doc so the carrier can read this pilot's certs while the
+    // application is under review. Skipped silently if there is no carrierId on the
+    // load (legacy data) — cert visibility just won't apply for that case.
+    if (load.carrierId) {
+      try {
+        await setDoc(doc(db, 'connections', currentUser.uid, 'carriers', load.carrierId), {
+          appId: appRef.id,
+          pilotId: currentUser.uid,
+          carrierId: load.carrierId,
+          status: 'pending',
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (connErr) { console.error('Connection write:', connErr); }
+    }
 
     // Write in-app notification to carrier
     if (load.carrierId) {

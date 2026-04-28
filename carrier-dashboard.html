@@ -1288,6 +1288,38 @@ window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, 
     const app = allApplications.find(a => a.id === appId);
     if (app) app.status = decision;
 
+    // Sync load status: count accepted apps for this load and mark filled/active accordingly.
+    // Without this the load stays 'active' even after all pilot slots are accepted, so the
+    // public load board keeps showing it as "Open."
+    if (app?.loadId) {
+      try {
+        const acceptedCount = allApplications.filter(x => x.loadId === app.loadId && x.status === 'accepted').length;
+        const load = allCarrierLoads?.find(l => l.id === app.loadId);
+        const needed = load?.pilots || 1;
+        const targetStatus = acceptedCount >= needed ? 'filled' : 'active';
+        if (load && (load.status || 'active') !== targetStatus && (load.status || 'active') !== 'completed') {
+          await updateDoc(doc(db, 'loads', app.loadId), { status: targetStatus });
+          load.status = targetStatus;
+        }
+      } catch (syncErr) { console.error('Load status sync:', syncErr); }
+    }
+
+    // Sync the connection doc so cert visibility tracks the application status.
+    // Declined connections stop granting cert read access (rules check status in
+    // pending/accepted/completed). The doc was first created when the pilot applied.
+    if (app?.pilotId && currentUser?.uid) {
+      try {
+        const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        await setDoc(doc(db, 'connections', app.pilotId, 'carriers', currentUser.uid), {
+          appId,
+          pilotId: app.pilotId,
+          carrierId: currentUser.uid,
+          status: decision,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (connErr) { console.error('Connection sync:', connErr); }
+    }
+
     // Write in-app notification to pilot
     const decidedApp = allApplications.find(a => a.id === appId);
     if (decidedApp?.pilotId) {

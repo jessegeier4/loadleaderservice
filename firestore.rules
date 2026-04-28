@@ -26,6 +26,42 @@ service cloud.firestore {
         && request.resource.data.reviewCount is int
         && request.resource.data.reviewCount >= 0
         && (resource.data.reviewCount == null || request.resource.data.reviewCount >= resource.data.reviewCount);
+
+      // ─── PILOT CERTIFICATES (subcollection) ───
+      // users/{pilotId}/certs/{certType}: metadata for an uploaded cert (storage path,
+      // size, content type, expiry, uploadedAt). Read by owner OR by a carrier with a
+      // non-declined connection to this pilot. Write by owner only.
+      match /certs/{certType} {
+        allow read: if isOwner(userId)
+          || (exists(/databases/$(database)/documents/connections/$(userId)/carriers/$(request.auth.uid))
+              && get(/databases/$(database)/documents/connections/$(userId)/carriers/$(request.auth.uid)).data.status in ['pending', 'accepted', 'completed']);
+        allow write, delete: if isOwner(userId);
+      }
+    }
+
+    // ─── CONNECTIONS ───
+    // connections/{pilotId}/carriers/{carrierId}: tracks the relationship between a
+    // pilot and a carrier so cert read rules can do an exists() check. Created when an
+    // application is submitted (status=pending) and updated when accepted/declined.
+    // The status field gates cert visibility: only pending/accepted/completed grant
+    // access (declined does not — see app code).
+    //
+    // Both parties may write the doc, but the writer must be a participant AND the doc
+    // must reference an existing application that genuinely matches this pilot/carrier
+    // pair. That validation prevents a malicious carrier from spoofing connections from
+    // devtools to pull arbitrary pilots' certs.
+    match /connections/{pilotId}/carriers/{carrierId} {
+      allow read: if isSignedIn() && (request.auth.uid == pilotId || request.auth.uid == carrierId);
+
+      allow create, update: if isSignedIn()
+        && (request.auth.uid == pilotId || request.auth.uid == carrierId)
+        && request.resource.data.appId is string
+        && exists(/databases/$(database)/documents/applications/$(request.resource.data.appId))
+        && get(/databases/$(database)/documents/applications/$(request.resource.data.appId)).data.pilotId == pilotId
+        && get(/databases/$(database)/documents/applications/$(request.resource.data.appId)).data.carrierId == carrierId
+        && request.resource.data.status in ['pending', 'accepted', 'declined', 'completed'];
+
+      allow delete: if isSignedIn() && (request.auth.uid == pilotId || request.auth.uid == carrierId);
     }
 
     // ─── LOADS ───
