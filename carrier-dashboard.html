@@ -256,7 +256,20 @@ select option{background:var(--mid);}
   #cMsgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
   #cMsgLayout > div:last-child{display:none!important;}
   #cMsgLayout.chat-open > div:first-child{display:none!important;}
-  #cMsgLayout.chat-open > div:last-child{display:flex!important;flex-direction:column;height:calc(100vh - 350px);min-height:280px;}
+  #panel-messages.chat-open > .sec-head{display:none!important;}
+  #cMsgLayout.chat-open > div:last-child{
+    display:flex!important;flex-direction:column;
+    height:calc(100vh - 230px);min-height:300px;
+    overflow:hidden;border-radius:12px;
+  }
+  #cChatMessages{
+    overflow-x:hidden!important;
+    background:var(--surface)!important;
+    padding:1rem .75rem!important;
+  }
+  .msg-bubble{max-width:68%!important;}
+  .msg-bubble.sent{border-radius:18px 18px 4px 18px!important;}
+  .msg-bubble.recv{border-radius:18px 18px 18px 4px!important;}
   #cMsgBackBtn{display:block!important;}
 }
 
@@ -267,13 +280,13 @@ select option{background:var(--mid);}
 .success-toast.show{display:block;}
 </style>
 <script>
-// Remove any service workers completely
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(reg => reg.unregister());
-  });
-  // Clear all caches
+  navigator.serviceWorker.getRegistrations().then(regs => { regs.forEach(reg => reg.unregister()); });
   caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+}
+if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+  const vp = document.querySelector('meta[name="viewport"]');
+  if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0';
 }
 </script>
 </head>
@@ -2257,7 +2270,10 @@ async function loadCarrierConversations() {
   } catch(e) { console.error('Load carrier conversations:', e); }
 }
 
-window.closeMobileCarrierChat = () => { document.getElementById('cMsgLayout').classList.remove('chat-open'); };
+window.closeMobileCarrierChat = () => {
+  document.getElementById('cMsgLayout').classList.remove('chat-open');
+  document.getElementById('panel-messages').classList.remove('chat-open');
+};
 window.openCarrierConversation = async (convId, otherId, otherName) => {
   cActiveConvId = convId;
   cActiveOtherId = otherId;
@@ -2265,7 +2281,10 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
   document.getElementById('cChatAvatar').textContent = initials;
   document.getElementById('cChatName').textContent = otherName;
   document.getElementById('cChatSub').textContent = 'Direct message';
-  if (window.innerWidth <= 600) document.getElementById('cMsgLayout').classList.add('chat-open');
+  if (window.innerWidth <= 600) {
+    document.getElementById('cMsgLayout').classList.add('chat-open');
+    document.getElementById('panel-messages').classList.add('chat-open');
+  }
   document.getElementById('cMsgInput').focus();
 
   try {
