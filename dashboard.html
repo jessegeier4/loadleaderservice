@@ -2347,24 +2347,95 @@ window.handleCertFile = (id, input) => {
     input.value = '';
     return;
   }
+  if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+    showToast('Only images or PDF allowed');
+    input.value = '';
+    return;
+  }
   const preview = document.getElementById('preview-' + id);
   const img = document.getElementById('preview-img-' + id);
   if (file.type.startsWith('image/')) {
     const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
+    reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; preview.style.display = 'block'; };
     reader.readAsDataURL(file);
   } else {
     img.src = '';
-    preview.style.display = 'block';
     img.style.display = 'none';
-    preview.innerHTML += '<div style="padding:.75rem;background:var(--mid);border-radius:6px;font-size:.8rem;color:#aaa;text-align:center;">📄 ' + file.name + '</div>';
+    preview.style.display = 'block';
+    preview.innerHTML += '<div style="padding:.75rem;background:var(--mid);border-radius:6px;font-size:.8rem;color:#aaa;text-align:center;">📄 ' + escapeHtml(file.name) + '</div>';
   }
 };
 
-window.removeCert = (id) => {
-  document.getElementById('preview-' + id).style.display = 'none';
-  document.getElementById('preview-img-' + id).src = '';
-  document.getElementById('cert-' + id).querySelector('input[type=file]').value = '';
+// Compress cert images for cheaper Storage. Slightly higher quality than receipts
+// since cert text needs to remain legible. PDFs pass through unchanged.
+function compressCertImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 1500;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Compression failed')), 'image/jpeg', 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image read failed')); };
+    img.src = url;
+  });
+}
+
+window.removeCert = async (id) => {
+  // Reset preview UI immediately
+  const previewEl = document.getElementById('preview-' + id);
+  const imgEl = document.getElementById('preview-img-' + id);
+  const fileInput = document.getElementById('cert-' + id)?.querySelector('input[type=file]');
+  if (previewEl) previewEl.style.display = 'none';
+  if (imgEl) imgEl.src = '';
+  if (fileInput) fileInput.value = '';
+
+  // If a saved cert exists, delete it from Storage + Firestore.
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    const { doc: fdoc, getDoc: fget, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const certRef = fdoc(db, 'users', user.uid, 'certs', id);
+    const certSnap = await fget(certRef);
+    if (certSnap.exists()) {
+      const data = certSnap.data();
+      if (data.storagePath) {
+        try {
+          const { getStorage, ref: sref, deleteObject } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+          await deleteObject(sref(getStorage(), data.storagePath));
+        } catch (storageErr) {
+          // File may not exist (e.g., legacy metadata). Continue with metadata delete.
+          console.error('Cert storage delete:', storageErr);
+        }
+      }
+      await deleteDoc(certRef);
+    }
+    // Also clear any legacy cert_X field on the user doc so the "Pending re-upload"
+    // banner stops appearing.
+    const { updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(fdoc(db, 'users', user.uid), { ['cert_' + id]: deleteField() }).catch(() => {});
+
+    // Reset UI badge
+    const statusEl = document.getElementById('status-' + id);
+    const expEl = document.getElementById('exp-' + id);
+    const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+    if (statusEl) { statusEl.textContent = 'Not uploaded'; statusEl.className = 'cert-status cert-missing'; }
+    if (expEl) { expEl.style.display = 'none'; expEl.textContent = ''; }
+    if (expandBtn) {
+      expandBtn.textContent = '+ Add';
+      expandBtn.style.color = '';
+      expandBtn.style.borderColor = '';
+    }
+    document.getElementById('cert-' + id)?.classList.remove('has-file');
+  } catch (e) {
+    console.error('Remove cert:', e);
+  }
 };
 
 window.saveCert = async (id, name) => {
@@ -2372,10 +2443,10 @@ window.saveCert = async (id, name) => {
   if (!user) return;
   const expiry = document.getElementById('expiry-' + id).value;
   const fileInput = document.getElementById('cert-' + id).querySelector('input[type=file]');
-  const hasFile = fileInput.files.length > 0;
+  const file = fileInput.files[0];
 
-  if (!hasFile && !expiry) {
-    alert('Please upload a certificate image or enter an expiry date.');
+  if (!file && !expiry) {
+    alert('Please upload a certificate file or enter an expiry date.');
     return;
   }
 
@@ -2384,29 +2455,73 @@ window.saveCert = async (id, name) => {
   btn.disabled = true;
 
   try {
-    // Save cert metadata to Firestore
-    const certData = {
+    let storagePath = null;
+    let contentType = null;
+    let size = 0;
+
+    if (file) {
+      // Validate again at the boundary in case the input was tampered with.
+      if (file.size > 5 * 1024 * 1024) throw new Error('File too large (max 5 MB)');
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        throw new Error('Only images or PDF allowed');
+      }
+
+      const isPdf = file.type === 'application/pdf';
+      const blob = isPdf ? file : await compressCertImage(file);
+      contentType = isPdf ? 'application/pdf' : 'image/jpeg';
+      size = blob.size;
+      const ext = isPdf ? 'pdf' : 'jpg';
+      storagePath = `certs/${user.uid}/${id}.${ext}`;
+
+      const { getStorage, ref: sref, uploadBytes } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+      await uploadBytes(sref(getStorage(), storagePath), blob, { contentType });
+    }
+
+    // Write cert metadata to subcollection. If an existing cert had a different
+    // extension (e.g., switching from .pdf to .jpg), the prior file is now orphaned —
+    // accept that as a one-time edge case rather than complicating with a delete-old.
+    const { doc: fdoc, setDoc, updateDoc, deleteField, getDoc: fget, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const certRef = fdoc(db, 'users', user.uid, 'certs', id);
+
+    // If file was NOT replaced (only expiry edited), preserve existing storagePath.
+    let finalStoragePath = storagePath;
+    let finalContentType = contentType;
+    let finalSize = size;
+    if (!file) {
+      const existing = await fget(certRef);
+      if (existing.exists()) {
+        finalStoragePath = existing.data().storagePath || null;
+        finalContentType = existing.data().contentType || null;
+        finalSize = existing.data().size || 0;
+      }
+    }
+
+    await setDoc(certRef, {
       name,
       expiry: expiry || '',
-      hasFile,
-      uploadedAt: new Date().toISOString(),
-      status: 'uploaded'
-    };
-
-    const { doc: firestoreDoc, updateDoc: firestoreUpdate } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await firestoreUpdate(firestoreDoc(db, 'users', user.uid), {
-      ['cert_' + id]: certData
+      storagePath: finalStoragePath,
+      contentType: finalContentType,
+      size: finalSize,
+      hasFile: !!finalStoragePath,
+      uploadedAt: serverTimestamp()
     });
+
+    // Clear any legacy cert_X field on the user doc — once the new metadata exists,
+    // the "Pending re-upload" banner from the legacy migration should disappear.
+    await updateDoc(fdoc(db, 'users', user.uid), { ['cert_' + id]: deleteField() }).catch(() => {});
 
     // Update UI
     const statusEl = document.getElementById('status-' + id);
     const expEl = document.getElementById('exp-' + id);
-    statusEl.textContent = 'Uploaded ✓';
-    statusEl.className = 'cert-status cert-valid';
+    if (statusEl) {
+      statusEl.textContent = finalStoragePath ? 'Uploaded ✓' : 'Expiry on file';
+      statusEl.className = 'cert-status cert-valid';
+    }
     document.getElementById('cert-' + id).classList.add('has-file');
-    if (expiry) {
+    if (expiry && expEl) {
       const d = new Date(expiry);
       expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+      expEl.style.display = 'inline-block';
     }
     const expandBtn = document.getElementById('cert-' + id).querySelector('.cert-expand-btn');
     expandBtn.textContent = '✓ Saved';
@@ -2417,10 +2532,12 @@ window.saveCert = async (id, name) => {
 
     btn.innerHTML = 'Save';
     btn.disabled = false;
+    showToast('✓ Certificate saved');
   } catch(e) {
+    console.error('Save cert:', e);
     btn.innerHTML = 'Save';
     btn.disabled = false;
-    alert('Could not save. Try again.');
+    alert('Could not save: ' + (e.message || 'unknown error'));
   }
 };
 
@@ -2459,29 +2576,61 @@ window.addCustomCert = () => {
   toggleCert(id);
 };
 
-// Load saved certs on profile load
+// Load saved certs on profile load. Reads the new users/{uid}/certs/{certType}
+// subcollection AND falls back to the legacy cert_X field on the user doc — those
+// were metadata-only with no real file behind them, so they show as "Pending
+// re-upload" until the pilot saves a real file.
 async function loadSavedCerts(data) {
   const certIds = ['pilot','insurance','osha'];
-  certIds.forEach(id => {
-    const cert = data['cert_' + id];
-    if (cert) {
-      const statusEl = document.getElementById('status-' + id);
-      const expEl = document.getElementById('exp-' + id);
-      const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+  const user = auth.currentUser;
+  let subcollDocs = {};
+  if (user) {
+    try {
+      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const snap = await getDocs(collection(db, 'users', user.uid, 'certs'));
+      snap.forEach(d => { subcollDocs[d.id] = d.data(); });
+    } catch (e) { console.error('Load certs subcoll:', e); }
+  }
+  // Include any custom certs stored in the subcollection beyond the standard set.
+  const allIds = new Set([...certIds, ...Object.keys(subcollDocs)]);
+  allIds.forEach(id => {
+    const newCert = subcollDocs[id];
+    const legacyCert = data['cert_' + id];
+    const statusEl = document.getElementById('status-' + id);
+    const expEl = document.getElementById('exp-' + id);
+    const expandBtn = document.getElementById('cert-' + id)?.querySelector('.cert-expand-btn');
+    if (newCert) {
+      const expired = newCert.expiry && new Date(newCert.expiry) < new Date();
       if (statusEl) {
-        statusEl.textContent = 'Uploaded ✓';
-        statusEl.className = 'cert-status cert-valid';
+        if (expired) { statusEl.textContent = 'EXPIRED'; statusEl.className = 'cert-status cert-missing'; }
+        else if (newCert.hasFile) { statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'cert-status cert-valid'; }
+        else { statusEl.textContent = 'Expiry on file'; statusEl.className = 'cert-status cert-valid'; }
       }
-      if (expEl && cert.expiry) {
-        const d = new Date(cert.expiry);
+      if (expEl && newCert.expiry) {
+        const d = new Date(newCert.expiry);
         expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+        expEl.style.display = 'inline-block';
       }
       if (expandBtn) {
-        expandBtn.textContent = '✓ On file';
-        expandBtn.style.color = 'var(--green)';
-        expandBtn.style.borderColor = 'rgba(74,222,128,.2)';
+        expandBtn.textContent = expired ? 'Update' : '✓ On file';
+        expandBtn.style.color = expired ? '' : 'var(--green)';
+        expandBtn.style.borderColor = expired ? '' : 'rgba(74,222,128,.2)';
       }
       document.getElementById('cert-' + id)?.classList.add('has-file');
+    } else if (legacyCert) {
+      // Old metadata-only entry — no file ever existed. Surface as "Pending re-upload"
+      // so the pilot knows they have to upload again. Carriers see it the same way.
+      if (statusEl) { statusEl.textContent = 'Pending re-upload'; statusEl.className = 'cert-status cert-missing'; }
+      if (expEl && legacyCert.expiry) {
+        const d = new Date(legacyCert.expiry);
+        expEl.textContent = 'Exp: ' + d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+        expEl.style.display = 'inline-block';
+      }
+      if (expandBtn) {
+        expandBtn.textContent = 'Re-upload';
+        expandBtn.style.color = 'var(--orange)';
+        expandBtn.style.borderColor = 'rgba(251,146,60,.25)';
+      }
     }
   });
 }

@@ -1238,6 +1238,7 @@ function buildAppCard(a) {
         <div class="ac-phone-num">${a.pilotPhone ? `<a href="tel:${escapeHtml(String(a.pilotPhone).replace(/[^0-9+]/g,''))}" style="color:var(--green);text-decoration:none;">${escapeHtml(a.pilotPhone)}</a>` : 'Not provided'}</div>
         <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Contact ${escapeHtml(String(a.pilotName||'').split(' ')[0])} directly to coordinate</div>
       </div>
+      ${!isDeclined ? `<button class="ac-btn" style="background:rgba(160,160,160,.08);border:1px solid #2a2a2a;color:#bbb;font-size:.78rem;padding:.55rem .85rem;margin-bottom:.5rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnViewCerts(this.dataset.appId)">📋 View Certificates</button>` : ''}
       <div class="ac-actions">
         ${isAccepted
           ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button>
@@ -1277,6 +1278,90 @@ window.appBtnRepeatHire = (appId) => {
 window.appBtnRemove = (appId) => {
   const a = allApplications.find(x => x.id === appId);
   if (a) openRemovePilot(a.id, a.pilotName, a.pilotEmail, a.loadRoute || '');
+};
+window.appBtnViewCerts = (appId) => {
+  const a = allApplications.find(x => x.id === appId);
+  if (a) openPilotCertsModal(a.pilotId, a.pilotName);
+};
+
+// Lazy-load and render a pilot's certs in a modal. The cert metadata read goes
+// through Firestore rules (gated by the connections doc); the file read goes
+// through Storage rules (same gate). A carrier without a non-declined connection
+// gets denied at both layers.
+window.openPilotCertsModal = async (pilotId, pilotName) => {
+  let modal = document.getElementById('pilotCertsModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'pilotCertsModal';
+    modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;align-items:center;justify-content:center;padding:1rem;';
+    modal.innerHTML = `
+      <div style="background:#121212;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:520px;padding:1.5rem;max-height:85vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <div style="font-family:var(--font-display);font-size:1.3rem;letter-spacing:1px;" id="pilotCertsTitle">Certificates</div>
+          <button onclick="document.getElementById('pilotCertsModal').style.display='none'" style="background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;">✕</button>
+        </div>
+        <div id="pilotCertsBody" style="font-size:.85rem;color:#ccc;">Loading…</div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+  }
+  const titleEl = document.getElementById('pilotCertsTitle');
+  const body = document.getElementById('pilotCertsBody');
+  titleEl.textContent = (pilotName || 'Pilot') + ' — Certificates';
+  body.textContent = 'Loading…';
+  modal.style.display = 'flex';
+
+  try {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'users', pilotId, 'certs'));
+    if (snap.empty) {
+      body.innerHTML = '<div style="text-align:center;padding:2rem 0;color:var(--muted);">This pilot has not uploaded any certificates yet.</div>';
+      return;
+    }
+    const items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+    body.innerHTML = items.map(c => {
+      const expired = c.expiry && new Date(c.expiry) < new Date();
+      const expLabel = c.expiry ? new Date(c.expiry).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
+      return `<div style="display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:var(--mid);border-radius:8px;margin-bottom:.5rem;">
+        <span style="font-size:1.25rem;">${c.contentType === 'application/pdf' ? '📄' : '🖼️'}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:.9rem;">${escapeHtml(c.name || c.id)}</div>
+          <div style="font-size:.72rem;color:${expired ? 'var(--red)' : 'var(--muted)'};margin-top:.15rem;">${expired ? 'EXPIRED' : (expLabel ? 'Exp: ' + escapeHtml(expLabel) : 'No expiry on file')}${c.size ? ' · ' + Math.round(c.size/1024) + ' KB' : ''}</div>
+        </div>
+        ${c.hasFile && c.storagePath ? `<button data-pid="${escapeHtml(pilotId)}" data-path="${escapeHtml(c.storagePath)}" data-type="${escapeHtml(c.contentType || 'application/octet-stream')}" onclick="viewCertFile(this)" style="background:var(--yellow);color:var(--black);border:none;padding:.4rem .85rem;border-radius:5px;font-size:.78rem;font-weight:700;cursor:pointer;">View</button>` : '<span style="font-size:.7rem;color:#555;">No file</span>'}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('Load pilot certs:', e);
+    body.innerHTML = '<div style="padding:1rem;color:var(--red);">Could not load certificates. You may not have permission to view this pilot’s certs.</div>';
+  }
+};
+
+// Fetches cert bytes via the Storage SDK (subject to Storage rules — NOT a token URL),
+// renders via blob URL with noopener so the file does not leak a window.opener back to
+// the dashboard. Blob URL is revoked after a generous timeout so the new tab works.
+window.viewCertFile = async (btn) => {
+  const path = btn.dataset.path;
+  const contentType = btn.dataset.type || 'application/octet-stream';
+  if (!path) return;
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+  try {
+    const { getStorage, ref: sref, getBytes } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+    const bytes = await getBytes(sref(getStorage(), path));
+    const blob = new Blob([bytes], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!win) alert('Pop-up blocked. Allow pop-ups to view the certificate.');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) {
+    console.error('View cert:', e);
+    alert('Could not open certificate. ' + (e.code === 'storage/unauthorized' ? 'You no longer have permission to view this pilot’s certs.' : 'Try again.'));
+  }
+  btn.disabled = false;
+  btn.textContent = original;
 };
 
 window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, carrier, pilotPhone) => {
