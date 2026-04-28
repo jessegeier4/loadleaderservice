@@ -9,23 +9,25 @@ service cloud.firestore {
     // Each user can read/write only their own user document.
     // Public read of basic profile info (firstName, lastName, state, rating) is allowed
     // so carriers can display pilot profiles on applications.
+    //
+    // Update has TWO paths combined into one allow expression so the cross-user
+    // bounds-checks short-circuit cleanly when not applicable. (Splitting into separate
+    // `allow write` + `allow update` blocks caused the cross-user expression to error
+    // on missing rating fields during owner updates, which Firestore treats as deny.)
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId);
-      // Cross-user update is intentionally narrow — only rating + reviewCount, with
-      // bounds-checking to prevent obvious tanking/inflation attacks (rating in 0-5,
-      // reviewCount only increases). This is NOT a full fix — any signed-in user can still
-      // submit a single bogus rating overwrite. The proper fix is to forbid client-side
-      // rating writes entirely and recompute server-side via a Cloud Function on
-      // reviews/{id} create. Tracked separately.
-      allow update: if isSignedIn()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount'])
-        && request.resource.data.rating is number
-        && request.resource.data.rating >= 0
-        && request.resource.data.rating <= 5
-        && request.resource.data.reviewCount is int
-        && request.resource.data.reviewCount >= 0
-        && (resource.data.reviewCount == null || request.resource.data.reviewCount >= resource.data.reviewCount);
+      allow create, delete: if isOwner(userId);
+      allow update: if isOwner(userId)
+        || (
+          isSignedIn()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount'])
+          && request.resource.data.rating is number
+          && request.resource.data.rating >= 0
+          && request.resource.data.rating <= 5
+          && request.resource.data.reviewCount is int
+          && request.resource.data.reviewCount >= 0
+          && (resource.data.reviewCount == null || request.resource.data.reviewCount >= resource.data.reviewCount)
+        );
 
       // ─── PILOT CERTIFICATES (subcollection) ───
       // users/{pilotId}/certs/{certType}: metadata for an uploaded cert (storage path,
