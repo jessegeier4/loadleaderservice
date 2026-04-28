@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LoadLeader – Pilot Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
@@ -302,7 +302,7 @@ select option{background:var(--mid);}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* MOBILE NAV BOTTOM */
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 max(.8rem,env(safe-area-inset-bottom,.8rem));z-index:100;}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 1.2rem;z-index:100;}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:var(--r-btn);transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);}
 .mn-item.active{color:var(--yellow);}
@@ -312,7 +312,7 @@ select option{background:var(--mid);}
   .mobile-nav{display:block;}
   .mn-item{padding:.3rem .35rem!important;}
   .mn-label{font-size:.6rem!important;letter-spacing:0!important;}
-  .dash-wrap{padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
+  .dash-wrap{padding-bottom:6.5rem;}
   #msgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
   #msgLayout > div:last-child{display:none!important;}
   #msgLayout.chat-open > div:first-child{display:none!important;}
