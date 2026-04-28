@@ -253,9 +253,9 @@ select option{background:var(--mid);}
   .mobile-nav{display:block;}
   .dash-wrap{padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
   #cMsgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
-  #cMsgLayout > div:last-child{display:none;}
+  #cMsgLayout > div:last-child{display:none!important;}
   #cMsgLayout.chat-open > div:first-child{display:none!important;}
-  #cMsgLayout.chat-open > div:last-child{display:flex!important;flex-direction:column;height:calc(100vh - 200px);min-height:unset!important;}
+  #cMsgLayout.chat-open > div:last-child{display:flex!important;flex-direction:column;height:calc(100vh - 350px);min-height:280px;}
   #cMsgBackBtn{display:block!important;}
 }
 
