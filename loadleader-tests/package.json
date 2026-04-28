@@ -1,0 +1,24 @@
+{
+  "name": "loadleader-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for LoadLeader — pilot car load board",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:chromium": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile-safari",
+    "test:auth": "playwright test tests/01-auth.spec.js",
+    "test:post-load": "playwright test tests/02-carrier-post-load.spec.js",
+    "test:apply": "playwright test tests/03-pilot-apply.spec.js",
+    "test:cancel": "playwright test tests/04-cancel-and-reappear.spec.js",
+    "test:invoice": "playwright test tests/05-delivery-and-invoice.spec.js",
+    "test:report": "playwright show-report",
+    "test:install": "playwright install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

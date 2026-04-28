@@ -1,0 +1,66 @@
+name: E2E Tests
+
+# When this runs:
+# - Every push to main (catches direct commits)
+# - Every pull request (blocks bad merges)
+# - Manual trigger via Actions tab (for debugging)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Playwright Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Use the loadleader-tests directory as the working dir for all steps
+    defaults:
+      run:
+        working-directory: loadleader-tests
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run Playwright tests against staging
+        env:
+          # Points tests at staging URL — set this in GitHub repo Settings > Secrets
+          TEST_URL: ${{ secrets.STAGING_URL }}
+          TEST_PILOT_EMAIL: ${{ secrets.TEST_PILOT_EMAIL }}
+          TEST_PILOT_PASSWORD: ${{ secrets.TEST_PILOT_PASSWORD }}
+          TEST_CARRIER_EMAIL: ${{ secrets.TEST_CARRIER_EMAIL }}
+          TEST_CARRIER_PASSWORD: ${{ secrets.TEST_CARRIER_PASSWORD }}
+          CI: true
+        run: npm test
+
+      # If tests fail, upload the screenshots and traces so you can see what happened
+      - name: Upload test report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: loadleader-tests/playwright-report/
+          retention-days: 14
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: loadleader-tests/test-results/
+          retention-days: 14
