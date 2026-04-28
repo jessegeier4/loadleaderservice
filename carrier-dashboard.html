@@ -238,6 +238,7 @@ select option{background:var(--mid);}
 @media(max-width:600px){
   nav{padding:.75rem 1rem;}
   .nav-center{display:none;}
+  .logout-btn{display:none;}
   .dash-wrap{padding:1.25rem 1rem 5rem;}
   .stats-row{grid-template-columns:1fr 1fr;}
   .applicant-grid{grid-template-columns:1fr;}
@@ -948,7 +949,7 @@ if ('serviceWorker' in navigator) {
   <div class="mobile-nav-items">
     <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon">🏠</span><span class="mn-label">Home</span></button>
     <button class="mn-item" onclick="showPanel('myloads',this)"><span class="mn-icon">🚛</span><span class="mn-label">Loads</span></button>
-    <button class="mn-item" onclick="showPanel('applicants',this)"><span class="mn-icon">👥</span><span class="mn-label">Pilots</span></button>
+    <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></button>
     <button class="mn-item" onclick="showPanel('postload',this)"><span class="mn-icon">➕</span><span class="mn-label">Post</span></button>
     <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">🏢</span><span class="mn-label">Profile</span></button>
   </div>
