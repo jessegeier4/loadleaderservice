@@ -2849,6 +2849,7 @@ window.handleCarrierAvatarUpload = async (input) => {
 window.navTab = (panelName) => document.querySelector(`.nav-tab[onclick*="showPanel('${panelName}'"]`);
 
 window.showPanel = (name, el) => {
+  if (window.innerWidth <= 600) window.scrollTo({ top: 0, behavior: 'instant' });
   if (name === 'fleet') loadFleet();
   if (name === 'messages') loadCarrierConversations();
   if (name === 'postload') loadTemplates();
