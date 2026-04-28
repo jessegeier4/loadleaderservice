@@ -1,0 +1,166 @@
+
+name: audit-site
+description: Run a full UX, content, feature, security, and performance audit of the LoadLeader app. Use when user says "audit the site", "review everything", "check the whole app", or asks for a comprehensive review before a release.
+---
+
+You are conducting a thorough audit of the entire LoadLeader application.
+Audience: pilot car drivers and truck drivers aged 35-70, often using
+phones in trucks, not necessarily tech-savvy.
+
+Read CLAUDE.md first before starting. Do not fix anything during the audit —
+document findings only and present the report for approval.
+
+## Step 1 — Inventory
+List every page and route. For each document:
+- Page name and file path
+- What it does
+- What API endpoints it calls
+- What Firestore collections it touches
+
+## Step 2 — Visual & UX Audit
+For every page check:
+- Font sizes (flag anything under 18px)
+- Color contrast (flag any gray-on-gray or low contrast)
+- Tap target sizes (flag anything under 48x48px)
+- Phone number visible and tappable on mobile
+- One clear CTA per section
+- Layout works on 375px mobile and 1280px desktop
+- No broken images or missing assets
+
+## Step 3 — Content Audit
+For every page ask:
+- Would a 55-year-old truck driver understand this immediately
+- Any language too technical or jargon-heavy
+- Error messages human-readable
+- Loading states clearly communicated
+- Empty states handled gracefully
+
+## Step 4 — Feature Audit
+Test and document status of:
+- Auth (login, logout, session handling)
+- Load management (create, view, assign, update)
+- Driver/carrier management
+- Notifications
+- Contact features
+- Firebase Storage uploads
+- All forms have loading, error, success states
+- Mobile nav works
+- All links and buttons functional
+- Console errors or warnings
+
+## Step 5 — Security & Connectivity
+- Does loadleadernet redirect to loadleaderservice.com with HTTPS
+- All API calls going through correct env variables
+- No API keys or secrets exposed in frontend code
+- Firestore rules properly restricting access
+- Protected routes actually protected
+
+## Step 6 — Performance
+- Any obvious slow-loading assets
+- Any raw fetch calls that should be cached
+- Service worker not caching HTML files
+- Any obvious unnecessary re-fetches
+
+## Deliverable
+Produce three lists, no fixes yet:
+
+**CRITICAL** (broken or blocking — fix immediately):
+- Item, location, what is wrong, how to fix
+
+**SHOULD CHANGE** (hurts UX for this audience — fix soon):
+- Item, location, what is wrong, recommended fix
+
+**NICE TO ADD** (would help pilot car drivers):
+- Feature, why it helps this audience, complexity estimate
+
+Wait for direction on which items to tackle first before writing any code.
+
+---
+name: debug
+description: Systematically debug a bug by reproducing it first before attempting any fix. Use when user reports something broken, says "this isn't working", "fix this bug", or describes unexpected behavior.
+---
+
+Do not guess at fixes. Follow this protocol exactly.
+
+## Step 1 — Reproduce
+Before changing any code:
+- Restate the bug in your own words
+- Identify the exact steps to trigger it
+- Identify the expected behavior vs actual behavior
+- If you cannot reproduce it from the description, ask the user
+  for the missing information before continuing
+
+## Step 2 — Locate
+- Read the relevant file(s) end to end before forming a theory
+- Check the Mistake Log in CLAUDE.md — has this happened before
+- Check Known Issues in CLAUDE.md — is this a known landmine
+- Identify the specific function or block where the bug lives
+
+## Step 3 — Diagnose
+State your theory of what is causing the bug in one sentence.
+List at least one alternative theory.
+Pick the more likely one and explain why.
+
+## Step 4 — Fix
+- Make the smallest possible change that fixes the bug
+- Do not refactor surrounding code
+- Do not improve adjacent functions
+- Do not add new features while fixing
+
+## Step 5 — Verify
+- Show how to reproduce the original bug
+- Show what should happen now after the fix
+- If you cannot test it yourself, list the exact verification steps
+  for the user
+- Never claim "fixed" without proof
+
+## Step 6 — Log
+- Add a one-line entry to the Mistake Log in CLAUDE.md
+- Format: `YYYY-MM-DD — what went wrong → what to do instead`
+- Show the user the git commit command for both the fix and the log update
+
+---
+name: read-first
+description: Read and summarize a file's structure before making any edits to it. Use automatically before any edit to a file over 200 lines, or when user says "read first", "understand this file", or "before editing".
+---
+
+Before editing any file, follow this protocol.
+
+## Step 1 — Full Read
+Read the entire file from top to bottom. Do not skim.
+Do not jump to the section you think needs editing.
+
+## Step 2 — Structure Summary
+Report back to the user:
+- Total line count
+- What the file does in one sentence
+- List of major functions or sections with line numbers
+- Any imports or dependencies at the top
+- Any inline scripts or styles
+- Any obvious patterns the file follows (naming, structure, style)
+
+## Step 3 — Edit Location
+- Identify the exact section that needs editing
+- Quote 3-5 lines before and after the edit point
+- Confirm with user this is the right location before changing anything
+- For files over 500 lines, always confirm before editing
+
+## Step 4 — Style Match
+- Match the existing code style exactly
+- Match indentation (tabs vs spaces, width)
+- Match quote style (single vs double)
+- Match naming conventions
+- Match comment style
+- Do not "improve" the style even if you would do it differently
+
+## Step 5 — Edit
+- Make only the requested change
+- Do not touch adjacent code
+- Do not reformat surrounding lines
+- Do not add comments unless asked
+
+## Step 6 — Diff Report
+After editing, show:
+- Which lines changed
+- What was added, removed, or modified
+- Confirm nothing else was touched
