@@ -220,6 +220,9 @@ Read this section before starting any task.
 Format: `YYYY-MM-DD — what went wrong → what to do instead`
 
 <!-- Add entries below this line as we work -->
+- 2026-04-28 — split `allow write` + `allow update` in `match /users/{userId}` denied owner self-updates (cross-user `update` expression errored on missing rating field; Firestore treats erroring rules as deny even with OR semantics) → collapse into single `allow update: if isOwner(userId) || (cross-user bounds)` so owner short-circuits before any potentially-erroring access
+- 2026-04-28 — declared Firestore + Storage rule changes "shipped" without simulating in Rules Playground; user found the rule-deny bug after deploy → ALWAYS simulate owner-update, cross-user-deny, and unauthenticated cases in Rules Playground before declaring rule changes done
+- 2026-04-28 — initial CSP `_headers` missed `https://*.firebasestorage.app` and `https://www.gstatic.com` from `connect-src`, blocking SDK source maps and risking Storage upload failure → when adding CSP for a Firebase project include the full set listed in `feedback_loadleader_security.md` entry #12
 
 
 ---
