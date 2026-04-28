@@ -73,7 +73,7 @@ nav.scrolled{padding:.75rem 3rem;}
 .section-body{font-size:.95rem;color:var(--text-2);line-height:1.85;max-width:600px;}
 .section-body strong{color:var(--text);font-weight:500;}
 .industry-cards{display:flex;flex-direction:column;gap:10px;}
-.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color var(--dur-hover) var(--ease);opacity:0;}
+.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color var(--dur-hover) var(--ease);}
 .ind-card:hover{border-color:var(--line-strong);}
 .ind-icon{font-size:1.2rem;flex-shrink:0;width:40px;height:40px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;}
 .ind-title{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:.3rem;}
@@ -88,7 +88,7 @@ nav.scrolled{padding:.75rem 3rem;}
 .mission-body{font-size:.9rem;color:var(--text-2);line-height:1.9;max-width:640px;margin:0 auto 2.5rem;}
 .mission-body strong{color:var(--text);font-weight:500;}
 .mission-values{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;}
-.mv-item{text-align:center;opacity:0;}
+.mv-item{text-align:center;}
 .mv-icon{font-size:1.3rem;margin-bottom:.35rem;}
 .mv-label{font-family:var(--font-display);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);font-weight:600;}
 
@@ -105,7 +105,7 @@ nav.scrolled{padding:.75rem 3rem;}
 .hiw-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
 @media(max-width:900px){.hiw-steps{grid-template-columns:1fr 1fr;}}
 @media(max-width:500px){.hiw-steps{grid-template-columns:1fr;}}
-.hiw-step{opacity:0;}
+.hiw-step{}
 .hiw-step-num{font-family:var(--font-display);font-size:4.5rem;font-weight:700;color:rgba(255,205,17,0.05);line-height:1;margin-bottom:-.75rem;letter-spacing:0.04em;}
 .hiw-step-icon{width:44px;height:44px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.9rem;}
 .hiw-step-title{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:.5rem;}
@@ -116,7 +116,7 @@ nav.scrolled{padding:.75rem 3rem;}
 .forwho-inner{max-width:1100px;margin:0 auto;}
 .forwho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:2.5rem;}
 @media(max-width:700px){.forwho-grid{grid-template-columns:1fr;}}
-.forwho-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-card);padding:2.25rem;position:relative;overflow:hidden;opacity:0;}
+.forwho-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-card);padding:2.25rem;position:relative;overflow:hidden;}
 .forwho-card.pilot{border-color:var(--accent-border);}
 .forwho-card.carrier{border-color:rgba(96,165,250,0.25);}
 .fw-badge{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:.3rem .75rem;border-radius:var(--r-chip);display:inline-block;margin-bottom:1.25rem;}
@@ -417,13 +417,28 @@ function switchTab(type, btn) {
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
     if (entry.isIntersecting) {
-      setTimeout(() => { entry.target.style.animation = 'fadeUp .6s ease forwards'; }, i * 80);
+      setTimeout(() => {
+        entry.target.style.animation = 'fadeUp .6s ease both';
+      }, i * 80);
       observer.unobserve(entry.target);
     }
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.ind-card, .hiw-step, .forwho-card, .mv-item').forEach(el => observer.observe(el));
+document.querySelectorAll('.ind-card, .hiw-step, .forwho-card, .mv-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  observer.observe(el);
+});
+
+setTimeout(() => {
+  document.querySelectorAll('.ind-card, .hiw-step, .forwho-card, .mv-item').forEach(el => {
+    if (el.style.opacity === '0') {
+      el.style.opacity = '1';
+      el.style.transform = '';
+    }
+  });
+}, 3000);
 </script>
 
 <script type="module">
