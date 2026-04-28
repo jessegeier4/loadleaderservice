@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>LoadLeader – Pilot Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
@@ -301,7 +301,7 @@ select option{background:var(--mid);}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* MOBILE NAV BOTTOM */
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 .8rem;z-index:100;}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 max(.8rem,env(safe-area-inset-bottom,.8rem));z-index:100;}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:var(--r-btn);transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);}
 .mn-item.active{color:var(--yellow);}
@@ -309,10 +309,12 @@ select option{background:var(--mid);}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
 @media(max-width:600px){
   .mobile-nav{display:block;}
-  .dash-wrap{padding-bottom:5rem;}
+  .dash-wrap{padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
   #msgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
-  #msgLayout > div:first-child{max-height:220px;overflow-y:auto;}
-  #msgLayout > div:last-child{min-height:380px;}
+  #msgLayout > div:last-child{display:none;}
+  #msgLayout.chat-open > div:first-child{display:none!important;}
+  #msgLayout.chat-open > div:last-child{display:flex!important;flex-direction:column;height:calc(100vh - 200px);min-height:unset!important;}
+  #msgBackBtn{display:block!important;}
 }
 </style>
 <script>
@@ -927,6 +929,7 @@ if ('serviceWorker' in navigator) {
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;">
         <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;">
+          <button id="msgBackBtn" onclick="closeMobileChat()" style="display:none;background:transparent;border:none;color:var(--yellow);font-size:1.3rem;cursor:pointer;padding:0 .25rem 0 0;line-height:1;flex-shrink:0;">←</button>
           <div id="chatAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.9rem;color:var(--black);flex-shrink:0;">?</div>
           <div>
             <div id="chatName" style="font-weight:600;font-size:.875rem;">Select a conversation</div>
@@ -2669,6 +2672,7 @@ async function loadConversations() {
   } catch(e) { console.error('Load conversations:', e); }
 }
 
+window.closeMobileChat = () => { document.getElementById('msgLayout').classList.remove('chat-open'); };
 window.openConversation = async (convId, otherId, otherName) => {
   activeConvId = convId;
   activeOtherId = otherId;
@@ -2676,6 +2680,7 @@ window.openConversation = async (convId, otherId, otherName) => {
   document.getElementById('chatAvatar').textContent = initials;
   document.getElementById('chatName').textContent = otherName;
   document.getElementById('chatSub').textContent = 'Direct message';
+  if (window.innerWidth <= 600) document.getElementById('msgLayout').classList.add('chat-open');
   document.getElementById('msgInput').focus();
 
   try {

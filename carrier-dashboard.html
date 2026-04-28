@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>LoadLeader – Carrier Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
@@ -243,7 +243,7 @@ select option{background:var(--mid);}
   .applicant-grid{grid-template-columns:1fr;}
   .load-row-top{flex-direction:column;}
 }
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 .8rem;z-index:100;}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gray);border-top:1px solid var(--border);padding:.6rem 0 max(.8rem,env(safe-area-inset-bottom,.8rem));z-index:100;}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:var(--r-btn);transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);}
 .mn-item.active{color:var(--yellow);}
@@ -251,10 +251,12 @@ select option{background:var(--mid);}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
 @media(max-width:600px){
   .mobile-nav{display:block;}
-  .dash-wrap{padding-bottom:5rem;}
+  .dash-wrap{padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
   #cMsgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
-  #cMsgLayout > div:first-child{max-height:220px;overflow-y:auto;}
-  #cMsgLayout > div:last-child{min-height:380px;}
+  #cMsgLayout > div:last-child{display:none;}
+  #cMsgLayout.chat-open > div:first-child{display:none!important;}
+  #cMsgLayout.chat-open > div:last-child{display:flex!important;flex-direction:column;height:calc(100vh - 200px);min-height:unset!important;}
+  #cMsgBackBtn{display:block!important;}
 }
 
 /* UTILS */
@@ -683,6 +685,7 @@ if ('serviceWorker' in navigator) {
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;">
         <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;">
+          <button id="cMsgBackBtn" onclick="closeMobileCarrierChat()" style="display:none;background:transparent;border:none;color:var(--yellow);font-size:1.3rem;cursor:pointer;padding:0 .25rem 0 0;line-height:1;flex-shrink:0;">←</button>
           <div id="cChatAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.9rem;color:var(--black);flex-shrink:0;">?</div>
           <div>
             <div id="cChatName" style="font-weight:600;font-size:.875rem;">Select a conversation</div>
@@ -2253,6 +2256,7 @@ async function loadCarrierConversations() {
   } catch(e) { console.error('Load carrier conversations:', e); }
 }
 
+window.closeMobileCarrierChat = () => { document.getElementById('cMsgLayout').classList.remove('chat-open'); };
 window.openCarrierConversation = async (convId, otherId, otherName) => {
   cActiveConvId = convId;
   cActiveOtherId = otherId;
@@ -2260,6 +2264,7 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
   document.getElementById('cChatAvatar').textContent = initials;
   document.getElementById('cChatName').textContent = otherName;
   document.getElementById('cChatSub').textContent = 'Direct message';
+  if (window.innerWidth <= 600) document.getElementById('cMsgLayout').classList.add('chat-open');
   document.getElementById('cMsgInput').focus();
 
   try {
