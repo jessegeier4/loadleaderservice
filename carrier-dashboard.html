@@ -1117,23 +1117,29 @@ async function loadApplications() {
     const loadsSnap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', currentUser.uid)));
     allCarrierLoads = loadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const myLoadIds = loadsSnap.docs.map(d => d.id);
-    const activeLoads = allCarrierLoads.filter(l => (l.status || 'active') === 'active').length;
+    // "Active Loads" stat = anything currently in-progress (active OR filled). Filled loads
+    // are still ongoing work the carrier is responsible for; they just stop appearing on the
+    // public load board.
+    const inProgressStatuses = ['active', 'filled'];
+    const activeLoads = allCarrierLoads.filter(l => inProgressStatuses.includes(l.status || 'active')).length;
     const completedLoads = allCarrierLoads.filter(l => l.status === 'completed').length;
     safeSet('cStatLoads', activeLoads);
     safeSet('cStatCompleted', completedLoads);
     safeSet('profileLoadsPosted', loadsSnap.size);
 
-    // Render loads immediately — before applications query so a query failure never blocks this
+    // Render loads immediately — before applications query so a query failure never blocks this.
+    // "Active" view includes both active and filled — filled loads are in-progress (covered)
+    // and the carrier still wants to see them on the default panel with the Covered badge.
     const loadsList = document.getElementById('myLoadsList');
     const overviewLoads = document.getElementById('overviewLoads');
-    const activeLoadsOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active');
+    const activeLoadsOnly = allCarrierLoads.filter(l => inProgressStatuses.includes(l.status || 'active'));
     if (loadsList) loadsList.innerHTML = activeLoadsOnly.length
       ? activeLoadsOnly.map(l => buildLoadCard(l)).join('')
-      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
-    const activeOnly = allCarrierLoads.filter(l => (l.status || 'active') === 'active').slice(0, 3);
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\')">+ Post Your First Load</button></div>';
+    const activeOnly = activeLoadsOnly.slice(0, 3);
     if (overviewLoads) overviewLoads.innerHTML = activeOnly.length
       ? activeOnly.map(l => buildLoadCard(l)).join('')
-      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted yet</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\',document.querySelectorAll(\'.nav-tab\')[3])">+ Post Your First Load</button></div>';
+      : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No loads posted yet</div><button class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;" onclick="showPanel(\'postload\')">+ Post Your First Load</button></div>';
     const loadFilter = document.getElementById('loadFilter');
     if (loadFilter && !loadFilter.dataset.populated) {
       loadFilter.dataset.populated = '1';
@@ -1168,6 +1174,59 @@ async function loadApplications() {
       }
       // Apply saved filter prefs once data is in
       if (typeof restoreCarrierFilters === 'function') restoreCarrierFilters();
+
+      // Backfill connection docs for any applications that predate the connection-write
+      // code (added 2026-04-28). Without these, cert reads from the carrier side fail
+      // with permission denied because the storage rule looks up the connection.
+      // Idempotent — runs once per page load, picks the most-favorable status per pilot
+      // so accepted apps grant access even if there is also a declined app.
+      // Same loop also backfills load.status='filled' for any active load whose accepted
+      // count already meets the pilot quota (predates the auto-sync code).
+      if (!window._connectionsBackfilled && allApplications.length) {
+        window._connectionsBackfilled = true;
+        try {
+          const { setDoc, updateDoc: fUpdate } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+          const rank = { accepted: 4, completed: 3, pending: 2, declined: 1 };
+          const byPilot = new Map();
+          const acceptedByLoad = {};
+          for (const a of allApplications) {
+            if (a.loadId && a.status === 'accepted') {
+              acceptedByLoad[a.loadId] = (acceptedByLoad[a.loadId] || 0) + 1;
+            }
+            if (!a.pilotId || !a.id) continue;
+            const cur = byPilot.get(a.pilotId);
+            if (!cur || (rank[a.status] || 0) > (rank[cur.status] || 0)) byPilot.set(a.pilotId, a);
+          }
+          // Connection backfill
+          await Promise.all([...byPilot.values()].map(a =>
+            setDoc(doc(db, 'connections', a.pilotId, 'carriers', currentUser.uid), {
+              appId: a.id,
+              pilotId: a.pilotId,
+              carrierId: currentUser.uid,
+              status: a.status || 'pending',
+              updatedAt: serverTimestamp()
+            }, { merge: true }).catch(err => console.error('Connection backfill', a.pilotId, err))
+          ));
+          // Load-status backfill
+          const toFill = allCarrierLoads.filter(l => {
+            const accepted = acceptedByLoad[l.id] || 0;
+            const needed = l.pilots || 1;
+            return (l.status || 'active') === 'active' && accepted >= needed;
+          });
+          if (toFill.length) {
+            await Promise.all(toFill.map(l =>
+              fUpdate(doc(db, 'loads', l.id), { status: 'filled' })
+                .then(() => { l.status = 'filled'; })
+                .catch(err => console.error('Load fill backfill:', l.id, err))
+            ));
+            // Re-render My Loads to show the Covered badge on the just-filled loads.
+            const refreshedLoads = allCarrierLoads.filter(l => inProgressStatuses.includes(l.status || 'active'));
+            if (loadsList) loadsList.innerHTML = refreshedLoads.length
+              ? refreshedLoads.map(l => buildLoadCard(l)).join('')
+              : '<div class="empty-state"><div class="empty-icon">🚛</div><div class="empty-text">No active loads</div></div>';
+          }
+        } catch (backErr) { console.error('Connection backfill batch:', backErr); }
+      }
     } catch(appsErr) {
       console.error('Applications query error:', appsErr);
       renderApplications([]);
@@ -1214,7 +1273,7 @@ function buildAppCard(a) {
     <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" id="card-${escapeHtml(a.id)}">
       <div class="ac-top">
         <div class="ac-load-ref">${escapeHtml(a.loadId)} · ${escapeHtml(a.loadDate)}</div>
-        <span class="badge ${isAccepted?'badge-active':isDeclined?'badge-draft':'badge-pending'}">${isAccepted?'Accepted':isDeclined?'Declined':'Pending'}</span>
+        <span class="badge ${isAccepted?'badge-active':isDeclined?'badge-draft':'badge-pending'}">${isAccepted?'Confirmed':isDeclined?'Declined':'Pending'}</span>
       </div>
       <div class="pilot-info">
         <div class="pilot-av">${escapeHtml(initials)}</div>
@@ -1241,7 +1300,7 @@ function buildAppCard(a) {
       ${!isDeclined ? `<button class="ac-btn" style="background:rgba(160,160,160,.08);border:1px solid #2a2a2a;color:#bbb;font-size:.78rem;padding:.55rem .85rem;margin-bottom:.5rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnViewCerts(this.dataset.appId)">📋 View Certificates</button>` : ''}
       <div class="ac-actions">
         ${isAccepted
-          ? `<button class="ac-btn accepted-state" disabled>✓ Accepted</button>
+          ? `<button class="ac-btn accepted-state" disabled>✓ Confirmed</button>
              <button class="ac-btn" style="background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,0.2);color:var(--yellow);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnReview(this.dataset.appId)">⭐ Review</button>
              <button class="ac-btn" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.2);color:var(--green);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnAddToFleet(this.dataset.appId)">+ Fleet</button>
              <button class="ac-btn" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,.2);color:var(--blue);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnRepeatHire(this.dataset.appId)">↩ Re-hire</button>
@@ -1434,7 +1493,7 @@ window.decisionApp = async (appId, decision, pilotEmail, pilotName, route, pay, 
       }, 100);
     }
 
-    showToast(decision === 'accepted' ? `✓ ${pilotName.split(' ')[0]} accepted! Their phone number is now visible.` : `${pilotName.split(' ')[0]} has been declined.`);
+    showToast(decision === 'accepted' ? `✓ ${pilotName.split(' ')[0]} confirmed! Their phone number is now visible.` : `${pilotName.split(' ')[0]} has been declined.`);
   } catch(e) {
     console.error('Decision error:', e);
     showToast('Error updating application. Try again.');
@@ -3132,7 +3191,14 @@ window.filterLoadStatus = (status, btn) => {
   if (btn) btn.classList.add('on');
   const list = document.getElementById('myLoadsList');
   if (!list) return;
-  const filtered = status === 'all' ? allCarrierLoads : allCarrierLoads.filter(l => (l.status || 'active') === status);
+  // The "Active" tab includes filled loads too (both are in-progress). Filled tab still
+  // narrows to filled-only via the explicit equality check.
+  const matchActive = (l) => ['active', 'filled'].includes(l.status || 'active');
+  const filtered = status === 'all'
+    ? allCarrierLoads
+    : status === 'active'
+      ? allCarrierLoads.filter(matchActive)
+      : allCarrierLoads.filter(l => (l.status || 'active') === status);
   if (!filtered.length) {
     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No ' + status + ' loads</div></div>';
   } else {
