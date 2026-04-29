@@ -45,6 +45,12 @@ export async function postLoad(page, overrides = {}) {
   // Wait for success toast or redirect
   await page.waitForSelector(SELECTORS.toastSuccess, { timeout: 15_000 });
 
+  // submitLoad calls loadApplications() (fire-and-forget) which re-renders the
+  // My Loads panel with the new card. The carrier stays on the postload panel
+  // visually, but the new card lands in the (display:none) myloads list — so
+  // wait for it to be ATTACHED, not necessarily visible.
+  await page.waitForSelector(SELECTORS.loadCard, { state: 'attached', timeout: 15_000 });
+
   // Return the most recently posted load — first card on dashboard
   const firstCard = page.locator(SELECTORS.loadCard).first();
   return await firstCard.getAttribute('data-load-id');
