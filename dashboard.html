@@ -356,16 +356,16 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 <nav>
   <a href="index.html" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
   <div class="nav-center">
-    <button class="nav-tab active" onclick="showPanel('overview',this)">Overview</button>
+    <button class="nav-tab active" data-testid="nav-dashboard" onclick="showPanel('overview',this)">Overview</button>
     <button class="nav-tab" onclick="showPanel('jobs',this)">My Jobs</button>
-    <button class="nav-tab" onclick="showPanel('messages',this)" id="msgTab">Messages <span style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;" id="msgDot"></span></button>
+    <button class="nav-tab" data-testid="nav-messages" onclick="showPanel('messages',this)" id="msgTab">Messages <span style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;" id="msgDot"></span></button>
     <button class="nav-tab" onclick="showPanel('following',this)">Following</button>
     <button class="nav-tab" onclick="showPanel('earnings',this)" style="display:none;">Earnings</button>
     <button class="nav-tab" onclick="showPanel('saved',this)">Saved Loads</button>
-    <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
+    <button class="nav-tab" data-testid="nav-profile" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div id="notifBtn" title="Notifications" style="position:relative;cursor:pointer;width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;"
+    <div id="notifBtn" data-testid="notification-bell" title="Notifications" style="position:relative;cursor:pointer;width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;"
       onclick="(function(e){e.stopPropagation();var p=document.getElementById('notifPanel');p.style.display=p.style.display==='none'?'block':'none';})(event)">
       🔔
       <div id="notifPanel" style="display:none;position:absolute;top:44px;right:0;width:280px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.8);">
@@ -380,7 +380,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
     </div>
-    <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+    <button class="logout-btn" data-testid="logout-btn" onclick="handleLogout()">Log Out</button>
   </div>
 </nav>
 
@@ -401,7 +401,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         </button>
       </div>
       <div class="welcome-actions">
-        <a href="loadboard.html" class="btn btn-y">Find New Loads</a>
+        <a href="loadboard.html" class="btn btn-y" data-testid="nav-loads">Find New Loads</a>
         <button class="btn btn-o" onclick="showPanel('profile')">Edit Profile</button>
       </div>
     </div>
@@ -3541,6 +3541,7 @@ function showToast(msg) {
   if (!t) {
     t = document.createElement('div');
     t.id = 'pToast';
+    t.setAttribute('data-testid', 'toast-success');
     t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;border:1px solid #333;color:#f0ede6;padding:.65rem 1.25rem;border-radius:8px;font-size:.82rem;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;';
     document.body.appendChild(t);
   }

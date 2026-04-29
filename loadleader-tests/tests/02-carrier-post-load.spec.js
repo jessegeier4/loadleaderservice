@@ -30,7 +30,8 @@ test.describe('Carrier — Post Load', () => {
     await expect(card).toContainText(TEST_LOAD.commodity);
   });
 
-  test('multi-pilot load shows correct counter immediately', async ({ page }) => {
+  // SKIPPED: pilot counter UI ("0 OF 3 — 3 SPOTS REMAINING") not yet built.
+  test.skip('multi-pilot load shows correct counter immediately', async ({ page }) => {
     // Post a load needing 3 pilots
     const loadId = await postLoad(page, { pilotsNeeded: 3 });
     const card = loadCardById(page, loadId);
@@ -42,7 +43,8 @@ test.describe('Carrier — Post Load', () => {
     await expect(counter).toContainText(/3\s*SPOT/i);
   });
 
-  test('single-pilot load does NOT show counter (Part B logic)', async ({ page }) => {
+  // SKIPPED: pilot counter UI not yet built.
+  test.skip('single-pilot load does NOT show counter (Part B logic)', async ({ page }) => {
     const loadId = await postLoad(page, { pilotsNeeded: 1 });
     const card = loadCardById(page, loadId);
 

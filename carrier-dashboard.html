@@ -301,7 +301,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 </div>
 
 <!-- TOAST -->
-<div class="success-toast" id="toast"></div>
+<div class="success-toast" id="toast" data-testid="toast-success"></div>
 
 <!-- NAV -->
 <nav>
@@ -310,17 +310,17 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
     <span class="carrier-badge">Carrier</span>
   </div>
   <div class="nav-center">
-    <button class="nav-tab active" onclick="showPanel('overview',this)">Overview</button>
-    <button class="nav-tab" onclick="showPanel('myloads',this)">My Loads</button>
+    <button class="nav-tab active" data-testid="nav-dashboard" onclick="showPanel('overview',this)">Overview</button>
+    <button class="nav-tab" data-testid="nav-loads" onclick="showPanel('myloads',this)">My Loads</button>
     <button class="nav-tab" onclick="showPanel('applicants',this)" id="appTab">Applicants <span class="tab-notif" id="appTabDot" style="display:none"></span></button>
     <button class="nav-tab" onclick="showPanel('pilotsearch',this)">Pilot Directory</button>
-    <button class="nav-tab" onclick="showPanel('postload',this)">Post a Load</button>
+    <button class="nav-tab" data-testid="post-load-btn" onclick="showPanel('postload',this)">Post a Load</button>
     <button class="nav-tab" onclick="showPanel('invoices',this)">Invoices</button>
-    <button class="nav-tab" onclick="showPanel('messages',this)" id="msgTab">Messages <span class="tab-notif" id="msgTabDot" style="display:none"></span></button>
-    <button class="nav-tab" onclick="showPanel('profile',this)">Profile</button>
+    <button class="nav-tab" data-testid="nav-messages" onclick="showPanel('messages',this)" id="msgTab">Messages <span class="tab-notif" id="msgTabDot" style="display:none"></span></button>
+    <button class="nav-tab" data-testid="nav-profile" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
-    <div onclick="toggleCarrierNotif()" id="cNotifBtn" style="width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;">
+    <div onclick="toggleCarrierNotif()" id="cNotifBtn" data-testid="notification-bell" style="width:34px;height:34px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.9rem;">
       🔔
       <div id="cNotifPanel" style="display:none;position:absolute;top:44px;right:0;width:290px;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.8);">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.75rem;font-weight:600;">Notifications</div>
@@ -334,7 +334,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
     </a>
-    <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+    <button class="logout-btn" data-testid="logout-btn" onclick="handleLogout()">Log Out</button>
   </div>
 </nav>
 
@@ -455,35 +455,35 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
     <div class="post-form">
       <div class="form-section-title">📍 Route Details</div>
       <div class="form-grid">
-        <div class="form-group"><label>Origin City</label><input type="text" id="pOriginCity" placeholder="e.g. North Canton"></div>
+        <div class="form-group"><label>Origin City</label><input type="text" id="pOriginCity" data-testid="load-origin" placeholder="e.g. North Canton"></div>
         <div class="form-group"><label>Origin State</label><select id="pOriginState"><option value="">Select state...</option><option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option></select></div>
-        <div class="form-group"><label>Destination City</label><input type="text" id="pDestCity" placeholder="e.g. Convoy"></div>
+        <div class="form-group"><label>Destination City</label><input type="text" id="pDestCity" data-testid="load-destination" placeholder="e.g. Convoy"></div>
         <div class="form-group"><label>Destination State</label><select id="pDestState"><option value="">Select state...</option><option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option></select></div>
       </div>
 
       <div class="form-section-title" style="margin-top:1.25rem;">📐 Load Dimensions</div>
       <div class="form-grid">
-        <div class="form-group"><label>Width</label><input type="text" id="pWidth" placeholder='e.g. 14&apos;0"'></div>
-        <div class="form-group"><label>Height</label><input type="text" id="pHeight" placeholder='e.g. 14&apos;6"'></div>
-        <div class="form-group"><label>Length</label><input type="text" id="pLength" placeholder='e.g. 120&apos;0"'></div>
-        <div class="form-group"><label>Weight (lbs)</label><input type="text" id="pWeight" placeholder="e.g. 47000"></div>
+        <div class="form-group"><label>Width</label><input type="text" id="pWidth" data-testid="load-width" placeholder='e.g. 14&apos;0"'></div>
+        <div class="form-group"><label>Height</label><input type="text" id="pHeight" data-testid="load-height" placeholder='e.g. 14&apos;6"'></div>
+        <div class="form-group"><label>Length</label><input type="text" id="pLength" data-testid="load-length" placeholder='e.g. 120&apos;0"'></div>
+        <div class="form-group"><label>Weight (lbs)</label><input type="text" id="pWeight" data-testid="load-weight" placeholder="e.g. 47000"></div>
         <div class="form-group"><label>Load Type</label><select id="pType"><option>Oversize</option><option>Overweight</option><option>Wide Load</option><option>Tall Load</option><option>Combination</option></select></div>
       </div>
-      <div class="form-group"><label>What are you hauling?</label><input type="text" id="pEquipment" placeholder="e.g. CAT 988H Loader, Steel Coils, Wind Turbine Blade"></div>
+      <div class="form-group"><label>What are you hauling?</label><input type="text" id="pEquipment" data-testid="load-commodity" placeholder="e.g. CAT 988H Loader, Steel Coils, Wind Turbine Blade"></div>
       <div class="form-group"><label>Trucking Company <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(appears on invoice)</span></label><input type="text" id="pTruckingCompany" placeholder="e.g. Smith Heavy Haul LLC"></div>
 
       <div class="form-section-title" style="margin-top:1.25rem;">🚩 Pilot Car Escorts</div>
       <div class="form-grid">
-        <div class="form-group"><label>How Many Pilot Car Drivers?</label><select id="pPilots"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div class="form-group"><label>Day Rate ($/day)</label><input type="text" inputmode="decimal" id="pDayRate" placeholder="e.g. 350"></div>
-        <div class="form-group"><label>Mileage Rate ($/mi)</label><input type="text" inputmode="decimal" id="pMileRate" placeholder="e.g. 1.50"></div>
+        <div class="form-group"><label>How Many Pilot Car Drivers?</label><select id="pPilots" data-testid="load-pilots-needed"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        <div class="form-group"><label>Day Rate ($/day)</label><input type="text" inputmode="decimal" id="pDayRate" data-testid="pay-day-rate" placeholder="e.g. 350"></div>
+        <div class="form-group"><label>Mileage Rate ($/mi)</label><input type="text" inputmode="decimal" id="pMileRate" data-testid="pay-mileage-rate" placeholder="e.g. 1.50"></div>
         <div class="form-group"><label>Mileage Threshold (mi/day)</label><input type="text" inputmode="numeric" id="pMileThreshold" placeholder="e.g. 400"></div>
         <div class="form-group"><label>Total Miles</label><input type="text" inputmode="numeric" id="pMiles" placeholder="e.g. 190"></div>
-        <div class="form-group"><label>Move Date</label><input type="date" id="pDate" style="color-scheme:dark"></div>
+        <div class="form-group"><label>Move Date</label><input type="date" id="pDate" data-testid="load-pickup-date" style="color-scheme:dark"></div>
         <div class="form-group"><label>Start Time (24hr)</label><input type="text" id="pTime" placeholder="e.g. 06:00" maxlength="5" style="font-variant-numeric:tabular-nums;"></div>
         <div class="form-group"><label>Timezone</label><select id="pTimezone"><option value="ET">ET — Eastern</option><option value="CT">CT — Central</option><option value="MT">MT — Mountain</option><option value="PT">PT — Pacific</option><option value="AKT">AKT — Alaska</option><option value="HT">HT — Hawaii</option></select></div>
       </div>
-      <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
+      <div class="form-group"><label>Special Instructions / Notes</label><textarea id="pNotes" data-testid="load-notes" rows="3" placeholder="Permit info, entry instructions, route notes, contact details..."></textarea></div>
 
       <div class="form-group">
         <label>Load Tags <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(optional — appear on the load card)</span></label>
@@ -571,7 +571,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <button onclick="cancelEditLoad()" style="background:transparent;border:1px solid rgba(96,165,250,.3);color:var(--blue);padding:.3rem .75rem;border-radius:5px;font-size:.72rem;cursor:pointer;">Cancel Edit</button>
       </div>
       <div id="postMsgBox" style="display:none;padding:.7rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:.75rem;"></div>
-      <button class="post-btn" id="postLoadBtn" onclick="submitLoad()">🚛 Post Load to Board</button>
+      <button class="post-btn" id="postLoadBtn" data-testid="load-submit" onclick="submitLoad()">🚛 Post Load to Board</button>
     </div>
   </div>
 
@@ -1265,7 +1265,7 @@ function buildAppCard(a) {
   const isDeclined = a.status === 'declined';
 
   return `
-    <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" id="card-${escapeHtml(a.id)}">
+    <div class="applicant-card ${isAccepted?'accepted':''} ${isDeclined?'declined':''}" data-testid="applicant-card" data-pilot-id="${escapeHtml(a.pilotId || '')}" id="card-${escapeHtml(a.id)}">
       <div class="ac-top">
         <div class="ac-load-ref">${escapeHtml(a.loadId)} · ${escapeHtml(a.loadDate)}</div>
         <span class="badge ${isAccepted?'badge-active':isDeclined?'badge-draft':'badge-pending'}">${isAccepted?'Confirmed':isDeclined?'Declined':'Pending'}</span>
@@ -1302,8 +1302,8 @@ function buildAppCard(a) {
              <button class="ac-btn" style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,.25);color:var(--red);flex:0;padding:.6rem .85rem;font-size:.75rem;" data-app-id="${escapeHtml(a.id)}" onclick="appBtnRemove(this.dataset.appId)">✕ Remove</button>`
           : isDeclined
           ? `<button class="ac-btn accept" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'accepted')">Reconsider</button><button class="ac-btn declined-state" disabled>✗ Declined</button>`
-          : `<button class="ac-btn accept" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'accepted')">✓ Accept Pilot</button>
-             <button class="ac-btn decline" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'declined')">✗ Decline</button>`
+          : `<button class="ac-btn accept" data-testid="accept-applicant" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'accepted')">✓ Accept Pilot</button>
+             <button class="ac-btn decline" data-testid="reject-applicant" data-app-id="${escapeHtml(a.id)}" onclick="appBtnDecide(this.dataset.appId,'declined')">✗ Decline</button>`
         }
       </div>
     </div>`;
@@ -3010,7 +3010,7 @@ function buildLoadCard(l) {
   const statusLabel = s === 'completed' ? 'Completed' : s === 'filled' ? 'Filled' : s === 'draft' ? 'Draft' : 'Active';
   const badgeClass = s === 'active' ? 'badge-active' : s === 'filled' ? 'badge-pending' : 'badge-draft';
   const rowClass = s === 'active' ? 'active-load' : s === 'filled' ? 'pending-load' : '';
-  return `<div class="load-row ${rowClass}">
+  return `<div class="load-row ${rowClass}" data-testid="load-card" data-load-id="${escapeHtml(l.id)}">
     <div class="load-row-top">
       <div class="load-row-left">
         <div class="load-id">${l.loadNum ? `LOAD #${l.loadNum}` : ''}<span style="font-size:.58rem;color:#333;margin-left:${l.loadNum ? '.5rem' : '0'};letter-spacing:1px;">${l.id.slice(0,8).toUpperCase()}</span></div>

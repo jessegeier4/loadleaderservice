@@ -166,7 +166,7 @@ if ('serviceWorker' in navigator) {
 
     <!-- LOGIN PANEL -->
     <div class="auth-panel active" id="loginPanel">
-      <div class="msg-box" id="loginMsg"></div>
+      <div class="msg-box" id="loginMsg" data-testid="toast-error"></div>
 
       <div class="social-btns">
         <button class="social-btn" onclick="socialAuth('Google')"><span class="social-icon">G</span> Google</button>
@@ -177,13 +177,13 @@ if ('serviceWorker' in navigator) {
 
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+        <input type="email" id="loginEmail" data-testid="login-email" placeholder="you@example.com" autocomplete="email">
       </div>
 
       <div class="form-group">
         <label>Password <a href="#" class="forgot-link" onclick="showForgot(event)">Forgot password?</a></label>
         <div class="pw-wrap">
-          <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
+          <input type="password" id="loginPassword" data-testid="login-password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
           <button class="pw-toggle" onclick="togglePw('loginPassword',this)" type="button">👁</button>
         </div>
       </div>
@@ -193,10 +193,10 @@ if ('serviceWorker' in navigator) {
         <label for="rememberMe">Keep me signed in for 30 days</label>
       </div>
 
-      <button class="submit-btn" id="loginBtn" onclick="handleLogin()">Log In to LoadLeader</button>
+      <button class="submit-btn" id="loginBtn" data-testid="login-submit" onclick="handleLogin()">Log In to LoadLeader</button>
 
       <div class="auth-footer">
-        No account? <a href="#" onclick="switchTab('signup');return false;">Sign up free →</a>
+        No account? <a href="#" data-testid="signup-link" onclick="switchTab('signup');return false;">Sign up free →</a>
       </div>
     </div>
 

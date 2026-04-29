@@ -10,7 +10,7 @@ import { SELECTORS, TEST_PILOT, TEST_CARRIER } from './test-data.js';
  * Log in as a pilot. Returns once the pilot dashboard is visible.
  */
 export async function loginAsPilot(page) {
-  await page.goto('/');
+  await page.goto('/login.html');
   await page.fill(SELECTORS.loginEmail, TEST_PILOT.email);
   await page.fill(SELECTORS.loginPassword, TEST_PILOT.password);
   await page.click(SELECTORS.loginSubmit);
@@ -24,7 +24,7 @@ export async function loginAsPilot(page) {
  * Log in as a carrier. Returns once the carrier dashboard is visible.
  */
 export async function loginAsCarrier(page) {
-  await page.goto('/');
+  await page.goto('/login.html');
   await page.fill(SELECTORS.loginEmail, TEST_CARRIER.email);
   await page.fill(SELECTORS.loginPassword, TEST_CARRIER.password);
   await page.click(SELECTORS.loginSubmit);

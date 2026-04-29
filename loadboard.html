@@ -267,7 +267,7 @@ if ('serviceWorker' in navigator) {
   <div class="ai-bar-wrap">
     <span class="ai-bar-label">AI Search</span>
     <span class="ai-tag">AI</span>
-    <input class="ai-input" id="aiInput" type="text" placeholder="e.g. Ohio to Texas, $500+"/>
+    <input class="ai-input" id="aiInput" data-testid="load-search" type="text" placeholder="e.g. Ohio to Texas, $500+"/>
     <button class="ai-btn" id="aiBtn" onclick="runAISearch()">Search</button>
   </div>
   <div class="ai-result-bar" id="aiResult"></div>
@@ -502,16 +502,16 @@ function renderLoads() {
   grid.innerHTML = page.map((l,i) => {
     const lid = escapeHtml(l.id);
     return `
-    <div class="load-card ${l.status}" style="animation-delay:${i*.04}s">
+    <div class="load-card ${l.status}" data-testid="load-card" data-load-id="${lid}" style="animation-delay:${i*.04}s">
       <div class="card-top">
         <div class="load-id">${l.loadNum ? `LOAD #${escapeHtml(l.loadNum)}` : ''}<span style="font-size:8px;color:var(--text-3);opacity:.5;margin-left:.4rem;letter-spacing:1px;">${escapeHtml(String(l.id).slice(0,8).toUpperCase())}</span></div>
         <div class="badges" style="display:flex;flex-wrap:wrap;gap:.3rem;justify-content:flex-end;">
           ${l.quickPay ? '<span class="badge" style="background:rgba(74,222,128,.12);color:var(--ok);border:1px solid rgba(74,222,128,.3);">💸 Quick Pay</span>' : ''}
           ${l.textOnly ? '<span class="badge" style="background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);">💬 Text</span>' : ''}
-          ${l.rawStatus === 'filled' ? '<span class="badge" style="background:rgba(160,160,160,.15);color:var(--text-2);border:1px solid var(--line-strong);">✓ Covered</span>' : ''}
+          ${l.rawStatus === 'filled' ? '<span class="badge" data-testid="full-badge" style="background:rgba(160,160,160,.15);color:var(--text-2);border:1px solid var(--line-strong);">✓ Covered</span>' : ''}
           ${appliedLoads.has(l.id)
-            ? '<span class="badge badge-applied">Applied</span>'
-            : `<span class="badge badge-${l.status==='new'?'new':l.status==='urgent'?'urgent':'open'}">${l.status==='new'?'New':l.status==='urgent'?'Urgent':'Open'}</span>`
+            ? '<span class="badge badge-applied" data-testid="load-status">Applied</span>'
+            : `<span class="badge badge-${l.status==='new'?'new':l.status==='urgent'?'urgent':'open'}" data-testid="load-status">${l.status==='new'?'New':l.status==='urgent'?'Urgent':'Open'}</span>`
           }
         </div>
       </div>
@@ -535,8 +535,8 @@ function renderLoads() {
         <div class="card-actions">
           <button class="save-btn ${savedLoads.has(l.id)?'saved':''}" data-lid="${lid}" onclick="toggleSave(this.dataset.lid,this)" title="Save">${savedLoads.has(l.id)?'♥':'♡'}</button>
           ${appliedLoads.has(l.id)
-            ? `<button class="apply-btn applied" disabled>Applied</button>`
-            : `<button class="apply-btn" data-lid="${lid}" onclick="openApplyModal(this.dataset.lid)">Apply Now</button>`
+            ? `<button class="apply-btn applied" data-testid="load-card-apply" disabled>Applied</button>`
+            : `<button class="apply-btn" data-testid="load-card-apply" data-lid="${lid}" onclick="openApplyModal(this.dataset.lid)">Apply Now</button>`
           }
         </div>
       </div>
@@ -662,7 +662,7 @@ window.openApplyModal=(loadId)=>{
       </div>
       <div id="applyMsgBox" style="display:none;padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.65rem;"></div>
       ${quickMsg ? `<div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:.4rem;cursor:pointer;" onclick="document.getElementById('applyMessage').value=this.dataset.msg" data-msg="${escapeHtml(quickMsg)}">Quick Apply message loaded — tap to reset</div>` : ''}
-      <button class="modal-submit" id="applySubmitBtn" data-lid="${lid}" onclick="submitApplication(this.dataset.lid)">Submit Application</button>
+      <button class="modal-submit" id="applySubmitBtn" data-testid="apply-confirm" data-lid="${lid}" onclick="submitApplication(this.dataset.lid)">Submit Application</button>
       <div class="modal-note">Your phone number is only shared with the carrier if they accept you.</div>
     </div>`;
 };
@@ -738,7 +738,7 @@ window.submitApplication=async(loadId)=>{
     document.getElementById('applyModalContent').innerHTML=`
       <div class="modal-head"><div></div><button class="modal-close" onclick="closeApplyModal()">✕</button></div>
       <div class="modal-body" style="padding-top:.5rem;">
-        <div class="success-state" style="padding:.5rem 0;">
+        <div class="success-state" data-testid="toast-success" style="padding:.5rem 0;">
           <div style="font-size:2.2rem;margin-bottom:.4rem;">🎉</div>
           <div class="success-title" style="margin-bottom:.5rem;">Application <span>Submitted!</span></div>
           <div style="font-size:.82rem;color:var(--text-2);line-height:1.5;margin-bottom:.85rem;">Sent to <strong style="color:var(--text)">${escapeHtml(load.carrier)}</strong> for <strong style="color:var(--text)">${escapeHtml(load.from)} → ${escapeHtml(load.to)}</strong>. You will get an email and a push notification when they respond.</div>

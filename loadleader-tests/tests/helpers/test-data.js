@@ -33,7 +33,7 @@ export const TEST_LOAD = {
   payStructure: {
     dayRate: '500',
     mileageRate: '2.50',
-    overnight: '150',
+    // overnight: '150',  // SKIPPED: no pay-overnight field in current carrier post-load form
   },
   notes: 'Test load — please ignore. Created by automated test suite.',
 };
