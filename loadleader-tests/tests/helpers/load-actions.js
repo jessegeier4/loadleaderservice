@@ -53,18 +53,22 @@ export async function postLoad(page, overrides = {}) {
   // Navigate to My Loads so the new card is in a visible panel — both for the
   // helper's getAttribute below and for the calling test's toBeVisible check.
   await page.click(SELECTORS.navLoads);
-  await page.waitForSelector(SELECTORS.loadCard, { timeout: 15_000 });
 
-  // Return the most recently posted load — first card on dashboard
-  const firstCard = page.locator(SELECTORS.loadCard).first();
+  // The carrier dashboard renders the same card in BOTH #panel-myloads (the list)
+  // AND #panel-overview (top-3 preview) — same data-testid, same data-load-id.
+  // After navLoads click, the overview is hidden but its cards are still in DOM.
+  // Use Playwright's :visible to scope to the card in the active panel.
+  await page.waitForSelector(`${SELECTORS.loadCard}:visible`, { timeout: 15_000 });
+  const firstCard = page.locator(`${SELECTORS.loadCard}:visible`).first();
   return await firstCard.getAttribute('data-load-id');
 }
 
 /**
- * Find a specific load card by its data-load-id.
+ * Find a specific load card by its data-load-id. Scoped to visible only because
+ * the carrier dashboard duplicates cards across overview + myloads panels.
  */
 export function loadCardById(page, loadId) {
-  return page.locator(`${SELECTORS.loadCard}[data-load-id="${loadId}"]`);
+  return page.locator(`${SELECTORS.loadCard}[data-load-id="${loadId}"]:visible`);
 }
 
 /**
