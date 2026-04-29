@@ -17,6 +17,11 @@ export async function postLoad(page, overrides = {}) {
   // Fill the form
   await page.fill(SELECTORS.loadOrigin, load.origin);
   await page.fill(SELECTORS.loadDestination, load.destination);
+  // pOriginState / pDestState are <select> elements with no testid — use the
+  // raw IDs. Required fields per submitLoad validation, otherwise it rejects
+  // with "Please fill in origin and destination" and never shows the toast.
+  if (load.originState) await page.selectOption('#pOriginState', load.originState);
+  if (load.destinationState) await page.selectOption('#pDestState', load.destinationState);
   await page.fill(SELECTORS.loadPickupDate, load.pickupDate);
   await page.fill(SELECTORS.loadWeight, load.weight);
   await page.fill(SELECTORS.loadLength, load.length);
@@ -24,9 +29,8 @@ export async function postLoad(page, overrides = {}) {
   await page.fill(SELECTORS.loadHeight, load.height);
   await page.fill(SELECTORS.loadCommodity, load.commodity);
 
-  // Pilots needed (number input or select)
-  const pilotsField = page.locator(SELECTORS.loadPilotsNeeded);
-  await pilotsField.fill(String(load.pilotsNeeded));
+  // pPilots is a <select> — use selectOption (page.fill does not work on selects).
+  await page.selectOption(SELECTORS.loadPilotsNeeded, String(load.pilotsNeeded));
 
   // Pay structure
   if (load.payStructure?.dayRate) {
@@ -45,11 +49,11 @@ export async function postLoad(page, overrides = {}) {
   // Wait for success toast or redirect
   await page.waitForSelector(SELECTORS.toastSuccess, { timeout: 15_000 });
 
-  // submitLoad calls loadApplications() (fire-and-forget) which re-renders the
-  // My Loads panel with the new card. The carrier stays on the postload panel
-  // visually, but the new card lands in the (display:none) myloads list — so
-  // wait for it to be ATTACHED, not necessarily visible.
-  await page.waitForSelector(SELECTORS.loadCard, { state: 'attached', timeout: 15_000 });
+  // submitLoad calls loadApplications() but stays on the postload panel.
+  // Navigate to My Loads so the new card is in a visible panel — both for the
+  // helper's getAttribute below and for the calling test's toBeVisible check.
+  await page.click(SELECTORS.navLoads);
+  await page.waitForSelector(SELECTORS.loadCard, { timeout: 15_000 });
 
   // Return the most recently posted load — first card on dashboard
   const firstCard = page.locator(SELECTORS.loadCard).first();

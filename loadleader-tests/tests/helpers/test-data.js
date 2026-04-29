@@ -19,10 +19,15 @@ export const TEST_CARRIER = {
   contactName: 'Test Carrier Mike',
 };
 
-// A reusable load template for tests that need to post one
+// A reusable load template for tests that need to post one.
+// Origin/destination are split into city + state because the carrier post-load
+// form has separate `pOriginCity` / `pOriginState` (select) inputs and validates
+// both. State values must match an option in the select element (full state name).
 export const TEST_LOAD = {
-  origin: 'CHICAGO, IL',
-  destination: 'DENVER, CO',
+  origin: 'CHICAGO',
+  originState: 'Illinois',
+  destination: 'DENVER',
+  destinationState: 'Colorado',
   pickupDate: getDateInDays(7), // 7 days from now
   weight: '85000', // pounds
   length: '75',
