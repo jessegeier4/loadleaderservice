@@ -1,0 +1,23 @@
+# Netlify build configuration.
+#
+# Currently this file exists for one reason: telling Netlify's secret scanner
+# that firebase-config.js intentionally contains Firebase web API keys.
+#
+# Why those keys are NOT secrets:
+#   Firebase web API keys (apiKey field in firebaseConfig) identify the project
+#   to Google's auth servers. They do NOT grant access. Real protection comes
+#   from Firestore Security Rules + Auth + Storage Rules (all deployed in this
+#   repo at firestore.rules and storage.rules).
+#   Per Firebase docs:
+#     "API keys for Firebase services are not secrets... they are not used to
+#      control access to backend resources."
+#     https://firebase.google.com/docs/projects/api-keys
+#
+# Without this exclusion, Netlify's scanner pattern-matches any "AIza..." string
+# as a Google API key and blocks the build.
+
+[build.environment]
+  # Skip secret scanning on the Firebase config file — the keys there are public-safe.
+  # firebase-messaging-sw.js also contains the production apiKey for service-worker
+  # context (cannot use ES module imports). Same reasoning applies.
+  SECRETS_SCAN_OMIT_PATHS = "firebase-config.js,firebase-messaging-sw.js"
