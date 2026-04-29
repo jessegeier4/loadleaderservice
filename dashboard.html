@@ -1066,6 +1066,13 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <input type="text" inputmode="numeric" id="logMiles" placeholder="e.g. 285" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;">
       </div>
       <div>
+        <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.55rem .85rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-input);font-size:.85rem;color:var(--text);user-select:none;">
+          <input type="checkbox" id="logOvernight" style="width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
+          <span>🌙 I stayed overnight</span>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--text-3);">pre-fills on invoice</span>
+        </label>
+      </div>
+      <div>
         <label style="display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;">Notes <span style="color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
         <textarea id="logNotes" placeholder="Permit issues, weather delays, special stops..." rows="3" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.65rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;resize:vertical;"></textarea>
       </div>
@@ -1115,8 +1122,23 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
     </div>
     <input type="hidden" id="expAppId">
     <input type="hidden" id="expRoute">
+    <input type="hidden" id="expEditIndex" value="">
     <div id="expMsg" style="display:none;padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.75rem;"></div>
     <button onclick="submitExpense()" style="width:100%;background:var(--accent);color:#0A0A0A;border:none;padding:.85rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Save Expense</button>
+  </div>
+</div>
+
+<!-- EXPENSE MANAGER MODAL — list / edit / delete existing expenses for a load -->
+<div id="expenseManagerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-card);width:100%;max-width:520px;padding:1.5rem;max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;"><span id="expMgrTitle">Expenses</span> <span id="expMgrTotal" style="color:var(--accent);font-size:.85rem;font-weight:600;letter-spacing:0;text-transform:none;margin-left:.5rem;"></span></div>
+      <button onclick="document.getElementById('expenseManagerModal').style.display='none'" style="background:none;border:none;color:var(--text-3);font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <button onclick="openExpenseLogFromManager()" style="width:100%;background:transparent;border:1px dashed var(--line-strong);color:var(--accent);padding:.7rem 1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:1rem;">+ Add Expense</button>
+    <div id="expMgrList" style="display:flex;flex-direction:column;gap:.5rem;">
+      <div style="text-align:center;padding:2rem 1rem;color:var(--text-3);font-size:.85rem;">No expenses logged yet for this load.</div>
+    </div>
   </div>
 </div>
 
@@ -1765,6 +1787,7 @@ function buildLoadLog(a) {
     '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:34px;font-size:.65rem;flex-shrink:0;">D' + e.day + '</span>' +
     '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.stop || '—') + '</span>' +
     (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;font-size:.65rem;">' + e.miles + 'mi</span>' : '') +
+    (e.overnight ? '<span title="Stayed overnight" style="flex-shrink:0;font-size:.7rem;">🌙</span>' : '') +
     '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-2);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Edit</button>' +
     '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--bad);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Delete</button>' +
     '</div>'
@@ -1809,11 +1832,11 @@ function buildJobCard(a) {
           ${isAccepted ? `
             <button class="job-btn" data-aid="${aid}" onclick="jobBtnViewPermits(this.dataset.aid)">📄 Permits</button>
             <button class="job-btn" data-aid="${aid}" data-count="${logDayCount}" onclick="openLogDay(this.dataset.aid, Number(this.dataset.count))">📝 Log Day</button>
-            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Log Expense</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Expenses</button>
             <button class="job-btn primary" data-aid="${aid}" onclick="jobBtnConfirmDelivery(this.dataset.aid)">✅ Confirm Delivery</button>
           ` : ''}
           ${isCompleted ? `
-            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Log Expense</button>
+            <button class="job-btn" data-aid="${aid}" onclick="jobBtnLogExpense(this.dataset.aid)">🧾 Expenses</button>
             <button class="job-btn" data-aid="${aid}" onclick="jobBtnReviewCarrier(this.dataset.aid)">⭐ Review Carrier</button>
           ` : ''}
         </div>
@@ -1830,7 +1853,7 @@ window.jobBtnViewPermits = (appId) => {
 };
 window.jobBtnLogExpense = (appId) => {
   const a = (window._allJobs || []).find(x => x.id === appId);
-  if (a) openExpenseLog(a.id || '', a.loadRoute || '');
+  if (a) openExpenseManager(a.id || '');
 };
 window.jobBtnConfirmDelivery = (appId) => {
   const a = (window._allJobs || []).find(x => x.id === appId);
@@ -1953,6 +1976,8 @@ window.openLogDay = (appId, currentDayCount) => {
   document.getElementById('logStop').value = '';
   document.getElementById('logMiles').value = '';
   document.getElementById('logNotes').value = '';
+  const overnightEl = document.getElementById('logOvernight');
+  if (overnightEl) overnightEl.checked = false;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = '';
   const msg = document.getElementById('logDayMsg');
@@ -1971,6 +1996,8 @@ window.openEditLogDay = (appId, index) => {
   document.getElementById('logStop').value = entry.stop || '';
   document.getElementById('logMiles').value = entry.miles || '';
   document.getElementById('logNotes').value = entry.notes || '';
+  const overnightEl = document.getElementById('logOvernight');
+  if (overnightEl) overnightEl.checked = !!entry.overnight;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = String(index);
   const msg = document.getElementById('logDayMsg');
@@ -2023,6 +2050,7 @@ window.submitLogDay = async () => {
   const stop     = document.getElementById('logStop').value.trim();
   const miles    = parseInt(document.getElementById('logMiles').value) || 0;
   const notes    = document.getElementById('logNotes').value.trim();
+  const overnight = document.getElementById('logOvernight')?.checked || false;
   const dayNum   = parseInt(document.getElementById('logDayNum').textContent) || 1;
   const editIdx  = document.getElementById('logEditIndex').value;
   const isEdit   = editIdx !== '' && editIdx !== null;
@@ -2043,11 +2071,11 @@ window.submitLogDay = async () => {
       const idx = parseInt(editIdx);
       const app = (window._allJobs || []).find(a => a.id === appId);
       const oldLog = app?.loadLog || [];
-      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, editedAt: new Date().toISOString() } : e);
+      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, overnight, editedAt: new Date().toISOString() } : e);
       await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
       updatedApps = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
     } else {
-      const newEntry = { day: dayNum, date, stop, miles, notes, loggedAt: new Date().toISOString() };
+      const newEntry = { day: dayNum, date, stop, miles, notes, overnight, loggedAt: new Date().toISOString() };
       await updateDoc(doc(db, 'applications', appId), { loadLog: arrayUnion(newEntry) });
       updatedApps = (window._allJobs || []).map(a => {
         if (a.id !== appId) return a;
@@ -2103,13 +2131,151 @@ window.clearExpReceipt = () => {
 window.openExpenseLog = (appId, route) => {
   document.getElementById('expAppId').value = appId;
   document.getElementById('expRoute').value = route || '';
+  document.getElementById('expEditIndex').value = '';
   document.getElementById('expAmount').value = '';
   document.getElementById('expNotes').value = '';
   document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('expCategory').value = 'Gas';
   document.getElementById('expMsg').style.display = 'none';
   clearExpReceipt();
+  // Reset modal title/button to add mode
+  const titleEl = document.querySelector('#expenseModal div[style*="font-family:var(--font-display)"]');
+  const submitBtn = document.querySelector('#expenseModal button[onclick="submitExpense()"]');
+  if (titleEl) titleEl.innerHTML = 'Log <span style="color:var(--accent)">Expense</span>';
+  if (submitBtn) submitBtn.textContent = 'Save Expense';
+  // Re-show the attach-receipt button + the preview's delete-X (openEditExpense
+  // hides both; need to restore for add mode).
+  const attachBtn = document.querySelector('#expenseModal button[onclick*="expReceipt"]');
+  if (attachBtn) attachBtn.style.display = '';
+  const previewX = document.querySelector('#expReceiptPreview button[onclick="clearExpReceipt()"]');
+  if (previewX) previewX.style.display = '';
   document.getElementById('expenseModal').style.display = 'flex';
+};
+
+// Open the expense modal in EDIT mode, pre-filled with an existing entry's values
+window.openEditExpense = (appId, index) => {
+  const app = (window._allJobs || []).find(a => a.id === appId);
+  const entry = app?.expenseLog?.[index];
+  if (!entry) return;
+  document.getElementById('expAppId').value = appId;
+  document.getElementById('expRoute').value = entry.route || '';
+  document.getElementById('expEditIndex').value = String(index);
+  document.getElementById('expAmount').value = entry.amount != null ? entry.amount : '';
+  document.getElementById('expNotes').value = entry.notes || '';
+  document.getElementById('expDate').value = entry.date || '';
+  document.getElementById('expCategory').value = entry.category || 'Gas';
+  document.getElementById('expMsg').style.display = 'none';
+  // Show existing receipt as read-only thumbnail (cannot be replaced; delete entry to swap)
+  clearExpReceipt();
+  if (entry.receiptUrl) {
+    const preview = document.getElementById('expReceiptPreview');
+    const img = document.getElementById('expReceiptImg');
+    if (img && preview) {
+      img.src = entry.receiptUrl;
+      preview.style.display = 'block';
+      // hide the X (delete-receipt) since receipt is immutable on edit
+      const x = preview.querySelector('button');
+      if (x) x.style.display = 'none';
+    }
+  }
+  // Hide the "attach photo" button on edit — receipts can't be added/changed
+  const fileInput = document.getElementById('expReceipt');
+  if (fileInput) fileInput.value = '';
+  const attachBtn = document.querySelector('#expenseModal button[onclick*="expReceipt"]');
+  if (attachBtn) attachBtn.style.display = entry.receiptUrl ? 'none' : 'none';
+  // Update modal title and submit button
+  const titleEl = document.querySelector('#expenseModal div[style*="font-family:var(--font-display)"]');
+  const submitBtn = document.querySelector('#expenseModal button[onclick="submitExpense()"]');
+  if (titleEl) titleEl.innerHTML = 'Edit <span style="color:var(--accent)">Expense</span>';
+  if (submitBtn) submitBtn.textContent = 'Update Expense';
+  document.getElementById('expenseModal').style.display = 'flex';
+};
+
+// Open the management modal — list of expenses for a specific load with edit/delete
+window.openExpenseManager = (appId) => {
+  const app = (window._allJobs || []).find(a => a.id === appId);
+  if (!app) return;
+  document.getElementById('expAppId').value = appId;
+  document.getElementById('expRoute').value = app.loadRoute || '';
+  const list = app.expenseLog || [];
+  // Sort newest-first by date (fallback loggedAt)
+  const sorted = list.map((e, i) => ({ ...e, _index: i }))
+    .sort((a, b) => {
+      const am = new Date(a.date || a.loggedAt || 0).getTime();
+      const bm = new Date(b.date || b.loggedAt || 0).getTime();
+      return bm - am;
+    });
+  const total = list.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+  document.getElementById('expMgrTitle').textContent = 'Expenses';
+  document.getElementById('expMgrTotal').textContent = list.length
+    ? '· $' + total.toFixed(2) + ' total · ' + list.length + ' entr' + (list.length === 1 ? 'y' : 'ies')
+    : '';
+  const container = document.getElementById('expMgrList');
+  if (!list.length) {
+    container.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text-3);font-size:.85rem;">No expenses logged yet for this load.</div>';
+  } else {
+    const icons = { Gas: '⛽', Food: '🍔', Hotel: '🛏️', Tolls: '🛣️', Parking: '🅿️', Repairs: '🔧', Other: '💵' };
+    container.innerHTML = sorted.map(e => {
+      const icon = icons[e.category] || '💵';
+      const amt = (parseFloat(e.amount) || 0).toFixed(2);
+      const dateStr = e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
+      const notesPreview = e.notes ? (e.notes.length > 40 ? e.notes.slice(0, 40) + '…' : e.notes) : '';
+      const hasReceipt = !!e.receiptUrl;
+      return '<div style="display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-card);">' +
+        '<span style="font-size:1.15rem;flex-shrink:0;">' + icon + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:.85rem;font-weight:600;color:var(--text);">$' + amt + ' <span style="color:var(--text-3);font-weight:400;font-size:.75rem;">· ' + escapeHtml(e.category || 'Other') + '</span></div>' +
+          '<div style="font-size:.7rem;color:var(--text-2);margin-top:.1rem;">' + escapeHtml(dateStr) + (notesPreview ? ' · ' + escapeHtml(notesPreview) : '') + (hasReceipt ? ' · 📎' : '') + '</div>' +
+        '</div>' +
+        '<button onclick="openEditExpense(\'' + escapeHtml(appId) + '\',' + e._index + ')" style="background:none;border:none;color:var(--text-2);font-size:.65rem;cursor:pointer;padding:.2rem .5rem;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.5px;font-weight:700;">Edit</button>' +
+        '<button onclick="deleteExpense(\'' + escapeHtml(appId) + '\',' + e._index + ')" style="background:none;border:none;color:var(--bad);font-size:.65rem;cursor:pointer;padding:.2rem .5rem;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.5px;font-weight:700;">Delete</button>' +
+      '</div>';
+    }).join('');
+  }
+  document.getElementById('expenseManagerModal').style.display = 'flex';
+};
+
+// Open the add-expense modal from inside the manager (close manager first so they stack cleanly).
+window.openExpenseLogFromManager = () => {
+  const appId = document.getElementById('expAppId').value;
+  const route = document.getElementById('expRoute').value;
+  document.getElementById('expenseManagerModal').style.display = 'none';
+  openExpenseLog(appId, route);
+};
+
+window.deleteExpense = async (appId, index) => {
+  if (!confirm('Delete this expense entry? This cannot be undone.')) return;
+  const app = (window._allJobs || []).find(a => a.id === appId);
+  if (!app) { alert('Could not find this job in memory — refresh the page and try again.'); return; }
+  const entry = (app.expenseLog || [])[index];
+  if (!entry) return;
+  const newLog = (app.expenseLog || []).filter((_, i) => i !== index);
+  try {
+    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await updateDoc(doc(db, 'applications', appId), { expenseLog: newLog });
+    // Best-effort cleanup of the receipt file in Storage. If it fails (already gone,
+    // permission, etc.) we still consider the delete successful — the metadata is
+    // gone and the user moves on.
+    if (entry.receiptUrl) {
+      try {
+        const { getStorage, ref: sref, deleteObject } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+        // receiptUrl is a download URL; extract the storage path from it.
+        const m = entry.receiptUrl.match(/\/o\/([^?]+)/);
+        if (m && m[1]) {
+          const path = decodeURIComponent(m[1]);
+          await deleteObject(sref(getStorage(), path));
+        }
+      } catch (storageErr) { console.error('Delete receipt:', storageErr); }
+    }
+    window._allJobs = (window._allJobs || []).map(a => a.id === appId ? { ...a, expenseLog: newLog } : a);
+    rerenderJobs(window._allJobs);
+    showToast('Expense deleted');
+    // Re-render the manager modal if still open
+    if (document.getElementById('expenseManagerModal').style.display === 'flex') openExpenseManager(appId);
+  } catch (e) {
+    console.error('Delete expense:', e);
+    alert('Could not delete: ' + (e.code || '') + ' ' + (e.message || 'unknown error'));
+  }
 };
 
 window.submitExpense = async () => {
@@ -2119,6 +2285,8 @@ window.submitExpense = async () => {
   const date     = document.getElementById('expDate').value;
   const notes    = document.getElementById('expNotes').value.trim();
   const route    = document.getElementById('expRoute').value;
+  const editIdx  = document.getElementById('expEditIndex')?.value;
+  const isEdit   = editIdx !== '' && editIdx != null;
   const file     = document.getElementById('expReceipt').files[0];
   const msg      = document.getElementById('expMsg');
   const btn      = document.querySelector('#expenseModal button[onclick="submitExpense()"]');
@@ -2134,29 +2302,52 @@ window.submitExpense = async () => {
     return;
   }
 
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>' + (file ? 'Uploading...' : 'Saving...'); }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>' + (file && !isEdit ? 'Uploading...' : 'Saving...'); }
   try {
-    let receiptUrl = '';
-    if (file) {
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
-      const storage = getStorage();
-      const user = auth.currentUser;
-      const compressed = await compressReceiptImage(file);
-      const path = `receipts/${user.uid}/${appId}/${Date.now()}.jpg`;
-      const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
-      receiptUrl = await getDownloadURL(snap.ref);
-    }
     const { doc, updateDoc, arrayUnion } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const entry = { category, amount, date, notes, route, loggedAt: new Date().toISOString() };
-    if (receiptUrl) entry.receiptUrl = receiptUrl;
-    await updateDoc(doc(db, 'applications', appId), { expenseLog: arrayUnion(entry) });
-    document.getElementById('expenseModal').style.display = 'none';
-    showToast('Expense saved');
+    if (isEdit) {
+      // Edit mode — preserve original loggedAt and receiptUrl (receipts are immutable;
+      // delete the entry to swap the receipt). Only update fields the user can change.
+      const idx = parseInt(editIdx);
+      const app = (window._allJobs || []).find(a => a.id === appId);
+      const oldLog = app?.expenseLog || [];
+      const oldEntry = oldLog[idx] || {};
+      const newLog = oldLog.map((e, i) => i === idx
+        ? { ...oldEntry, category, amount, date, notes, route, editedAt: new Date().toISOString() }
+        : e);
+      await updateDoc(doc(db, 'applications', appId), { expenseLog: newLog });
+      window._allJobs = (window._allJobs || []).map(a => a.id === appId ? { ...a, expenseLog: newLog } : a);
+      document.getElementById('expenseModal').style.display = 'none';
+      showToast('Expense updated');
+      // Re-render manager if it was open behind us
+      openExpenseManager(appId);
+    } else {
+      // Add mode — uploads receipt if attached
+      let receiptUrl = '';
+      if (file) {
+        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+        const storage = getStorage();
+        const user = auth.currentUser;
+        const compressed = await compressReceiptImage(file);
+        const path = `receipts/${user.uid}/${appId}/${Date.now()}.jpg`;
+        const snap = await uploadBytes(ref(storage, path), compressed, { contentType: 'image/jpeg' });
+        receiptUrl = await getDownloadURL(snap.ref);
+      }
+      const entry = { category, amount, date, notes, route, loggedAt: new Date().toISOString() };
+      if (receiptUrl) entry.receiptUrl = receiptUrl;
+      await updateDoc(doc(db, 'applications', appId), { expenseLog: arrayUnion(entry) });
+      window._allJobs = (window._allJobs || []).map(a =>
+        a.id === appId ? { ...a, expenseLog: [...(a.expenseLog || []), entry] } : a);
+      document.getElementById('expenseModal').style.display = 'none';
+      showToast('Expense saved');
+      // Re-open manager so the user lands back on the list with their new entry visible.
+      openExpenseManager(appId);
+    }
   } catch(e) {
     console.error('Expense save error:', e);
     msg.style.cssText = 'display:block;background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);padding:.65rem .9rem;border-radius:var(--r-card);font-size:.8rem;margin-bottom:.75rem;';
     msg.textContent = 'Could not save expense. Please try again.';
-    if (btn) { btn.disabled = false; btn.textContent = 'Save Expense'; }
+    if (btn) { btn.disabled = false; btn.textContent = isEdit ? 'Update Expense' : 'Save Expense'; }
   }
 };
 
@@ -3330,7 +3521,10 @@ window.submitDelivery = async (forceManual) => {
 
     // Fetch day logs from application
     const appSnap = await getDoc(doc(db, 'applications', applicationId));
-    const loadLog = appSnap.data()?.loadLog || [];
+    const appData = appSnap.data() || {};
+    const loadLog = appData.loadLog || [];
+    const overnightRate = parseFloat(appData.loadOvernightRate) || 0;
+    const overnights = loadLog.filter(d => !!d.overnight).length;
 
     // Calculate pay per day: mileage rate only applies on days that hit the threshold
     let totalPay = 0;
@@ -3343,6 +3537,8 @@ window.submitDelivery = async (forceManual) => {
     } else {
       totalPay = pay || 0;
     }
+    // Add overnight pay (count from day logs × per-night rate set by carrier on the load)
+    totalPay += overnights * overnightRate;
 
     // Build invoice data
     const invoiceData = {
@@ -3360,6 +3556,8 @@ window.submitDelivery = async (forceManual) => {
       mileRate: mileRate || 0,
       mileThreshold: mileThreshold || 0,
       days: loadLog,
+      overnights,
+      overnightRate,
       totalPay,
       truckNum: truckNum || '—',
       trailerNum: trailerNum || '—',

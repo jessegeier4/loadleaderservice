@@ -477,6 +477,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <div class="form-group"><label>How Many Pilot Car Drivers?</label><select id="pPilots" data-testid="load-pilots-needed"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
         <div class="form-group"><label>Day Rate ($/day)</label><input type="text" inputmode="decimal" id="pDayRate" data-testid="pay-day-rate" placeholder="e.g. 350"></div>
         <div class="form-group"><label>Mileage Rate ($/mi)</label><input type="text" inputmode="decimal" id="pMileRate" data-testid="pay-mileage-rate" placeholder="e.g. 1.50"></div>
+        <div class="form-group"><label>Overnight Rate ($/night) <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(optional)</span></label><input type="text" inputmode="decimal" id="pOvernightRate" data-testid="pay-overnight" placeholder="e.g. 150"></div>
         <div class="form-group"><label>Mileage Threshold (mi/day)</label><input type="text" inputmode="numeric" id="pMileThreshold" placeholder="e.g. 400"></div>
         <div class="form-group"><label>Total Miles</label><input type="text" inputmode="numeric" id="pMiles" placeholder="e.g. 190"></div>
         <div class="form-group"><label>Move Date</label><input type="date" id="pDate" data-testid="load-pickup-date" style="color-scheme:dark"></div>
@@ -1556,6 +1557,7 @@ window.submitLoad = async () => {
   const height = document.getElementById('pHeight').value.trim();
   const dayRate = parseFloat(document.getElementById('pDayRate').value) || 0;
   const mileRate = parseFloat(document.getElementById('pMileRate').value) || 0;
+  const overnightRate = parseFloat(document.getElementById('pOvernightRate').value) || 0;
   const mileThreshold = parseFloat(document.getElementById('pMileThreshold').value) || 0;
   const date = document.getElementById('pDate').value;
 
@@ -1582,6 +1584,7 @@ window.submitLoad = async () => {
       pilots: parseInt(document.getElementById('pPilots').value),
       dayRate,
       mileRate,
+      overnightRate,
       mileThreshold,
       pay: dayRate,
       date, time: document.getElementById('pTime').value,
@@ -2061,6 +2064,7 @@ window.saveAsTemplate = async () => {
       pilots: document.getElementById('pPilots').value,
       dayRate: document.getElementById('pDayRate').value,
       mileRate: document.getElementById('pMileRate').value,
+      overnightRate: document.getElementById('pOvernightRate').value,
       mileThreshold: document.getElementById('pMileThreshold').value,
       miles: document.getElementById('pMiles').value,
       notes: document.getElementById('pNotes').value,
@@ -2085,6 +2089,7 @@ function loadTemplate(t) {
   setVal('pPilots', t.pilots);
   setVal('pDayRate', t.dayRate || t.pay);
   setVal('pMileRate', t.mileRate);
+  setVal('pOvernightRate', t.overnightRate);
   setVal('pMileThreshold', t.mileThreshold);
   setVal('pMiles', t.miles);
   setVal('pNotes', t.notes);
@@ -2876,6 +2881,7 @@ window.editLoad = (loadId) => {
   setVal('pPilots', l.pilots);
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
+  setVal('pOvernightRate', l.overnightRate);
   setVal('pMileThreshold', l.mileThreshold);
   setVal('pMiles', l.miles);
   setVal('pDate', l.date);
@@ -2911,6 +2917,7 @@ window.repostLoad = (loadId) => {
   setVal('pPilots', l.pilots);
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
+  setVal('pOvernightRate', l.overnightRate);
   setVal('pMileThreshold', l.mileThreshold);
   setVal('pMiles', l.miles);
   setVal('pTime', l.time);
@@ -2929,7 +2936,7 @@ window.cancelEditLoad = () => {
   document.getElementById('pEditLoadId').value = '';
   document.getElementById('postEditBanner').style.display = 'none';
   document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
-  ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pTruckingCompany','pDayRate','pMileRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pTruckingCompany','pDayRate','pMileRate','pOvernightRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   ['pQuickPay','pTextOnly'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
   const dateEl = document.getElementById('pDate');
   if (dateEl) dateEl.value = '';
