@@ -50,11 +50,29 @@ export async function postLoad(page, overrides = {}) {
   await page.waitForSelector(SELECTORS.toastSuccess, { timeout: 15_000 });
 
   // Get the just-posted load id deterministically. submitLoad sets
-  // window._lastPostedLoadId = ref.id after addDoc — this is essential because
-  // staging Firestore accumulates test data across runs, and "the first card on
-  // dashboard" is not reliable (no sort order, multiple cards may match).
-  const loadId = await page.evaluate(() => window._lastPostedLoadId);
-  if (!loadId) throw new Error('postLoad: window._lastPostedLoadId not set after submit — did submitLoad run?');
+  // window._lastPostedLoadId = ref.id after addDoc, BUT only on builds that
+  // include the latest carrier-dashboard.html. To handle staging deploys that
+  // are behind main, fall back to querying Firestore directly for the most
+  // recent postedAt by the current carrier — which works against any version
+  // of the page as long as Firebase is initialized (which it is, since we
+  // just used the same SDK to post the load).
+  const loadId = await page.evaluate(async () => {
+    if (window._lastPostedLoadId) return window._lastPostedLoadId;
+    const { getApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const db = getFirestore(getApp());
+    const uid = getAuth(getApp()).currentUser?.uid;
+    if (!uid) return null;
+    const snap = await getDocs(query(collection(db, 'loads'), where('carrierId', '==', uid)));
+    let newestId = null, newestMs = 0;
+    snap.forEach(d => {
+      const ms = d.data().postedAt?.toMillis?.() || 0;
+      if (ms > newestMs) { newestMs = ms; newestId = d.id; }
+    });
+    return newestId;
+  });
+  if (!loadId) throw new Error('postLoad: could not determine just-posted loadId from Firestore or window._lastPostedLoadId');
 
   // Navigate to My Loads so the new card is in a visible panel — both for the
   // calling test's toBeVisible check and any follow-up locator queries.
