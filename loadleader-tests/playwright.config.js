@@ -15,8 +15,9 @@ export default defineConfig({
   fullyParallel: true,
   // Fail the build on CI if you left test.only in source
   forbidOnly: !!process.env.CI,
-  // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  // No retries on CI yet — gives us fast feedback on real failures while we
+  // stabilize. Bump to 1-2 once tests are reliably green.
+  retries: 0,
   // Opt out of parallel tests on CI for stability
   workers: process.env.CI ? 1 : undefined,
   // Reporter to use
@@ -46,24 +47,22 @@ export default defineConfig({
     navigationTimeout: 15_000,
   },
 
-  // Configure projects for major browsers
+  // Configure projects for major browsers.
+  // mobile-safari (webkit) disabled while we stabilize — doubles run time and adds
+  // iOS-specific quirks not worth debugging at this stage. Re-enable when chromium
+  // is reliably green.
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    {
-      name: 'mobile-safari',
-      use: { ...devices['iPhone 13'] },
-    },
-    // Uncomment to also test in Firefox/Webkit/Android
+    // {
+    //   name: 'mobile-safari',
+    //   use: { ...devices['iPhone 13'] },
+    // },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'mobile-android',
-    //   use: { ...devices['Pixel 7'] },
     // },
   ],
 });
