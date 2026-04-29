@@ -49,18 +49,23 @@ export async function postLoad(page, overrides = {}) {
   // Wait for success toast or redirect
   await page.waitForSelector(SELECTORS.toastSuccess, { timeout: 15_000 });
 
-  // submitLoad calls loadApplications() but stays on the postload panel.
+  // Get the just-posted load id deterministically. submitLoad sets
+  // window._lastPostedLoadId = ref.id after addDoc — this is essential because
+  // staging Firestore accumulates test data across runs, and "the first card on
+  // dashboard" is not reliable (no sort order, multiple cards may match).
+  const loadId = await page.evaluate(() => window._lastPostedLoadId);
+  if (!loadId) throw new Error('postLoad: window._lastPostedLoadId not set after submit — did submitLoad run?');
+
   // Navigate to My Loads so the new card is in a visible panel — both for the
-  // helper's getAttribute below and for the calling test's toBeVisible check.
+  // calling test's toBeVisible check and any follow-up locator queries.
   await page.click(SELECTORS.navLoads);
 
-  // The carrier dashboard renders the same card in BOTH #panel-myloads (the list)
-  // AND #panel-overview (top-3 preview) — same data-testid, same data-load-id.
-  // After navLoads click, the overview is hidden but its cards are still in DOM.
-  // Use Playwright's :visible to scope to the card in the active panel.
-  await page.waitForSelector(`${SELECTORS.loadCard}:visible`, { timeout: 15_000 });
-  const firstCard = page.locator(`${SELECTORS.loadCard}:visible`).first();
-  return await firstCard.getAttribute('data-load-id');
+  // Wait for the specific card we just posted to be visible. The carrier
+  // dashboard renders the same card in #panel-myloads (visible) AND
+  // #panel-overview (hidden after this click) — the :visible filter scopes to
+  // the active panel.
+  await page.waitForSelector(`${SELECTORS.loadCard}[data-load-id="${loadId}"]:visible`, { timeout: 15_000 });
+  return loadId;
 }
 
 /**

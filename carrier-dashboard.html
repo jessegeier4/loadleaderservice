@@ -1601,7 +1601,11 @@ window.submitLoad = async () => {
       loadData.status = 'active';
       loadData.loadNum = (allCarrierLoads.length || 0) + 1;
       loadData.postedAt = serverTimestamp();
-      await addDoc(collection(db, 'loads'), loadData);
+      const newLoadRef = await addDoc(collection(db, 'loads'), loadData);
+      // Expose the just-posted id so e2e tests can find it deterministically.
+      // Without this, tests have to guess which card is "the new one" and end
+      // up picking a stale load when test data accumulates.
+      window._lastPostedLoadId = newLoadRef.id;
     }
 
     btn.disabled = false;
