@@ -1029,6 +1029,9 @@ async function initPushNotifications(user) {
   try {
     if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
     if (!FCM_VAPID_KEY) { console.log('Push: VAPID key not configured yet'); return; }
+    // Skip FCM on staging — VAPID key + service worker are pinned to the production
+    // Firebase project. Push is not under test, so silently skipping is fine.
+    if (window.LOADLEADER_ENV === 'staging') { console.log('Push: skipped on staging'); return; }
     if (Notification.permission === 'denied') return;
     const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     if (Notification.permission !== 'granted') {
