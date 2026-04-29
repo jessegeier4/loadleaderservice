@@ -974,15 +974,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAzAeTkeBbkeuebjwhgj3nedgbdgbhJ1KI",
-  authDomain: "load-leader.firebaseapp.com",
-  projectId: "load-leader",
-  storageBucket: "load-leader.firebasestorage.app",
-  messagingSenderId: "411492756195",
-  appId: "1:411492756195:web:ffd28b7e1dd32b2670f3d6"
-};
+import { firebaseConfig } from '/firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);

@@ -20,16 +20,14 @@ const PRODUCTION_CONFIG = {
 };
 
 // ============ STAGING CONFIG ============
-// Filled in after the staging Firebase project is created. Until then these are
-// placeholders — staging URLs will fail to initialize Firebase, which is fine
-// because nobody navigates to staging URLs until the project exists.
 const STAGING_CONFIG = {
-  apiKey: "REPLACE_WITH_YOUR_STAGING_API_KEY",
-  authDomain: "REPLACE_WITH_YOUR_STAGING_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_STAGING_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STAGING_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_STAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_STAGING_APP_ID"
+  apiKey: "AIzaSyCc46L1Ee5r6g-3Ti-fyEczTPeO2Iw1mS8",
+  authDomain: "loadleader-staging.firebaseapp.com",
+  projectId: "loadleader-staging",
+  storageBucket: "loadleader-staging.firebasestorage.app",
+  messagingSenderId: "975417711682",
+  appId: "1:975417711682:web:ee10c16d7fb744944c61db",
+  measurementId: "G-YS4CP1K63Q"
 };
 
 // ============ AUTO-ROUTE ============
