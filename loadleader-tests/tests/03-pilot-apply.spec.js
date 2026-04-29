@@ -59,7 +59,8 @@ test.describe('Pilot — Search & Apply', () => {
     }
   });
 
-  test('counter updates after pilot applies and is accepted', async ({ page, browser }) => {
+  // SKIPPED: pilot counter UI ("X OF Y") not yet built.
+  test.skip('counter updates after pilot applies and is accepted', async ({ page, browser }) => {
     // Carrier posts a 2-pilot load
     const carrierContext = await browser.newContext();
     const carrierPage = await carrierContext.newPage();

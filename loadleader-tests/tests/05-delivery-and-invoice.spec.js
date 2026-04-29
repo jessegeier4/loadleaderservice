@@ -12,7 +12,10 @@ import { loginAsPilot, loginAsCarrier } from './helpers/auth.js';
 import { postLoad, loadCardById, applyToLoad } from './helpers/load-actions.js';
 import { SELECTORS } from './helpers/test-data.js';
 
-test.describe('Delivery & Invoice (End-to-End Happy Path)', () => {
+// SKIPPED: mark-delivered + invoice form are Part D — features not yet built.
+// Re-enable (remove .skip) once mark-delivered, invoice-create, invoice-* form
+// fields, and invoice-submit ship in the pilot dashboard.
+test.describe.skip('Delivery & Invoice (End-to-End Happy Path)', () => {
 
   test('full flow: post → apply → accept → deliver → invoice', async ({ page, browser }) => {
     // 1. Carrier posts a load

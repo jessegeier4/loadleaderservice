@@ -35,7 +35,7 @@ test.describe('Authentication', () => {
   });
 
   test('wrong password shows error and does not log in', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/login.html');
     await page.fill(SELECTORS.loginEmail, TEST_PILOT.email);
     await page.fill(SELECTORS.loginPassword, 'wrongpassword123');
     await page.click(SELECTORS.loginSubmit);

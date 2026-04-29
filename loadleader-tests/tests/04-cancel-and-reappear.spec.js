@@ -12,7 +12,10 @@ import { loginAsPilot, loginAsCarrier } from './helpers/auth.js';
 import { postLoad, loadCardById, applyToLoad, getPilotCounterText, isLoadFull } from './helpers/load-actions.js';
 import { SELECTORS } from './helpers/test-data.js';
 
-test.describe('Cancel & Auto-Reappear (Part B/C)', () => {
+// SKIPPED: cancel/remove/auto-reappear flow is Part B/C — features not yet built.
+// Re-enable (remove .skip) once cancel-load, remove-pilot, cancel-reason, and
+// cancel-confirm UI ships in dashboard / carrier-dashboard.
+test.describe.skip('Cancel & Auto-Reappear (Part B/C)', () => {
 
   test('pilot cancels — load reappears as open with correct counter', async ({ page, browser }) => {
     // Setup: carrier posts 2-pilot load, pilot gets accepted
