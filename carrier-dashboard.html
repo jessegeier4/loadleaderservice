@@ -32,8 +32,8 @@
   --blue-bg:var(--info-bg); --orange:#FF8A00;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--black);color:var(--white);font-family:var(--font-body);min-height:100vh;text-transform:uppercase;}
-input,textarea,select{text-transform:none;font-size:16px;}
+body{background:var(--black);color:var(--white);font-family:var(--font-body);min-height:100vh;}
+input,textarea,select{font-size:16px;}
 
 /* LOADING */
 #loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
@@ -108,7 +108,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 
 /* SECTION HEADERS */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
-.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;}
+.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.2;padding-bottom:.15rem;}
 .sec-title span{color:var(--yellow);}
 
 /* MY LOADS */
@@ -214,15 +214,70 @@ select option{background:var(--mid);}
 .prs-val{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);}
 .prs-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 
-/* CONVERSATIONS / MESSAGES */
-.conv-item{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;cursor:pointer;transition:background .2s;border-bottom:1px solid #1a1a1a;}
-.conv-item:hover,.conv-item.active{background:var(--mid);}
-.conv-av{width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;color:var(--black);flex-shrink:0;overflow:hidden;}
-.conv-name{font-size:.85rem;font-weight:500;margin-bottom:.1rem;}
-.conv-preview{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
-.msg-bubble{max-width:75%;padding:.55rem .85rem;border-radius:var(--r-card);font-size:.82rem;line-height:1.5;word-break:break-word;text-transform:none;}
-.msg-bubble.sent{background:var(--yellow);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
-.msg-bubble.recv{background:var(--mid);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px;}
+/* MESSAGES — modern two-pane chat (mirrors pilot dashboard) */
+#panel-messages.active .sec-head{margin-bottom:.85rem;}
+.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100vh - 180px);min-height:540px;}
+.msg-list-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;}
+.msg-list-head{padding:1rem 1.1rem .75rem;border-bottom:1px solid var(--border);}
+.msg-list-title{font-family:var(--font-display);font-size:.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.msg-search{position:relative;}
+.msg-search input{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .85rem .55rem 2.1rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .15s ease,box-shadow .15s ease;}
+.msg-search input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,0.12);}
+.msg-search svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-3);pointer-events:none;}
+.conv-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.conv-item{display:flex;align-items:center;gap:.85rem;padding:.85rem 1.1rem;cursor:pointer;transition:background .15s ease;border-bottom:1px solid rgba(255,255,255,0.04);position:relative;}
+.conv-item:hover{background:rgba(255,255,255,0.025);}
+.conv-item.active{background:var(--mid);}
+.conv-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;background:var(--yellow);border-radius:0 2px 2px 0;}
+.conv-av{width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--black);flex-shrink:0;overflow:hidden;}
+.conv-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.conv-row{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;}
+.conv-name{font-size:.92rem;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.conv-item.unread .conv-name{font-weight:700;}
+.conv-time{font-size:.72rem;color:var(--text-3);font-weight:500;white-space:nowrap;flex-shrink:0;}
+.conv-preview{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;}
+.conv-item.unread .conv-preview{color:var(--white);font-weight:500;}
+.conv-unread-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;box-shadow:0 0 8px rgba(245,196,0,0.5);}
+.msg-thread-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);display:flex;flex-direction:column;overflow:hidden;}
+.msg-thread-head{padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.85rem;flex-shrink:0;}
+.msg-back-btn{display:none;background:transparent;border:none;color:var(--yellow);cursor:pointer;padding:.4rem;border-radius:var(--r-btn);transition:background .15s ease;flex-shrink:0;}
+.msg-back-btn:hover{background:var(--mid);}
+.msg-back-btn svg{width:20px;height:20px;display:block;}
+.msg-thread-name{font-weight:600;font-size:.95rem;color:var(--white);line-height:1.2;}
+.msg-thread-sub{font-size:.75rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;}
+.msg-area{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:.4rem;min-height:0;scroll-behavior:smooth;}
+.msg-date-divider{align-self:center;font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);padding:.5rem 1rem;margin:.5rem 0 .25rem;}
+.msg-row{display:flex;flex-direction:column;max-width:100%;}
+.msg-row.sent{align-items:flex-end;}
+.msg-row.recv{align-items:flex-start;}
+.msg-row + .msg-row{margin-top:0;}
+.msg-row.gap{margin-top:.6rem;}
+.msg-bubble{max-width:68%;padding:.65rem .95rem;border-radius:18px;font-size:.92rem;line-height:1.45;word-break:break-word;text-transform:none;}
+.msg-bubble.sent{background:var(--yellow);color:var(--black);font-weight:500;border-bottom-right-radius:6px;}
+.msg-bubble.recv{background:var(--mid);color:var(--white);border-bottom-left-radius:6px;}
+.msg-row.burst-mid .msg-bubble.sent{border-bottom-right-radius:18px;}
+.msg-row.burst-mid .msg-bubble.recv{border-bottom-left-radius:18px;}
+.msg-row.burst-end .msg-bubble.sent{border-bottom-right-radius:6px;}
+.msg-row.burst-end .msg-bubble.recv{border-bottom-left-radius:6px;}
+.msg-time{font-size:.68rem;color:var(--text-3);margin-top:.25rem;padding:0 .35rem;font-weight:500;}
+.msg-row.sent .msg-time{text-align:right;}
+.msg-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--muted);gap:.75rem;}
+.msg-empty-icon{width:56px;height:56px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;color:var(--text-3);}
+.msg-empty-icon svg{width:24px;height:24px;}
+.msg-empty-text{font-size:.95rem;color:var(--text-2);}
+.msg-empty-sub{font-size:.82rem;color:var(--muted);}
+.msg-composer{padding:.85rem 1rem;border-top:1px solid var(--border);display:flex;gap:.65rem;align-items:flex-end;flex-shrink:0;background:var(--card);}
+.msg-composer-field{flex:1;display:flex;align-items:center;background:var(--mid);border:1px solid #2a2a2a;border-radius:22px;padding:.4rem .9rem;transition:border-color .15s ease,box-shadow .15s ease;}
+.msg-composer-field:focus-within{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,0.10);}
+.msg-composer textarea{flex:1;background:transparent;border:none;color:var(--white);font-family:var(--font-body);font-size:15px;line-height:1.45;outline:none;resize:none;padding:.55rem 0;min-height:24px;max-height:120px;text-transform:none;}
+.msg-composer textarea::placeholder{color:var(--text-3);}
+.msg-send-btn{background:var(--yellow);color:var(--black);border:none;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 150ms ease,transform 150ms ease,box-shadow 150ms ease;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.msg-send-btn:hover{background:#FFE066;transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 6px 14px rgba(245,196,0,0.30);}
+.msg-send-btn:active{transform:translateY(0);transition-duration:80ms;}
+.msg-send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.msg-send-btn svg{width:18px;height:18px;display:block;}
+@keyframes msgPaneSlide{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){.msg-shell.chat-open > .msg-thread-pane{animation:none;}}
 
 /* EMPTY */
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
@@ -248,31 +303,24 @@ select option{background:var(--mid);}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:var(--r-btn);transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);}
 .mn-item.active{color:var(--yellow);}
-.mn-icon{font-size:1.25rem;}
+.mn-icon{display:inline-flex;align-items:center;justify-content:center;height:22px;line-height:1;}
+.mn-icon svg{width:22px;height:22px;display:block;}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
 @media(max-width:600px){
   .mobile-nav{display:block;}
   .mn-item{padding:.3rem .35rem!important;}
   .mn-label{font-size:.6rem!important;letter-spacing:0!important;}
   .dash-wrap{padding-bottom:6.5rem;}
-  #cMsgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
-  #cMsgLayout > div:last-child{display:none!important;}
-  #cMsgLayout.chat-open > div:first-child{display:none!important;}
+  #cMsgLayout.msg-shell{grid-template-columns:1fr!important;height:calc(100dvh - 145px)!important;min-height:unset!important;gap:0!important;}
+  .msg-list-pane,.msg-thread-pane{border-radius:0!important;border-left:none;border-right:none;}
+  #cMsgLayout.msg-shell > .msg-thread-pane{display:none!important;}
+  #cMsgLayout.msg-shell.chat-open > .msg-list-pane{display:none!important;}
   #panel-messages.chat-open > .sec-head{display:none!important;}
-  #cMsgLayout.chat-open > div:last-child{
-    display:flex!important;flex-direction:column;
-    height:calc(100vh - 165px);min-height:300px;
-    overflow:hidden;border-radius:12px;
-  }
-  #cChatMessages{
-    overflow-x:hidden!important;
-    background:var(--surface)!important;
-    padding:1rem .75rem!important;
-  }
-  .msg-bubble{max-width:68%!important;}
-  .msg-bubble.sent{border-radius:18px 18px 4px 18px!important;}
-  .msg-bubble.recv{border-radius:18px 18px 18px 4px!important;}
-  #cMsgBackBtn{display:block!important;}
+  #cMsgLayout.msg-shell.chat-open > .msg-thread-pane{display:flex!important;animation:msgPaneSlide 220ms cubic-bezier(0.4,0,0.2,1);}
+  .msg-back-btn{display:flex!important;width:40px;height:40px;}
+  .msg-area{padding:1rem .9rem!important;}
+  .msg-bubble{max-width:78%!important;}
+  .msg-composer{padding-bottom:max(.85rem,env(safe-area-inset-bottom))!important;}
 }
 
 /* UTILS */
@@ -686,37 +734,62 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
   <!-- MESSAGES PANEL -->
   <div class="panel" id="panel-messages">
-    <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">💬 <span>Messages</span></div>
-      <button class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;" onclick="showCarrierNewMsgModal()">+ New Message</button>
+    <div class="sec-head" style="margin-bottom:1.25rem;">
+      <div class="sec-title">My <span>Messages</span></div>
+      <button class="btn btn-y" style="font-size:.8rem;padding:.55rem 1.1rem;display:inline-flex;align-items:center;gap:.4rem;" onclick="showCarrierNewMsgModal()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Message
+      </button>
     </div>
-    <div id="cMsgLayout" style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:500px;">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-        <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;">Conversations</div>
-        <div id="cConvList">
-          <div class="empty-state" style="padding:2rem 1rem;">
-            <div class="empty-icon">💬</div>
-            <div class="empty-text" style="font-size:.82rem;">No conversations yet</div>
+    <div class="msg-shell" id="cMsgLayout">
+
+      <!-- LEFT: conversation list pane -->
+      <aside class="msg-list-pane">
+        <div class="msg-list-head">
+          <div class="msg-list-title">Conversations</div>
+          <div class="msg-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="cConvSearch" placeholder="Search messages..." oninput="filterCarrierConversations(this.value)">
           </div>
         </div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;">
-        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;">
-          <button id="cMsgBackBtn" onclick="closeMobileCarrierChat()" style="display:none;background:transparent;border:none;color:var(--yellow);font-size:1.3rem;cursor:pointer;padding:0 .25rem 0 0;line-height:1;flex-shrink:0;">←</button>
-          <div id="cChatAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.9rem;color:var(--black);flex-shrink:0;">?</div>
-          <div>
-            <div id="cChatName" style="font-weight:600;font-size:.875rem;">Select a conversation</div>
-            <div id="cChatSub" style="font-size:.7rem;color:var(--muted);">or start a new one</div>
+        <div class="conv-list" id="cConvList" role="list">
+          <div class="msg-empty" style="padding:2rem 1rem;">
+            <div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="msg-empty-text">No conversations yet</div>
+            <div class="msg-empty-sub">Pilots will reach out about your loads</div>
           </div>
         </div>
-        <div id="cChatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem;min-height:300px;">
-          <div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Select a conversation to start chatting</div>
+      </aside>
+
+      <!-- RIGHT: thread pane -->
+      <section class="msg-thread-pane">
+        <header class="msg-thread-head">
+          <button class="msg-back-btn" id="cMsgBackBtn" onclick="closeMobileCarrierChat()" aria-label="Back to conversations">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <div id="cChatAvatar" class="conv-av" style="width:42px;height:42px;">?</div>
+          <div style="flex:1;min-width:0;">
+            <div id="cChatName" class="msg-thread-name">Select a conversation</div>
+            <div id="cChatSub" class="msg-thread-sub"><span>or start a new one</span></div>
+          </div>
+        </header>
+        <div id="cChatMessages" class="msg-area" role="log" aria-live="polite">
+          <div class="msg-empty" style="margin:auto 0;">
+            <div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="msg-empty-text">Pick a conversation</div>
+            <div class="msg-empty-sub">Or start a new one to get going</div>
+          </div>
         </div>
-        <div style="padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;">
-          <input type="text" id="cMsgInput" placeholder="Type a message..." style="flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.6rem .9rem;border-radius:6px;font-family:sans-serif;font-size:15px;outline:none;" onkeydown="if(event.key==='Enter')sendCarrierMessage()">
-          <button onclick="sendCarrierMessage()" style="background:var(--yellow);color:var(--black);border:none;padding:.6rem 1.1rem;border-radius:6px;font-family:sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;">Send</button>
-        </div>
-      </div>
+        <form class="msg-composer" onsubmit="event.preventDefault();sendCarrierMessage();">
+          <div class="msg-composer-field">
+            <textarea id="cMsgInput" rows="1" placeholder="Type a message..." onkeydown="if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();sendCarrierMessage();}" oninput="onCarrierComposerInput(this)"></textarea>
+          </div>
+          <button type="submit" class="msg-send-btn" id="cMsgSendBtn" aria-label="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </section>
+
     </div>
   </div>
 
@@ -963,11 +1036,11 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 <!-- MOBILE NAV -->
 <div class="mobile-nav">
   <div class="mobile-nav-items">
-    <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon">🏠</span><span class="mn-label">Home</span></button>
-    <button class="mn-item" onclick="showPanel('myloads',this)"><span class="mn-icon">🚛</span><span class="mn-label">Loads</span></button>
-    <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></button>
-    <button class="mn-item" onclick="showPanel('postload',this)"><span class="mn-icon">➕</span><span class="mn-label">Post</span></button>
-    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">🏢</span><span class="mn-label">Profile</span></button>
+    <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="mn-label">Home</span></button>
+    <button class="mn-item" onclick="showPanel('myloads',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span><span class="mn-label">Loads</span></button>
+    <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="mn-label">Messages</span></button>
+    <button class="mn-item" onclick="showPanel('postload',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="mn-label">Post</span></button>
+    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></span><span class="mn-label">Profile</span></button>
   </div>
 </div>
 
@@ -2480,6 +2553,24 @@ let cActiveOtherId = null;
 let cConvUnsubscribe = null;
 let cSelectedRecipient = null;
 
+function _formatCConvTime(ts) {
+  if (!ts?.toMillis) return '';
+  const d = new Date(ts.toMillis());
+  const now = new Date();
+  const diffH = (now - d) / 36e5;
+  if (diffH < 24 && d.getDate() === now.getDate()) return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  if (diffH < 48) return 'Yesterday';
+  if (diffH < 168) return d.toLocaleDateString([], {weekday:'short'});
+  return d.toLocaleDateString([], {month:'short', day:'numeric'});
+}
+function _formatCDateDivider(d) {
+  const now = new Date();
+  const today = now.toDateString();
+  const yest = new Date(now.getTime() - 86400000).toDateString();
+  if (d.toDateString() === today) return 'Today';
+  if (d.toDateString() === yest) return 'Yesterday';
+  return d.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric'});
+}
 async function loadCarrierConversations() {
   if (!currentUser) return;
   try {
@@ -2488,7 +2579,7 @@ async function loadCarrierConversations() {
     const convList = document.getElementById('cConvList');
     if (!convList) return;
     if (snap.empty) {
-      convList.innerHTML = '<div class="empty-state" style="padding:2rem 1rem;"><div class="empty-icon">💬</div><div class="empty-text" style="font-size:.82rem;">No conversations yet</div></div>';
+      convList.innerHTML = '<div class="msg-empty" style="padding:2.5rem 1rem;"><div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="msg-empty-text">No conversations yet</div><div class="msg-empty-sub">Pilots will reach out about your loads</div></div>';
       return;
     }
     const convs = [];
@@ -2499,13 +2590,19 @@ async function loadCarrierConversations() {
       const otherName = c.participantNames?.[otherId] || 'Pilot';
       const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
       const hasUnread = c.unread?.[currentUser.uid] > 0;
-      return `<div class="conv-item ${cActiveConvId === c.id ? 'active' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" onclick="openCarrierConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
+      const time = _formatCConvTime(c.lastMessageAt);
+      return `<div class="conv-item ${cActiveConvId === c.id ? 'active' : ''} ${hasUnread ? 'unread' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" data-search-name="${escapeHtml(otherName.toLowerCase())}" onclick="openCarrierConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
         <div class="conv-av">${escapeHtml(initials)}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="conv-name">${escapeHtml(otherName)}</div>
-          <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
+        <div class="conv-body">
+          <div class="conv-row">
+            <div class="conv-name">${escapeHtml(otherName)}</div>
+            <div class="conv-time">${escapeHtml(time)}</div>
+          </div>
+          <div class="conv-row">
+            <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
+            ${hasUnread ? '<div class="conv-unread-dot"></div>' : ''}
+          </div>
         </div>
-        ${hasUnread ? '<div class="conv-unread-dot" style="width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;"></div>' : ''}
       </div>`;
     }).join('');
 
@@ -2515,6 +2612,21 @@ async function loadCarrierConversations() {
     if (dot) dot.style.display = unreadCount > 0 ? 'block' : 'none';
   } catch(e) { console.error('Load carrier conversations:', e); }
 }
+
+window.filterCarrierConversations = (q) => {
+  const term = (q || '').toLowerCase().trim();
+  document.querySelectorAll('#cConvList .conv-item').forEach(item => {
+    const name = item.dataset.searchName || '';
+    item.style.display = (!term || name.includes(term)) ? '' : 'none';
+  });
+};
+
+window.onCarrierComposerInput = (el) => {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  const btn = document.getElementById('cMsgSendBtn');
+  if (btn) btn.disabled = !el.value.trim();
+};
 
 window.closeMobileCarrierChat = () => {
   document.getElementById('cMsgLayout').classList.remove('chat-open');
@@ -2528,7 +2640,8 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
   const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('cChatAvatar').textContent = initials;
   document.getElementById('cChatName').textContent = otherName;
-  document.getElementById('cChatSub').textContent = 'Direct message';
+  document.getElementById('cChatSub').innerHTML = '<span>Direct message</span>';
+  document.querySelectorAll('#cConvList .conv-item').forEach(it => it.classList.toggle('active', it.dataset.convId === convId));
   if (window.innerWidth <= 600) {
     document.getElementById('cMsgLayout').classList.add('chat-open');
     document.getElementById('panel-messages').classList.add('chat-open');
@@ -2540,6 +2653,7 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
   try {
     const { collection, query, where, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     if (cConvUnsubscribe) cConvUnsubscribe();
+    let lastCount = 0;
     cConvUnsubscribe = onSnapshot(
       query(collection(db, 'messages'), where('conversationId', '==', convId)),
       (snap) => {
@@ -2548,17 +2662,44 @@ window.openCarrierConversation = async (convId, otherId, otherName) => {
         msgs.sort((a, b) => (a.sentAt?.toMillis?.() || 0) - (b.sentAt?.toMillis?.() || 0));
         const container = document.getElementById('cChatMessages');
         if (!msgs.length) {
-          container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Start the conversation!</div>';
+          container.innerHTML = '<div class="msg-empty" style="margin:auto 0;"><div class="msg-empty-text">Start the conversation</div><div class="msg-empty-sub">Say hi!</div></div>';
+          lastCount = 0;
           return;
         }
-        container.innerHTML = msgs.map(m => {
+        const wasAtBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) < 80;
+        const isFirstRender = lastCount === 0;
+        const html = [];
+        let lastDay = '';
+        let lastSenderId = null;
+        let lastSentAt = 0;
+        msgs.forEach((m, idx) => {
           const isMine = m.senderId === currentUser.uid;
-          return `<div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
+          const ts = m.sentAt?.toMillis?.() || 0;
+          const d = new Date(ts || Date.now());
+          const day = d.toDateString();
+          if (day !== lastDay) {
+            html.push(`<div class="msg-date-divider">${escapeHtml(_formatCDateDivider(d))}</div>`);
+            lastDay = day;
+            lastSenderId = null;
+          }
+          const sameSender = m.senderId === lastSenderId && (ts - lastSentAt) < 120000;
+          const next = msgs[idx + 1];
+          const nextSame = next && next.senderId === m.senderId && ((next.sentAt?.toMillis?.() || 0) - ts) < 120000;
+          const burstClass = sameSender && nextSame ? 'burst-mid' : (nextSame ? '' : (sameSender ? 'burst-end' : 'burst-end'));
+          const gapClass = !sameSender && idx > 0 ? 'gap' : '';
+          const time = ts ? new Date(ts).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) : '';
+          html.push(`<div class="msg-row ${isMine ? 'sent' : 'recv'} ${burstClass} ${gapClass}" title="${escapeHtml(time)}">
             <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${escapeHtml(m.text)}</div>
-            <div style="font-size:.62rem;color:#444;margin-top:.2rem;${isMine ? 'text-align:right' : ''}">${m.sentAt ? new Date(m.sentAt.toMillis()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}</div>
-          </div>`;
-        }).join('');
-        container.scrollTop = container.scrollHeight;
+            ${(!nextSame && time) ? `<div class="msg-time ${isMine ? 'sent' : ''}">${escapeHtml(time)}</div>` : ''}
+          </div>`);
+          lastSenderId = m.senderId;
+          lastSentAt = ts;
+        });
+        container.innerHTML = html.join('');
+        if (isFirstRender || wasAtBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+        lastCount = msgs.length;
       }
     );
   } catch(e) { console.error('Open carrier conversation:', e); }

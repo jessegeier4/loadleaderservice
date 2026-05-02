@@ -9,6 +9,7 @@
 <meta name="description" content="LoadLeader is the first load board built for pilot car operators and the carriers who hire them. Real loads, real pay, real time.">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
+<script src="/tokens-theme.js"></script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#FFCD11">
 <meta name="mobile-web-app-capable" content="yes">
@@ -16,38 +17,75 @@
 <meta name="apple-mobile-web-app-title" content="LoadLeader">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-/* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;border-bottom:1px solid var(--line);position:fixed;top:0;width:100%;background:rgba(10,10,10,0.92);backdrop-filter:blur(16px);z-index:200;transition:padding var(--dur-hover) var(--ease);}
-nav.scrolled{padding:.75rem 3rem;}
+/* NAV — transparent over the hero, solidifies once the user scrolls past the top */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;position:fixed;top:0;width:100%;background:transparent;z-index:200;transition:background var(--dur-hover) var(--ease),padding var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease);border-bottom:1px solid transparent;}
+nav.scrolled{padding:.75rem 3rem;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom-color:var(--line);}
 .logo{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:0.10em;color:var(--text);text-decoration:none;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;}
 .logo-sq{width:20px;height:20px;background:var(--accent);display:inline-block;flex-shrink:0;}
 .logo span{color:var(--accent);}
 .nav-links{display:flex;gap:.25rem;}
-.nav-links a{font-family:var(--font-display);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-2);text-decoration:none;padding:8px 12px;transition:color var(--dur-hover) var(--ease);}
+.nav-links a{position:relative;font-family:var(--font-display);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-2);text-decoration:none;padding:8px 12px;transition:color var(--dur-hover) var(--ease);}
+.nav-links a::after{content:'';position:absolute;left:12px;right:12px;bottom:2px;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 200ms var(--ease);}
 .nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{transform:scaleX(1);}
 .nav-right{display:flex;gap:.5rem;align-items:center;}
 .btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);text-decoration:none;}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
-.btn-yellow{background:var(--accent);color:#0A0A0A;padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background var(--dur-hover) var(--ease);text-decoration:none;border:none;}
-.btn-yellow:hover{background:var(--accent-hot);}
+.btn-yellow{background:var(--accent);color:#0A0A0A;padding:.45rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 150ms var(--ease),transform 150ms var(--ease),box-shadow 150ms var(--ease);text-decoration:none;border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.btn-yellow:hover{background:var(--accent-hot);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 6px 16px rgba(255,205,17,0.25);}
+.btn-yellow:active{transform:translateY(0);transition-duration:80ms;}
 
 /* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 5rem;position:relative;overflow:hidden;}
-.hero-dot-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
-.hero-glow{position:absolute;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,205,17,0.06) 0%,transparent 65%);pointer-events:none;}
-.hero-content{position:relative;z-index:1;max-width:960px;}
-.hero-tag{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
-.hero-tag-line{width:32px;height:1px;background:var(--accent);}
-.hero-eyebrow{font-family:var(--font-display);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);}
-.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(3.5rem,9vw,7.5rem);line-height:.92;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:24px;}
-.hero h1 .line-yellow{color:var(--accent);}
-.hero h1 .line-dim{color:var(--text);opacity:.35;}
-.hero-desc{font-size:1.05rem;color:var(--text-2);line-height:1.7;max-width:560px;margin-bottom:36px;}
-.hero-ctas{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:52px;}
-.cta-primary{background:var(--accent);color:#0A0A0A;padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background var(--dur-hover) var(--ease);text-decoration:none;border:none;display:inline-block;}
-.cta-primary:hover{background:var(--accent-hot);}
-.cta-secondary{background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);text-decoration:none;display:inline-block;}
-.cta-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.hero{position:relative;height:100vh;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+.hero-image{position:absolute;inset:0;background-image:url('/images/truck-hero.jpg');background-size:cover;background-position:center;animation:kenBurns 25s ease-in-out infinite alternate;will-change:transform;}
+/* Layered overlay: dot grid (site aesthetic) + side vignettes + top dark fade for nav contrast.
+   The bottom edge is handled by ::after so it can fade to var(--bg) cleanly in either theme. */
+.hero-overlay{position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(10,10,10,0.55) 0%,transparent 14%,transparent 86%,rgba(10,10,10,0.55) 100%),linear-gradient(180deg,#0A0A0A 0%,rgba(10,10,10,0.85) 6%,rgba(0,0,0,0.35) 18%,rgba(0,0,0,0.30) 50%,rgba(0,0,0,0.22) 75%,transparent 90%,transparent 100%);}
+.hero-overlay::before{content:'';position:absolute;left:0;right:0;top:0;height:140px;background:linear-gradient(180deg,#0A0A0A 0%,rgba(10,10,10,0.6) 50%,transparent 100%);pointer-events:none;}
+.hero-overlay::after{content:'';position:absolute;left:0;right:0;bottom:0;height:220px;background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--bg) 50%,transparent) 55%,var(--bg) 100%);pointer-events:none;}
+/* Ambient drifting yellow orb behind headline — Stripe/Cursor signature */
+.hero-orb{position:absolute;left:50%;top:42%;width:760px;height:760px;margin-left:-380px;margin-top:-380px;background:radial-gradient(circle,rgba(255,205,17,0.15) 0%,rgba(255,205,17,0.05) 35%,transparent 65%);filter:blur(40px);pointer-events:none;z-index:1;animation:orbDrift 14s ease-in-out infinite alternate;}
+@keyframes orbDrift{0%{transform:translate(0,0) scale(1);}50%{transform:translate(3%,-2%) scale(1.05);}100%{transform:translate(-3%,2%) scale(0.95);}}
+@media(max-width:700px){.hero-orb{width:480px;height:480px;margin-left:-240px;margin-top:-240px;}}
+.hero-content{position:relative;z-index:2;max-width:1100px;padding:0 1.5rem;text-align:center;color:#fff;transition:transform 250ms cubic-bezier(0.22,1,0.36,1);}
+/* Live stamp — pulsing yellow dot + activity count */
+.hero-live{display:inline-flex;align-items:center;gap:10px;margin:0 auto 1.75rem;padding:.45rem .9rem;border:1px solid rgba(255,205,17,0.35);background:rgba(10,10,10,0.55);backdrop-filter:blur(8px);border-radius:99px;opacity:0;transform:translateY(8px);animation:heroWord 600ms var(--ease) forwards;animation-delay:60ms;}
+.hero-live-dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(255,205,17,0.6);animation:livePulse 1.8s ease-out infinite;}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(255,205,17,0.55);}70%{box-shadow:0 0 0 10px rgba(255,205,17,0);}100%{box-shadow:0 0 0 0 rgba(255,205,17,0);}}
+.hero-live-text{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.92);}
+.hero-live-text b{color:var(--accent);font-weight:700;margin:0 4px;}
+.hero-content h1{font-family:var(--font-display);font-weight:700;font-size:clamp(3rem,7.8vw,6rem);line-height:1.02;letter-spacing:0.02em;text-transform:uppercase;margin:0 0 1.5rem;color:#fff;text-shadow:0 2px 28px rgba(0,0,0,0.45);}
+.hero-content h1 .w{display:inline-block;opacity:0;transform:translateY(14px);animation:heroWord 600ms var(--ease) forwards;animation-delay:calc(var(--i,0) * 90ms + 240ms);}
+@keyframes heroWord{to{opacity:1;transform:translateY(0);}}
+/* Cycling final phrase — stacked, block-level, auto-centered to its own width */
+.hero-cycle-wrap{display:grid;grid-template-areas:'stack';width:max-content;max-width:100%;margin:.25rem auto 0;position:relative;}
+.hero-cycle-phrase{grid-area:stack;display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap;color:#fff;text-shadow:0 2px 28px rgba(0,0,0,0.55),0 0 40px rgba(255,205,17,0.18);position:relative;opacity:0;transform:translateY(48px);transition:opacity 380ms cubic-bezier(0.4,0,0.2,1),transform 520ms cubic-bezier(0.22,1,0.36,1);will-change:opacity,transform;justify-self:center;}
+.hero-cycle-phrase.active{opacity:1;transform:translateY(0);transition:opacity 460ms cubic-bezier(0.22,1,0.36,1) 120ms,transform 560ms cubic-bezier(0.22,1,0.36,1) 120ms;}
+.hero-cycle-phrase.exiting{opacity:0;transform:translateY(-48px);transition:opacity 280ms cubic-bezier(0.4,0,1,1),transform 420ms cubic-bezier(0.4,0,0.2,1);}
+.hero-cycle-phrase::after{content:'';position:absolute;left:0;right:0;bottom:-10px;height:3px;background:var(--accent);border-radius:2px;transform:scaleX(0);transform-origin:left center;transition:transform 450ms cubic-bezier(0.22,1,0.36,1) 100ms;box-shadow:0 0 16px rgba(255,205,17,0.5);}
+.hero-cycle-phrase.active::after{transform:scaleX(1);}
+.hero-cycle-phrase.exiting::after{transform:scaleX(0);transform-origin:right center;transition:transform 280ms cubic-bezier(0.4,0,1,1);}
+.hero-caret{display:inline-block;width:6px;height:0.78em;background:var(--accent);box-shadow:0 0 12px rgba(255,205,17,0.55);align-self:center;animation:caretBlink 1.05s steps(2,start) infinite;border-radius:1px;transform:translateY(3px);}
+@keyframes caretBlink{0%,100%{opacity:1;}50%{opacity:0;}}
+.hero-desc{font-size:1.05rem;line-height:1.6;color:rgba(255,255,255,0.88);max-width:560px;margin:0 auto 2rem;}
+.hero-cta{display:inline-block;background:var(--accent);color:#0A0A0A;padding:.95rem 2.25rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 150ms var(--ease),transform 150ms var(--ease),box-shadow 150ms var(--ease);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.hero-cta:hover{background:var(--accent-hot);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 8px 20px rgba(255,205,17,0.30);}
+.hero-cta:active{transform:translateY(0);transition-duration:80ms;}
+@keyframes kenBurns{
+  0%{transform:scale(1) translate(0,0);}
+  100%{transform:scale(1.15) translate(-2%,-1%);}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-image{animation:none;}
+}
+.cta-primary{background:var(--accent);color:#0A0A0A;padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 150ms var(--ease),transform 150ms var(--ease),box-shadow 150ms var(--ease);text-decoration:none;border:none;display:inline-block;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.cta-primary:hover{background:var(--accent-hot);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 8px 20px rgba(255,205,17,0.28);}
+.cta-primary:active{transform:translateY(0);transition-duration:80ms;}
+.cta-secondary{background:transparent;border:1px solid var(--line-strong);color:var(--text);padding:.875rem 2rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:border-color 150ms var(--ease),color 150ms var(--ease),background-color 150ms var(--ease);text-decoration:none;display:inline-block;}
+.cta-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+
+/* HERO STATS BAND */
+.hero-stats-band{padding:0 3rem;}
 .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
 .hs-item{padding:24px 20px;border-right:1px solid var(--line);}
 .hs-item:last-child{border-right:none;}
@@ -73,8 +111,8 @@ nav.scrolled{padding:.75rem 3rem;}
 .section-body{font-size:.95rem;color:var(--text-2);line-height:1.85;max-width:600px;}
 .section-body strong{color:var(--text);font-weight:500;}
 .industry-cards{display:flex;flex-direction:column;gap:10px;}
-.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color var(--dur-hover) var(--ease);}
-.ind-card:hover{border-color:var(--line-strong);}
+.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color 200ms var(--ease),transform 200ms var(--ease),box-shadow 200ms var(--ease);box-shadow:0 0 0 transparent;}
+.ind-card:hover{border-color:var(--line-hover);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.35);}
 .ind-icon{font-size:1.2rem;flex-shrink:0;width:40px;height:40px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;}
 .ind-title{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:.3rem;}
 .ind-desc{font-size:.8rem;color:var(--text-2);line-height:1.55;}
@@ -116,7 +154,8 @@ nav.scrolled{padding:.75rem 3rem;}
 .forwho-inner{max-width:1100px;margin:0 auto;}
 .forwho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:2.5rem;}
 @media(max-width:700px){.forwho-grid{grid-template-columns:1fr;}}
-.forwho-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-card);padding:2.25rem;position:relative;overflow:hidden;}
+.forwho-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-card);padding:2.25rem;position:relative;overflow:hidden;transition:border-color 200ms var(--ease),transform 200ms var(--ease),box-shadow 200ms var(--ease);box-shadow:0 0 0 transparent;}
+.forwho-card:hover{border-color:var(--line-hover);transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,0.4);}
 .forwho-card.pilot{border-color:var(--accent-border);}
 .forwho-card.carrier{border-color:rgba(96,165,250,0.25);}
 .fw-badge{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:.3rem .75rem;border-radius:var(--r-chip);display:inline-block;margin-bottom:1.25rem;}
@@ -164,11 +203,12 @@ footer{background:var(--surface);border-top:1px solid var(--line);padding:3rem;}
   .nav-links{display:none;}
   .btn-ghost{display:none;}
   .btn-yellow{font-size:10px;padding:.4rem .8rem;}
-  .hero{padding:5.5rem 1rem 3rem;}
-  .hero h1{font-size:clamp(2.8rem,13vw,4.5rem);}
+  .hero-content{padding:0 1rem;}
+  .hero-content h1{font-size:clamp(2.4rem,11vw,3.6rem);line-height:1.05;}
   .hero-desc{font-size:.9rem;}
-  .hero-ctas{flex-direction:column;gap:.55rem;margin-bottom:36px;}
+  .hero-cta{padding:.8rem 1.6rem;font-size:12px;}
   .cta-primary,.cta-secondary{width:100%;text-align:center;padding:.75rem 1.25rem;font-size:12px;}
+  .hero-stats-band{padding:0 1rem;}
   .hero-stats{grid-template-columns:1fr 1fr;}
   .hs-item{padding:14px 12px;}
   .hs-item:nth-child(1),.hs-item:nth-child(2){border-bottom:1px solid var(--line);}
@@ -181,8 +221,6 @@ footer{background:var(--surface);border-top:1px solid var(--line);padding:3rem;}
   .fc-btns{flex-direction:column;gap:.55rem;}
   footer{padding:2rem 1rem;}
 }
-body{text-transform:uppercase;}
-input,textarea,select{text-transform:none;}
 </style>
 </head>
 <body>
@@ -196,35 +234,36 @@ input,textarea,select{text-transform:none;}
     <a href="pricing.html">Pricing</a>
   </div>
   <div class="nav-right" id="navAuthBtns">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
     <a href="login.html" class="btn-ghost">Log In</a>
     <a href="login.html?tab=signup" class="btn-yellow">Get Started Free</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-dot-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-content">
-    <div class="hero-tag">
-      <span class="hero-tag-line"></span>
-      <span class="hero-eyebrow">The Future of Pilot Car Escorts</span>
+  <div class="hero-image"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-content" id="heroContent">
+    <div class="hero-live">
+      <span class="hero-live-dot"></span>
+      <span class="hero-live-text">Live <b>·</b> <b id="heroLiveCount">12</b> Loads Posted Today</span>
     </div>
-    <h1>
-      <span class="line1">America Moves</span><br>
-      <span class="line-yellow">Oversize.</span><br>
-      <span class="line-dim">We Lead The Way.</span>
-    </h1>
-    <p class="hero-desc">The first load board built for pilot car operators and the carriers who hire them. No more Facebook groups. No more dispatch phone tag. See real loads, posted live, with real pay attached.</p>
-    <div class="hero-ctas">
-      <a href="login.html?tab=signup&role=pilot" class="cta-primary">Join as a Pilot — Free</a>
-      <a href="loadboard.html" class="cta-secondary">Browse Live Loads</a>
-    </div>
-    <div class="hero-stats">
-      <div class="hs-item"><div class="hs-num" id="heroLoads">—</div><div class="hs-label">Active Loads</div></div>
-      <div class="hs-item"><div class="hs-num" id="heroPilots">—</div><div class="hs-label">Registered Pilots</div></div>
-      <div class="hs-item"><div class="hs-num">50</div><div class="hs-label">States Covered</div></div>
-      <div class="hs-item"><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
-    </div>
+    <h1><span class="w" style="--i:0">Lead</span> <span class="w" style="--i:1">the</span> <span class="w" style="--i:2">Load</span><span class="hero-cycle-wrap" id="heroCycle"><span class="hero-cycle-phrase active">Your Way.<span class="hero-caret" aria-hidden="true"></span></span><span class="hero-cycle-phrase">Every Mile.<span class="hero-caret" aria-hidden="true"></span></span><span class="hero-cycle-phrase">Coast to Coast.<span class="hero-caret" aria-hidden="true"></span></span><span class="hero-cycle-phrase">With Pride.<span class="hero-caret" aria-hidden="true"></span></span></span></h1>
+    <p class="hero-desc">Connecting carriers, drivers, and pilot cars across America.</p>
+    <a href="loadboard.html" class="hero-cta">View Loads</a>
+  </div>
+</section>
+
+<section class="hero-stats-band">
+  <div class="hero-stats">
+    <div class="hs-item"><div class="hs-num" id="heroLoads">—</div><div class="hs-label">Active Loads</div></div>
+    <div class="hs-item"><div class="hs-num" id="heroPilots">—</div><div class="hs-label">Registered Pilots</div></div>
+    <div class="hs-item"><div class="hs-num">50</div><div class="hs-label">States Covered</div></div>
+    <div class="hs-item"><div class="hs-num">$0</div><div class="hs-label">To Get Started</div></div>
   </div>
 </section>
 
@@ -439,6 +478,44 @@ setTimeout(() => {
     }
   });
 }, 3000);
+
+/* Hero — cycling final phrase (stacked, no layout shift) */
+(function(){
+  const wrap = document.getElementById('heroCycle');
+  if (!wrap) return;
+  const phrases = [...wrap.querySelectorAll('.hero-cycle-phrase')];
+  if (phrases.length < 2) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let idx = 0;
+  setInterval(() => {
+    const current = phrases[idx];
+    idx = (idx + 1) % phrases.length;
+    const next = phrases[idx];
+    current.classList.remove('active');
+    current.classList.add('exiting');
+    next.classList.add('active');
+    setTimeout(() => current.classList.remove('exiting'), 600);
+  }, 3600);
+})();
+
+/* Hero — mouse parallax on headline (desktop only) */
+(function(){
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hero = document.querySelector('.hero');
+  const content = document.getElementById('heroContent');
+  const orb = document.querySelector('.hero-orb');
+  if (!hero || !content) return;
+  hero.addEventListener('pointermove', (e) => {
+    const r = hero.getBoundingClientRect();
+    const x = (e.clientX / r.width - 0.5) * 10;
+    const y = (e.clientY / r.height - 0.5) * 6;
+    content.style.transform = `translate3d(${x}px,${y}px,0)`;
+  });
+  hero.addEventListener('pointerleave', () => {
+    content.style.transform = '';
+  });
+})();
 </script>
 
 <script type="module">

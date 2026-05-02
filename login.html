@@ -8,6 +8,7 @@
 <title>LoadLeader – Login / Sign Up</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
+<script src="/tokens-theme.js"></script>
 <style>
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,0.025) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;z-index:0;}
 body::after{content:'';position:fixed;top:-200px;left:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,205,17,0.05) 0%,transparent 65%);pointer-events:none;z-index:0;}
@@ -27,10 +28,11 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 /* AUTH CARD */
 .auth-card{width:100%;max-width:480px;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-card);overflow:hidden;animation:fadeUp .5s ease both;}
 
-/* TABS */
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);}
-.auth-tab{padding:1rem;text-align:center;font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;cursor:pointer;color:var(--text-2);transition:all var(--dur-hover) var(--ease);border:none;background:transparent;}
-.auth-tab.active{color:var(--accent);background:var(--accent-bg);border-bottom:2px solid var(--accent);}
+/* TABS — sliding pill indicator */
+.auth-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);}
+.auth-tabs::after{content:'';position:absolute;left:var(--tab-x,0);bottom:-1px;width:var(--tab-w,50%);height:2px;background:var(--accent);transition:left 220ms var(--ease),width 220ms var(--ease);pointer-events:none;}
+.auth-tab{position:relative;padding:1rem;text-align:center;font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;cursor:pointer;color:var(--text-2);transition:color var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease);border:none;background:transparent;z-index:1;}
+.auth-tab.active{color:var(--accent);background:var(--accent-bg);}
 .auth-tab:hover:not(.active){color:var(--text);}
 
 /* PANELS */
@@ -39,20 +41,22 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 
 /* ACCOUNT TYPE */
 .type-select{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.5rem;}
-.type-btn{background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:var(--r-card);padding:1rem .65rem;text-align:center;cursor:pointer;transition:all var(--dur-hover) var(--ease);position:relative;}
+.type-btn{background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:var(--r-card);padding:1.1rem .75rem;text-align:center;cursor:pointer;transition:all var(--dur-hover) var(--ease);position:relative;}
 .type-btn:hover{border-color:var(--text-3);}
 .type-btn.selected{border-color:var(--accent);background:var(--accent-bg);}
-.type-btn.selected::after{content:'✓';position:absolute;top:.45rem;right:.55rem;font-family:var(--font-display);font-weight:700;color:var(--accent);font-size:.7rem;}
-.type-icon{font-size:1.5rem;margin-bottom:.45rem;}
-.type-label{font-family:var(--font-display);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:.15rem;}
-.type-desc{font-size:.7rem;color:var(--text-2);line-height:1.4;}
+.type-btn.selected::after{content:'';position:absolute;top:.55rem;right:.55rem;width:14px;height:14px;background:var(--accent);border-radius:50%;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A0A0A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");background-size:10px;background-position:center;background-repeat:no-repeat;}
+.type-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;color:var(--text-2);margin-bottom:.6rem;transition:color var(--dur-hover) var(--ease);}
+.type-btn.selected .type-icon{color:var(--accent);}
+.type-icon svg{width:24px;height:24px;}
+.type-label{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:.2rem;}
+.type-desc{font-size:.82rem;color:var(--text-2);line-height:1.45;}
 .type-btn.selected .type-label{color:var(--accent);}
 
 /* FORM */
 .form-group{margin-bottom:1rem;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
-label{display:block;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;}
-input[type=text],input[type=email],input[type=password],input[type=tel],select{width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.7rem .9rem;border-radius:var(--r-input);font-family:var(--font-body);font-size:15px;outline:none;transition:border-color var(--dur-hover) var(--ease);}
+label{display:block;font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.4rem;}
+input[type=text],input[type=email],input[type=password],input[type=tel],select{width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);padding:.75rem .9rem;min-height:44px;border-radius:var(--r-input);font-family:var(--font-body);font-size:16px;outline:none;transition:border-color var(--dur-hover) var(--ease);}
 input::placeholder{color:var(--text-3);}
 input:focus,select:focus{border-color:var(--accent);}
 select{cursor:pointer;}
@@ -61,7 +65,8 @@ select option{background:var(--surface-2);}
 /* PASSWORD TOGGLE */
 .pw-wrap{position:relative;}
 .pw-wrap input{padding-right:2.8rem;}
-.pw-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-3);cursor:pointer;font-size:.82rem;transition:color var(--dur-hover) var(--ease);padding:0;}
+.pw-toggle{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-3);cursor:pointer;transition:color var(--dur-hover) var(--ease);padding:.4rem;display:inline-flex;align-items:center;justify-content:center;}
+.pw-toggle svg{width:18px;height:18px;display:block;}
 .pw-toggle:hover{color:var(--text);}
 
 /* STRENGTH METER */
@@ -69,63 +74,64 @@ select option{background:var(--surface-2);}
 .strength-wrap.show{display:block;}
 .strength-bar{height:2px;background:var(--surface-3);border-radius:0;overflow:hidden;margin-bottom:.25rem;}
 .strength-fill{height:100%;transition:width .3s,background .3s;}
-.strength-label{font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);}
+.strength-label{font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);}
 
 /* DIVIDER */
-.or-divider{display:flex;align-items:center;gap:.65rem;margin:1.1rem 0;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-3);}
+.or-divider{display:flex;align-items:center;gap:.65rem;margin:1.1rem 0;font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.10em;color:var(--text-3);}
 .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--line);}
 
 /* SOCIAL BUTTONS */
 .social-btns{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.1rem;}
-.social-btn{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text-2);padding:.65rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.social-btn{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text-2);padding:.85rem;min-height:40px;border-radius:var(--r-btn);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem;}
 .social-btn:hover{border-color:var(--line-hover);color:var(--text);}
-.social-icon{font-size:.95rem;}
+.social-icon{font-size:.95rem;font-weight:700;}
 
 /* SUBMIT */
-.submit-btn{width:100%;background:var(--accent);color:#0A0A0A;border:none;padding:.85rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);margin-top:.4rem;}
+.submit-btn{width:100%;background:var(--accent);color:#0A0A0A;border:none;padding:.95rem;min-height:44px;border-radius:var(--r-btn);font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);margin-top:.4rem;}
 .submit-btn:hover{background:var(--accent-hot);}
 .submit-btn:active{background:var(--accent-dim);}
 .submit-btn:disabled{opacity:.5;cursor:not-allowed;}
 
 /* FOOTER LINKS */
-.auth-footer{text-align:center;margin-top:1.1rem;font-size:.82rem;color:var(--text-2);}
+.auth-footer{text-align:center;margin-top:1.1rem;font-size:.9rem;color:var(--text-2);}
 .auth-footer a{color:var(--accent);text-decoration:none;}
 .auth-footer a:hover{text-decoration:underline;}
 
 /* FORGOT LINK */
-.forgot-link{float:right;font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);text-decoration:none;transition:color var(--dur-hover) var(--ease);margin-top:-.25rem;}
+.forgot-link{float:right;font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);text-decoration:none;transition:color var(--dur-hover) var(--ease);margin-top:-.25rem;}
 .forgot-link:hover{color:var(--accent);}
 
 /* TERMS */
-.terms-note{font-size:.7rem;color:var(--text-3);text-align:center;margin-top:.9rem;line-height:1.5;}
+.terms-note{font-size:.82rem;color:var(--text-3);text-align:center;margin-top:.9rem;line-height:1.5;}
 .terms-note a{color:var(--text-2);text-decoration:underline;}
 
 /* VERIFY PANEL */
 .verify-panel{text-align:center;padding:2.25rem 1.75rem;}
-.verify-icon{font-size:2.75rem;margin-bottom:.85rem;}
+.verify-icon{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto .85rem;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:50%;}
+.verify-icon svg{width:28px;height:28px;}
 .verify-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:.4rem;}
 .verify-title span{color:var(--accent);}
-.verify-desc{font-size:.85rem;color:var(--text-2);line-height:1.7;margin-bottom:1.25rem;}
-.verify-email{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-chip);padding:.5rem .9rem;font-family:var(--font-display);font-size:.82rem;font-weight:600;color:var(--accent);display:inline-block;margin-bottom:1.25rem;}
-.resend-btn{background:transparent;border:1px solid var(--line-strong);color:var(--text-2);padding:.55rem 1.4rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);}
+.verify-desc{font-size:.9rem;color:var(--text-2);line-height:1.7;margin-bottom:1.25rem;}
+.verify-email{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--r-chip);padding:.5rem .9rem;font-family:var(--font-display);font-size:.9rem;font-weight:600;color:var(--accent);display:inline-block;margin-bottom:1.25rem;}
+.resend-btn{background:transparent;border:1px solid var(--line-strong);color:var(--text-2);padding:.7rem 1.5rem;min-height:40px;border-radius:var(--r-btn);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);}
 .resend-btn:hover{border-color:var(--accent);color:var(--accent);}
 
 /* FORGOT PANEL */
 .forgot-panel{padding:1.75rem;display:none;}
 .forgot-panel.active{display:block;animation:fadeUp .3s ease;}
-.back-btn{background:none;border:none;font-family:var(--font-display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);cursor:pointer;padding:0;margin-bottom:1.4rem;display:flex;align-items:center;gap:.35rem;transition:color var(--dur-hover) var(--ease);}
+.back-btn{background:none;border:none;font-family:var(--font-display);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2);cursor:pointer;padding:0;margin-bottom:1.4rem;display:flex;align-items:center;gap:.35rem;transition:color var(--dur-hover) var(--ease);}
 .back-btn:hover{color:var(--text);}
 
 /* ERROR / SUCCESS */
-.msg-box{border-radius:var(--r-card);padding:.7rem .9rem;font-size:.82rem;margin-bottom:.9rem;display:none;line-height:1.5;}
+.msg-box{border-radius:var(--r-card);padding:.7rem .9rem;font-size:.9rem;margin-bottom:.9rem;display:none;line-height:1.5;}
 .msg-box.show{display:block;}
 .msg-box.error{background:var(--bad-bg);border:1px solid var(--bad-border);color:var(--bad);}
 .msg-box.success{background:var(--ok-bg);border:1px solid var(--ok-border);color:var(--ok);}
 
 /* CHECKBOX */
 .check-wrap{display:flex;align-items:flex-start;gap:.55rem;margin-bottom:.9rem;}
-.check-wrap input[type=checkbox]{width:15px;height:15px;margin-top:.15rem;accent-color:var(--accent);flex-shrink:0;}
-.check-wrap label{font-size:.78rem;color:var(--text-2);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;}
+.check-wrap input[type=checkbox]{width:16px;height:16px;margin-top:.15rem;accent-color:var(--accent);flex-shrink:0;}
+.check-wrap label{font-size:.9rem;color:var(--text-2);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;line-height:1.5;}
 .check-wrap label a{color:var(--accent);text-decoration:none;}
 
 /* SPINNER */
@@ -138,8 +144,7 @@ select option{background:var(--surface-2);}
   .form-row{grid-template-columns:1fr;}
   .social-btns{grid-template-columns:1fr;}
 }
-body{text-transform:uppercase;}
-input,textarea,select{text-transform:none;font-size:16px;}
+input,textarea,select{font-size:16px;}
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -152,7 +157,13 @@ if ('serviceWorker' in navigator) {
 
 <nav>
   <a href="index.html" class="logo" style="display:inline-flex;align-items:center;text-decoration:none;"><img src="/loadleader-oval-minimal.svg" alt="LoadLeader" style="height:36px;width:auto;display:block;"></a>
-  <a href="index.html" class="back-link">← Back to Home</a>
+  <div style="display:flex;gap:.6rem;align-items:center;">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
 </nav>
 
 <div class="auth-wrap">
@@ -184,7 +195,7 @@ if ('serviceWorker' in navigator) {
         <label>Password <a href="#" class="forgot-link" onclick="showForgot(event)">Forgot password?</a></label>
         <div class="pw-wrap">
           <input type="password" id="loginPassword" data-testid="login-password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
-          <button class="pw-toggle" onclick="togglePw('loginPassword',this)" type="button">👁</button>
+          <button class="pw-toggle" onclick="togglePw('loginPassword',this)" type="button" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
 
@@ -207,12 +218,12 @@ if ('serviceWorker' in navigator) {
       <div style="font-family:var(--font-display);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-2);margin-bottom:.65rem;">I am a...</div>
       <div class="type-select">
         <div class="type-btn selected" id="typePilot" onclick="selectType('pilot')">
-          <div class="type-icon">🚩</div>
+          <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
           <div class="type-label">Pilot Car Driver</div>
           <div class="type-desc">I escort oversize loads</div>
         </div>
         <div class="type-btn" id="typeCarrier" onclick="selectType('carrier')">
-          <div class="type-icon">🚛</div>
+          <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></div>
           <div class="type-label">Carrier / Broker</div>
           <div class="type-desc">I post loads and need pilot car escorts</div>
         </div>
@@ -270,7 +281,7 @@ if ('serviceWorker' in navigator) {
         <label>Password</label>
         <div class="pw-wrap">
           <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)">
-          <button class="pw-toggle" onclick="togglePw('signupPassword',this)" type="button">👁</button>
+          <button class="pw-toggle" onclick="togglePw('signupPassword',this)" type="button" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
         <div class="strength-wrap" id="strengthWrap">
           <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
@@ -315,7 +326,7 @@ if ('serviceWorker' in navigator) {
 <div id="verifyScreen" style="display:none;flex:1;align-items:center;justify-content:center;padding:2rem;position:relative;z-index:1;">
   <div class="auth-card" style="max-width:420px;">
     <div class="verify-panel">
-      <div class="verify-icon">📧</div>
+      <div class="verify-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div>
       <div class="verify-title">Check Your <span>Email</span></div>
       <div class="verify-desc">We sent a verification link to:</div>
       <div class="verify-email" id="verifyEmailDisplay">you@example.com</div>
@@ -331,23 +342,37 @@ if ('serviceWorker' in navigator) {
 <script>
 let selectedType = 'pilot';
 
+function syncTabIndicator() {
+  const tabs = document.querySelector('.auth-tabs');
+  if (!tabs) return;
+  const active = tabs.querySelector('.auth-tab.active');
+  if (!active) return;
+  tabs.style.setProperty('--tab-x', active.offsetLeft + 'px');
+  tabs.style.setProperty('--tab-w', active.offsetWidth + 'px');
+}
 function switchTab(tab) {
   document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.getElementById('loginPanel').classList.toggle('active', tab==='login');
   document.getElementById('signupPanel').classList.toggle('active', tab==='signup');
   document.getElementById('forgotPanel').classList.remove('active');
+  syncTabIndicator();
   clearMsgs();
 }
+window.addEventListener('load', syncTabIndicator);
+window.addEventListener('resize', syncTabIndicator);
 function selectType(type) {
   selectedType = type;
   document.getElementById('typePilot').classList.toggle('selected', type==='pilot');
   document.getElementById('typeCarrier').classList.toggle('selected', type==='carrier');
 }
+const PW_EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const PW_EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
 function togglePw(id, btn) {
   const inp = document.getElementById(id);
   const isText = inp.type === 'text';
   inp.type = isText ? 'password' : 'text';
-  btn.textContent = isText ? '👁' : '🙈';
+  btn.innerHTML = isText ? PW_EYE : PW_EYE_OFF;
+  btn.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
 }
 function checkStrength(pw) {
   const wrap = document.getElementById('strengthWrap');
