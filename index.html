@@ -17,9 +17,11 @@
 <meta name="apple-mobile-web-app-title" content="LoadLeader">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-/* NAV — transparent over the hero, solidifies once the user scrolls past the top */
+/* NAV — transparent over the hero, solidifies once user scrolls past the top.
+   Both the top of the hero and the page bg use var(--bg), so theme-aware colors
+   work in both contexts (nav text is dark on white in light mode, light on dark in dark mode). */
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;position:fixed;top:0;width:100%;background:transparent;z-index:200;transition:background var(--dur-hover) var(--ease),padding var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease);border-bottom:1px solid transparent;}
-nav.scrolled{padding:.75rem 3rem;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom-color:var(--line);}
+nav.scrolled{padding:.75rem 3rem;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(16px);border-bottom-color:var(--line);}
 .logo{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:0.10em;color:var(--text);text-decoration:none;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;}
 .logo-sq{width:20px;height:20px;background:var(--accent);display:inline-block;flex-shrink:0;}
 .logo span{color:var(--accent);}
@@ -41,7 +43,7 @@ nav.scrolled{padding:.75rem 3rem;background:rgba(10,10,10,0.85);backdrop-filter:
 /* Layered overlay: dot grid (site aesthetic) + side vignettes + top dark fade for nav contrast.
    The bottom edge is handled by ::after so it can fade to var(--bg) cleanly in either theme. */
 .hero-overlay{position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(10,10,10,0.55) 0%,transparent 14%,transparent 86%,rgba(10,10,10,0.55) 100%),linear-gradient(180deg,#0A0A0A 0%,rgba(10,10,10,0.85) 6%,rgba(0,0,0,0.35) 18%,rgba(0,0,0,0.30) 50%,rgba(0,0,0,0.22) 75%,transparent 90%,transparent 100%);}
-.hero-overlay::before{content:'';position:absolute;left:0;right:0;top:0;height:140px;background:linear-gradient(180deg,#0A0A0A 0%,rgba(10,10,10,0.6) 50%,transparent 100%);pointer-events:none;}
+.hero-overlay::before{content:'';position:absolute;left:0;right:0;top:0;height:200px;background:linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 50%,transparent) 50%,transparent 100%);pointer-events:none;}
 .hero-overlay::after{content:'';position:absolute;left:0;right:0;bottom:0;height:220px;background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--bg) 50%,transparent) 55%,var(--bg) 100%);pointer-events:none;}
 /* Ambient drifting yellow orb behind headline — Stripe/Cursor signature */
 .hero-orb{position:absolute;left:50%;top:42%;width:760px;height:760px;margin-left:-380px;margin-top:-380px;background:radial-gradient(circle,rgba(255,205,17,0.15) 0%,rgba(255,205,17,0.05) 35%,transparent 65%);filter:blur(40px);pointer-events:none;z-index:1;animation:orbDrift 14s ease-in-out infinite alternate;}
