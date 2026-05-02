@@ -107,7 +107,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 
 /* SECTION HEADERS */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
-.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.2;padding-bottom:.15rem;}
+.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.35;padding-bottom:.3rem;}
 .sec-title span{color:var(--yellow);}
 .sec-link{color:var(--yellow);font-size:.8rem;text-decoration:none;font-weight:500;}
 .sec-link:hover{text-decoration:underline;}
@@ -260,8 +260,12 @@ select option{background:var(--mid);}
 .review-submit-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.875rem;font-weight:700;cursor:pointer;margin-top:.5rem;}
 
 /* MESSAGES — modern two-pane chat */
-#panel-messages.active .sec-head{margin-bottom:.85rem;}
-.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100vh - 180px);min-height:540px;}
+#panel-messages.active{padding-top:.25rem;}
+#panel-messages.active .sec-head{margin-bottom:.75rem;}
+.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 200px);min-height:460px;max-height:calc(100dvh - 180px);}
+/* Hide thread header until a conversation is opened (avoids the duplicate "Select a conversation" placeholder) */
+.msg-shell .msg-thread-head{display:none;}
+.msg-shell.thread-active .msg-thread-head{display:flex;}
 .msg-list-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;}
 .msg-list-head{padding:1rem 1.1rem .75rem;border-bottom:1px solid var(--border);}
 .msg-list-title{font-family:var(--font-display);font-size:.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
@@ -3186,6 +3190,7 @@ window.openConversation = async (convId, otherId, otherName) => {
   document.getElementById('chatAvatar').textContent = initials;
   document.getElementById('chatName').textContent = otherName;
   document.getElementById('chatSub').innerHTML = '<span>Direct message</span>';
+  document.getElementById('msgLayout').classList.add('thread-active');
   document.querySelectorAll('#convList .conv-item').forEach(it => it.classList.toggle('active', it.dataset.convId === convId));
   if (window.innerWidth <= 600) {
     document.getElementById('msgLayout').classList.add('chat-open');
