@@ -249,15 +249,15 @@ select option{background:var(--mid);}
 .review-submit-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.875rem;font-weight:700;cursor:pointer;margin-top:.5rem;}
 
 /* MESSAGES — modern two-pane chat */
-#panel-messages.active{padding-top:.25rem;}
-#panel-messages.active .sec-head{margin-bottom:.75rem;}
-.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 200px);min-height:460px;max-height:calc(100dvh - 180px);}
+#panel-messages.active{padding-top:0;}
+.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 130px);min-height:480px;}
 /* Hide thread header until a conversation is opened (avoids the duplicate "Select a conversation" placeholder) */
 .msg-shell .msg-thread-head{display:none;}
 .msg-shell.thread-active .msg-thread-head{display:flex;}
 .msg-list-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;}
-.msg-list-head{padding:1rem 1.1rem .75rem;border-bottom:1px solid var(--border);}
-.msg-list-title{font-family:var(--font-display);font-size:.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.msg-list-head{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.msg-list-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;letter-spacing:.5px;color:var(--white);}
+.msg-search-wrap{padding:.65rem 1rem;border-bottom:1px solid var(--border);}
 .msg-search{position:relative;}
 .msg-search input{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .85rem .55rem 2.1rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .15s ease,box-shadow .15s ease;}
 .msg-search input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,0.12);}
@@ -302,9 +302,9 @@ select option{background:var(--mid);}
 .msg-time{font-size:.68rem;color:var(--text-3);margin-top:.25rem;padding:0 .35rem;font-weight:500;}
 .msg-row.sent .msg-time{text-align:right;}
 .msg-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--muted);gap:.75rem;}
-.msg-empty-icon{width:56px;height:56px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;color:var(--text-3);}
-.msg-empty-icon svg{width:24px;height:24px;}
-.msg-empty-text{font-size:.95rem;color:var(--text-2);}
+.msg-empty-icon{width:72px;height:72px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;color:var(--text-3);}
+.msg-empty-icon svg{width:30px;height:30px;}
+.msg-empty-text{font-size:1rem;font-weight:700;color:var(--white);}
 .msg-empty-sub{font-size:.82rem;color:var(--muted);}
 .msg-composer{padding:.85rem 1rem;border-top:1px solid var(--border);display:flex;gap:.65rem;align-items:flex-end;flex-shrink:0;background:var(--card);}
 .msg-composer-field{flex:1;display:flex;align-items:center;background:var(--mid);border:1px solid #2a2a2a;border-radius:22px;padding:.4rem .9rem;transition:border-color .15s ease,box-shadow .15s ease;}
@@ -383,11 +383,10 @@ select option{background:var(--mid);}
   .mn-item{padding:.3rem .35rem!important;}
   .mn-label{font-size:.6rem!important;letter-spacing:0!important;}
   .dash-wrap{padding-bottom:6.5rem;}
-  .msg-shell{grid-template-columns:1fr!important;height:calc(100dvh - 145px)!important;min-height:unset!important;gap:0!important;}
+  .msg-shell{grid-template-columns:1fr!important;height:calc(100dvh - 160px)!important;min-height:unset!important;gap:0!important;}
   .msg-list-pane,.msg-thread-pane{border-radius:0!important;border-left:none;border-right:none;}
   .msg-shell > .msg-thread-pane{display:none!important;}
   .msg-shell.chat-open > .msg-list-pane{display:none!important;}
-  #panel-messages.chat-open > .sec-head{display:none!important;}
   .msg-shell.chat-open > .msg-thread-pane{display:flex!important;animation:msgPaneSlide 220ms var(--ease,cubic-bezier(0.4,0,0.2,1));}
   .msg-back-btn{display:flex!important;width:40px;height:40px;}
   .msg-area{padding:1rem .9rem!important;}
@@ -963,19 +962,17 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
   <!-- MESSAGES PANEL -->
   <div class="panel" id="panel-messages">
-    <div class="sec-head" style="margin-bottom:1.25rem;">
-      <div class="sec-title">My <span>Messages</span></div>
-      <button class="btn btn-y" style="font-size:.8rem;padding:.55rem 1.1rem;display:inline-flex;align-items:center;gap:.4rem;" onclick="showNewMessageModal()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Message
-      </button>
-    </div>
     <div class="msg-shell" id="msgLayout">
 
       <!-- LEFT: conversation list pane -->
       <aside class="msg-list-pane">
         <div class="msg-list-head">
-          <div class="msg-list-title">Conversations</div>
+          <div class="msg-list-title">Messages</div>
+          <button class="new-msg-icon-btn" onclick="showNewMessageModal()" title="New message" aria-label="New message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+        </div>
+        <div class="msg-search-wrap">
           <div class="msg-search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="convSearch" placeholder="Search messages..." oninput="filterConversations(this.value)">
@@ -1005,8 +1002,9 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <div id="chatMessages" class="msg-area" role="log" aria-live="polite">
           <div class="msg-empty" style="margin:auto 0;">
             <div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-            <div class="msg-empty-text">Pick a conversation</div>
-            <div class="msg-empty-sub">Or start a new one to get going</div>
+            <div class="msg-empty-text">Select a conversation</div>
+            <div class="msg-empty-sub">Choose from your existing conversations or start a new one</div>
+            <button class="btn btn-o" style="margin-top:.75rem;font-size:.85rem;" onclick="showNewMessageModal()">New Message</button>
           </div>
         </div>
         <form class="msg-composer" onsubmit="event.preventDefault();sendMessage();">
