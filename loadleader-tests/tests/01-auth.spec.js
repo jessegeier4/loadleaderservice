@@ -16,11 +16,14 @@ test.describe('Authentication', () => {
     await loginAsPilot(page);
     await expectLoggedIn(page);
 
-    // Pilot-specific element should be visible — load search
-    await expect(page.locator(SELECTORS.loadSearchInput)).toBeVisible();
-
-    // Should NOT see carrier-only "Post Load" button
+    // Carrier-only "Post Load" button MUST not exist on the pilot dashboard
     await expect(page.locator(SELECTORS.postLoadBtn)).toHaveCount(0);
+
+    // Navigate to the public load board (the "Find New Loads" link) and confirm
+    // pilot-side search input is there. (load-search lives on loadboard.html;
+    // the pilot dashboard itself does not embed a search field.)
+    await page.click(SELECTORS.navLoads);
+    await expect(page.locator(SELECTORS.loadSearchInput)).toBeVisible();
   });
 
   test('carrier can log in and reaches carrier dashboard (NOT pilot dashboard)', async ({ page }) => {
@@ -51,7 +54,7 @@ test.describe('Authentication', () => {
     await expectLoggedOut(page);
 
     // Try to navigate to a protected route — should redirect to login
-    await page.goto('/dashboard');
+    await page.goto('/dashboard.html');
     await page.waitForSelector(SELECTORS.loginSubmit, { timeout: 10_000 });
   });
 

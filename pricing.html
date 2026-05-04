@@ -8,6 +8,7 @@
 <title>LoadLeader – Pricing</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
+<script src="/tokens-theme.js"></script>
 <style>
 /* NAV */
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;border-bottom:1px solid var(--line);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
@@ -53,13 +54,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-bottom:4rem;}
 @media(max-width:800px){.cards-row{grid-template-columns:1fr;}}
 @media(min-width:600px) and (max-width:800px){.cards-row{grid-template-columns:1fr 1fr;}}
-.price-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.75rem;position:relative;transition:border-color var(--dur-hover) var(--ease);animation:fadeUp .5s ease both;}
+.price-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:1.75rem;position:relative;overflow:hidden;transition:border-color 200ms var(--ease),transform 200ms var(--ease),box-shadow 200ms var(--ease);animation:fadeUp .5s ease both;box-shadow:0 0 0 transparent;}
+.price-card::before{content:'';position:absolute;inset:0;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(255,205,17,0.10),transparent 60%);opacity:0;transition:opacity 200ms var(--ease);pointer-events:none;}
+@media(hover:hover){.price-card:hover::before{opacity:1;}}
 .price-card:nth-child(2){animation-delay:.08s;}
 .price-card:nth-child(3){animation-delay:.16s;}
-.price-card:hover{border-color:var(--line-strong);}
+.price-card:hover{border-color:var(--line-hover);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.4);}
 .price-card.popular{border-color:var(--accent-border);}
+.price-card>*{position:relative;z-index:1;}
 .popular-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0A0A0A;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;padding:.25rem .85rem;border-radius:var(--r-chip);white-space:nowrap;}
-.card-icon{font-size:1.5rem;margin-bottom:.8rem;}
+.card-icon{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:var(--r-card);background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--accent);margin-bottom:1rem;}
+.card-icon svg{width:22px;height:22px;}
 .card-name{font-family:var(--font-display);font-size:1.2rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:.2rem;}
 .card-desc{font-size:.78rem;color:var(--text-2);margin-bottom:1.25rem;line-height:1.5;}
 .card-price{margin-bottom:1.25rem;}
@@ -68,13 +73,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .price-period{font-size:.78rem;color:var(--text-2);margin-left:.2rem;}
 .price-annual{font-family:var(--font-display);font-size:10px;font-weight:600;color:var(--text-3);margin-top:.2rem;display:none;}
 .price-annual span{color:var(--ok);}
-.card-cta{width:100%;padding:.7rem;border-radius:var(--r-btn);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all var(--dur-hover) var(--ease);border:none;margin-bottom:1.25rem;text-align:center;display:block;text-decoration:none;}
-.cta-yellow{background:var(--accent);color:#0A0A0A;}
-.cta-yellow:hover{background:var(--accent-hot);}
+.card-cta{width:100%;padding:.85rem;min-height:42px;border-radius:var(--r-btn);font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 150ms var(--ease),transform 150ms var(--ease),box-shadow 150ms var(--ease),border-color 150ms var(--ease),color 150ms var(--ease);border:none;margin-bottom:1.25rem;text-align:center;display:block;text-decoration:none;}
+.cta-yellow{background:var(--accent);color:#0A0A0A;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.cta-yellow:hover{background:var(--accent-hot);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 6px 16px rgba(255,205,17,0.25);}
+.cta-yellow:active{transform:translateY(0);transition-duration:80ms;}
 .cta-outline{background:transparent;border:1px solid var(--line-strong);color:var(--text);}
-.cta-outline:hover{border-color:var(--accent);color:var(--accent);}
-.cta-green{background:var(--ok);color:#0A0A0A;}
-.cta-green:hover{background:#22c55e;}
+.cta-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+.cta-green{background:var(--ok);color:#0A0A0A;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.cta-green:hover{background:#22c55e;transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 6px 16px rgba(74,222,128,0.25);}
+.cta-green:active{transform:translateY(0);transition-duration:80ms;}
 .feature-list{display:flex;flex-direction:column;gap:.5rem;}
 .feature-item{display:flex;align-items:flex-start;gap:.55rem;font-size:.8rem;color:var(--text-2);line-height:1.4;}
 .feature-item.included{color:var(--text-2);}
@@ -155,6 +162,10 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
     <a href="pricing.html" class="active">Pricing</a>
   </div>
   <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
     <a href="login.html" class="btn-sm btn-ghost">Log In</a>
     <a href="login.html?tab=signup" class="btn-sm btn-yellow">Sign Up Free</a>
   </div>
@@ -182,7 +193,7 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
 
   <div class="cards-row">
     <div class="price-card">
-      <div class="card-icon">🚩</div>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
       <div class="card-name">Starter</div>
       <div class="card-desc">Get started and explore the board before committing</div>
       <div class="card-price">
@@ -205,7 +216,7 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
 
     <div class="price-card popular">
       <div class="popular-badge">Most Popular</div>
-      <div class="card-icon">🚀</div>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
       <div class="card-name">Pro Pilot</div>
       <div class="card-desc">Everything you need to run your pilot car business full time</div>
       <div class="card-price">
@@ -228,7 +239,7 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
     </div>
 
     <div class="price-card">
-      <div class="card-icon">👑</div>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg></div>
       <div class="card-name">Elite Pilot</div>
       <div class="card-desc">Maximum visibility and tools for high-volume pilot car operators</div>
       <div class="card-price">
@@ -260,7 +271,7 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
 
   <div class="carrier-cards">
     <div class="price-card" style="border-color:var(--info-border);">
-      <div class="card-icon">🆓</div>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
       <div class="card-name">Free Trial</div>
       <div class="card-desc">Full access for 30 days — no credit card required</div>
       <div class="card-price">
@@ -282,7 +293,7 @@ footer{padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-i
 
     <div class="price-card popular">
       <div class="popular-badge">Best Value</div>
-      <div class="card-icon">🚛</div>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></div>
       <div class="card-name">Carrier Pro</div>
       <div class="card-desc">Unlimited loads, full pilot management, and premium tools</div>
       <div class="card-price">
@@ -407,6 +418,17 @@ function toggleFaq(el) {
   const wasOpen = item.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
   if (!wasOpen) item.classList.add('open');
+}
+
+// Mouse-tracking spotlight on pricing cards
+if (window.matchMedia('(hover: hover)').matches) {
+  document.querySelectorAll('.price-card').forEach(card => {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
 }
 </script>
 </body>

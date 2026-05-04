@@ -16,6 +16,12 @@
 # Without this exclusion, Netlify's scanner pattern-matches any "AIza..." string
 # as a Google API key and blocks the build.
 
+[build]
+  # Skip Netlify builds when commits only touch files Netlify never serves
+  # (test suite, GitHub workflow, repo docs). Saves build minutes on test-only
+  # iteration. Exit 0 = skip build; non-zero = build.
+  ignore = "git diff --quiet HEAD^ HEAD -- . ':(exclude)loadleader-tests' ':(exclude).github' ':(exclude)CLAUDE.md' ':(exclude)README.md'"
+
 [build.environment]
   # Skip secret scanning on the Firebase config file — the keys there are public-safe.
   # firebase-messaging-sw.js also contains the production apiKey for service-worker

@@ -17,7 +17,9 @@ export async function loginAsPilot(page) {
 
   // Wait for dashboard to confirm successful login
   await page.waitForSelector(SELECTORS.navDashboard, { timeout: 15_000 });
-  await page.waitForLoadState('networkidle');
+  // Skip waitForLoadState('networkidle') — Firebase apps maintain persistent
+  // listeners (Firestore, FCM) and never reach networkidle. waitForSelector above
+  // is sufficient to confirm the dashboard is rendered.
 }
 
 /**
@@ -31,7 +33,9 @@ export async function loginAsCarrier(page) {
 
   // Wait for the carrier-specific element (post load button)
   await page.waitForSelector(SELECTORS.postLoadBtn, { timeout: 15_000 });
-  await page.waitForLoadState('networkidle');
+  // Skip waitForLoadState('networkidle') — Firebase apps maintain persistent
+  // listeners (Firestore, FCM) and never reach networkidle. waitForSelector above
+  // is sufficient to confirm the dashboard is rendered.
 }
 
 /**
