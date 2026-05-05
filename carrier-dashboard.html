@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <script src="/tokens-theme.js"></script>
+<script>(function(){try{if(!localStorage.getItem('ll-theme'))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})()</script>
 <style>
 :root {
   /* Local aliases mapping legacy dashboard CSS names to the global theme-aware tokens
@@ -211,7 +212,7 @@ select option{background:var(--mid);}
 .msg-shell.thread-active .msg-thread-head{display:flex;}
 .msg-list-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;}
 .msg-list-head{padding:.85rem 1.1rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.msg-list-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;letter-spacing:.5px;color:var(--white);}
+.msg-list-title{font-family:var(--font-body);font-size:1.05rem;font-weight:700;letter-spacing:.2px;color:var(--white);}
 .msg-search-wrap{padding:.65rem 1rem;border-bottom:1px solid var(--border);}
 .new-msg-icon-btn{background:var(--mid);border:1px solid #2a2a2a;color:var(--white);width:34px;height:34px;border-radius:var(--r-btn);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s ease;flex-shrink:0;}
 .new-msg-icon-btn:hover{border-color:var(--yellow);color:var(--yellow);}
