@@ -24,7 +24,7 @@
   --accent:        #FFCD11;
   --accent-hot:    #FFE066;
   --accent-dim:    #C99E00;
-  --accent-text:   #8A6800; /* amber text on light surfaces — meets WCAG AA (5:1 on white) */
+  --accent-text:   #0A0A0A;
   --accent-bg:     rgba(255,205,17,0.16);
   --accent-border: rgba(255,205,17,0.45);
 
