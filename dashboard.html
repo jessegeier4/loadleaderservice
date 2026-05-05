@@ -250,7 +250,7 @@ select option{background:var(--mid);}
 
 /* MESSAGES — modern two-pane chat */
 #panel-messages.active{padding-top:0;}
-.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 160px);min-height:480px;}
+.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 172px);min-height:480px;}
 /* Hide thread header until a conversation is opened (avoids the duplicate "Select a conversation" placeholder) */
 .msg-shell .msg-thread-head{display:none;}
 .msg-shell.thread-active .msg-thread-head{display:flex;}
@@ -934,7 +934,6 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <button onclick="resetTestData()" id="resetTestBtn" style="background:var(--bad);color:#fff;border:none;padding:.65rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;">Reset My Test Data</button>
         </div>
       </div>
-    </div><!-- /ptab-pane-about -->
 
     <!-- FOLLOWING SUB-TAB -->
     <div id="ptab-pane-following" class="ptab-pane">
