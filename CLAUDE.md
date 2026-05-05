@@ -66,13 +66,17 @@ For multi-step tasks, state a brief plan:
 Strong success criteria let you loop independently.
 Weak criteria ("make it work") require constant clarification.
 
-## 5. Verify Before Claiming Done
+## 5. Verify Before Claiming Done — Never Assume, Always Test
 
-Never say "this is working" or "I fixed it" without proof.
-- Run the code if possible
-- Show the output or test result
+Never say "this is working" or "I fixed it" without proof. Do not assume CSS/layout
+bugs are fixed based on reading the code or doing arithmetic — use Puppeteer to
+measure the actual rendered DOM and confirm with a screenshot.
+
+- Use Puppeteer (getBoundingClientRect, getComputedStyle) to measure real rendered positions before and after layout fixes
+- Take a screenshot to visually confirm the result
+- Show the measurement output or screenshot as proof
 - If you cannot test it, say "I have not tested this — please verify"
-- Never assume a fix worked because it compiled or looked right
+- Never assume a fix worked because it compiled, the math looked right, or the code looks correct
 
 ## 6. Read Before Writing
 
@@ -239,6 +243,7 @@ Format: `YYYY-MM-DD — what went wrong → what to do instead`
 - 2026-04-28 — split `allow write` + `allow update` in `match /users/{userId}` denied owner self-updates (cross-user `update` expression errored on missing rating field; Firestore treats erroring rules as deny even with OR semantics) → collapse into single `allow update: if isOwner(userId) || (cross-user bounds)` so owner short-circuits before any potentially-erroring access
 - 2026-04-28 — declared Firestore + Storage rule changes "shipped" without simulating in Rules Playground; user found the rule-deny bug after deploy → ALWAYS simulate owner-update, cross-user-deny, and unauthenticated cases in Rules Playground before declaring rule changes done
 - 2026-04-28 — initial CSP `_headers` missed `https://*.firebasestorage.app` and `https://www.gstatic.com` from `connect-src`, blocking SDK source maps and risking Storage upload failure → when adding CSP for a Firebase project include the full set listed in `feedback_loadleader_security.md` entry #12
+- 2026-05-04 — assumed CSS height calc fixes were correct based on arithmetic alone; spent multiple rounds adjusting numbers without testing. Root cause (stray </div> kicking panel-messages outside dash-wrap entirely) was only found by using Puppeteer to measure actual DOM positions → NEVER assume layout fixes work; always use Puppeteer getBoundingClientRect to verify before pushing
 
 
 ---
