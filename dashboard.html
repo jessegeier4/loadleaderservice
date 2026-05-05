@@ -889,27 +889,27 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <p style="font-size:.78rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5;">Get notified instantly when loads matching your preferences are posted.</p>
 
           <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1rem;">
-            <div style="padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
+            <div style="padding:.85rem 1rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
                 <div style="font-size:.875rem;font-weight:500;">Enable Load Alerts</div>
                 <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
                   <input type="checkbox" id="alert_enabled" style="width:16px;height:16px;accent-color:var(--yellow);">
-                  <span style="font-size:.78rem;color:#aaa;">Email me</span>
+                  <span style="font-size:.78rem;color:var(--text-2);">Email me</span>
                 </label>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Min Pay ($)</label>
-                  <input type="text" inputmode="decimal" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="decimal" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Max Miles</label>
-                  <input type="text" inputmode="numeric" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="numeric" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
               </div>
               <div style="margin-top:.65rem;">
                 <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">States to Watch (leave blank for all)</label>
-                <input type="text" id="alert_states" placeholder="e.g. OH, PA, WV, KY" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                <input type="text" id="alert_states" placeholder="e.g. OH, PA, WV, KY" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
               </div>
             </div>
           </div>
