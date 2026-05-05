@@ -15,7 +15,7 @@
   /* Local aliases mapping legacy dashboard CSS names to the global theme-aware tokens
      defined in tokens.css. The page therefore inherits whatever theme is active
      ([data-theme="light"] or [data-theme="dark"]) instead of forcing dark. */
-  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim);
+  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim); --yellow-text:var(--accent-text);
   --yellow-bg:var(--accent-bg); --white:var(--text); --gray:var(--surface);
   --mid:var(--surface-2); --card:var(--surface); --border:var(--line-strong);
   --muted:var(--text-2); --green:var(--ok); --green-bg:var(--ok-bg);
@@ -95,7 +95,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .stat-card.orange::before{background:var(--orange);}
 .sc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;}
 .sc-val{font-family:var(--font-display);font-size:2rem;letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
-.stat-card.yellow .sc-val{color:var(--yellow);}
+.stat-card.yellow .sc-val{color:var(--yellow-text);}
 .stat-card.green .sc-val{color:var(--green);}
 .stat-card.blue .sc-val{color:var(--blue);}
 .stat-card.orange .sc-val{color:var(--orange);}
@@ -104,7 +104,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 /* SECTION HEADERS */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
 .sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.35;padding-bottom:.3rem;}
-.sec-title span{color:var(--yellow);}
+.sec-title span{color:var(--yellow-text);}
 
 /* MY LOADS */
 .load-list{display:flex;flex-direction:column;gap:.75rem;}
@@ -121,11 +121,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .load-route{display:flex;align-items:center;gap:.6rem;}
 .lr-city{font-weight:600;font-size:1rem;}
 .lr-st{color:var(--muted);font-size:.82rem;margin-left:.15rem;}
-.lr-arr{color:var(--yellow);}
+.lr-arr{color:var(--yellow-text);}
 .load-row-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
 .badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:var(--r-chip);letter-spacing:.5px;text-transform:uppercase;}
 .badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
-.badge-pending{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow-text);border:1px solid rgba(245,196,0,.2);}
 .badge-filled{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
 .badge-draft{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
 .load-meta{display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:.9rem;}
@@ -530,6 +530,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         <div class="form-group"><label>Day Rate ($/day)</label><input type="text" inputmode="decimal" id="pDayRate" data-testid="pay-day-rate" placeholder="e.g. 350"></div>
         <div class="form-group"><label>Mileage Rate ($/mi)</label><input type="text" inputmode="decimal" id="pMileRate" data-testid="pay-mileage-rate" placeholder="e.g. 1.50"></div>
         <div class="form-group"><label>Overnight Rate ($/night) <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(optional)</span></label><input type="text" inputmode="decimal" id="pOvernightRate" data-testid="pay-overnight" placeholder="e.g. 150"></div>
+        <div class="form-group"><label>No-Go Rate ($/day) <span style="text-transform:none;letter-spacing:0;color:#666;font-weight:400;">(optional — standby/weather delay)</span></label><input type="text" inputmode="decimal" id="pNoGoRate" placeholder="e.g. 200"></div>
         <div class="form-group"><label>Mileage Threshold (mi/day)</label><input type="text" inputmode="numeric" id="pMileThreshold" placeholder="e.g. 400"></div>
         <div class="form-group"><label>Total Miles</label><input type="text" inputmode="numeric" id="pMiles" placeholder="e.g. 190"></div>
         <div class="form-group"><label>Move Date</label><input type="date" id="pDate" data-testid="load-pickup-date" style="color-scheme:dark"></div>
@@ -1634,6 +1635,7 @@ window.submitLoad = async () => {
   const dayRate = parseFloat(document.getElementById('pDayRate').value) || 0;
   const mileRate = parseFloat(document.getElementById('pMileRate').value) || 0;
   const overnightRate = parseFloat(document.getElementById('pOvernightRate').value) || 0;
+  const noGoRate = parseFloat(document.getElementById('pNoGoRate').value) || 0;
   const mileThreshold = parseFloat(document.getElementById('pMileThreshold').value) || 0;
   const date = document.getElementById('pDate').value;
 
@@ -1661,6 +1663,7 @@ window.submitLoad = async () => {
       dayRate,
       mileRate,
       overnightRate,
+      noGoRate,
       mileThreshold,
       pay: dayRate,
       date, time: document.getElementById('pTime').value,
@@ -2141,6 +2144,7 @@ window.saveAsTemplate = async () => {
       dayRate: document.getElementById('pDayRate').value,
       mileRate: document.getElementById('pMileRate').value,
       overnightRate: document.getElementById('pOvernightRate').value,
+      noGoRate: document.getElementById('pNoGoRate').value,
       mileThreshold: document.getElementById('pMileThreshold').value,
       miles: document.getElementById('pMiles').value,
       notes: document.getElementById('pNotes').value,
@@ -3027,6 +3031,7 @@ window.editLoad = (loadId) => {
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
   setVal('pOvernightRate', l.overnightRate);
+  setVal('pNoGoRate', l.noGoRate);
   setVal('pMileThreshold', l.mileThreshold);
   setVal('pMiles', l.miles);
   setVal('pDate', l.date);
@@ -3063,6 +3068,7 @@ window.repostLoad = (loadId) => {
   setVal('pDayRate', l.dayRate);
   setVal('pMileRate', l.mileRate);
   setVal('pOvernightRate', l.overnightRate);
+  setVal('pNoGoRate', l.noGoRate);
   setVal('pMileThreshold', l.mileThreshold);
   setVal('pMiles', l.miles);
   setVal('pTime', l.time);
@@ -3081,7 +3087,7 @@ window.cancelEditLoad = () => {
   document.getElementById('pEditLoadId').value = '';
   document.getElementById('postEditBanner').style.display = 'none';
   document.getElementById('postLoadBtn').innerHTML = '🚛 Post Load to Board';
-  ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pTruckingCompany','pDayRate','pMileRate','pOvernightRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['pOriginCity','pDestCity','pWidth','pHeight','pLength','pWeight','pEquipment','pTruckingCompany','pDayRate','pMileRate','pOvernightRate','pNoGoRate','pMileThreshold','pMiles','pTime','pNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   ['pQuickPay','pTextOnly'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
   const dateEl = document.getElementById('pDate');
   if (dateEl) dateEl.value = '';

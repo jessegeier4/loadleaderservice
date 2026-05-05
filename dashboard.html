@@ -15,7 +15,7 @@
   /* Local aliases mapping legacy dashboard CSS names to the global theme-aware tokens
      defined in tokens.css. The page therefore inherits whatever theme is active
      ([data-theme="light"] or [data-theme="dark"]) instead of forcing dark. */
-  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim);
+  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim); --yellow-text:var(--accent-text);
   --yellow-bg:var(--accent-bg); --white:var(--text); --gray:var(--surface);
   --mid:var(--surface-2); --card:var(--surface); --border:var(--line-strong);
   --muted:var(--text-2); --green:var(--ok); --green-bg:var(--ok-bg);
@@ -93,7 +93,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .stat-card.orange::before{background:var(--orange);}
 .sc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;}
 .sc-val{font-family:var(--font-display);font-size:2rem;letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
-.stat-card.yellow .sc-val{color:var(--yellow);}
+.stat-card.yellow .sc-val{color:var(--yellow-text);}
 .stat-card.green .sc-val{color:var(--green);}
 .stat-card.blue .sc-val{color:var(--blue);}
 .stat-card.orange .sc-val{color:var(--orange);}
@@ -102,8 +102,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 /* SECTION HEADERS */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
 .sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.35;padding-bottom:.3rem;}
-.sec-title span{color:var(--yellow);}
-.sec-link{color:var(--yellow);font-size:.8rem;text-decoration:none;font-weight:500;}
+.sec-title span{color:var(--yellow-text);}
+.sec-link{color:var(--yellow-text);font-size:.8rem;text-decoration:none;font-weight:500;}
 .sec-link:hover{text-decoration:underline;}
 
 /* JOB CARDS */
@@ -118,16 +118,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .job-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;}
 .job-city{font-weight:600;font-size:.95rem;}
 .job-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
-.job-arr{color:var(--yellow);}
+.job-arr{color:var(--yellow-text);}
 .job-meta{display:flex;gap:1rem;flex-wrap:wrap;}
 .job-meta-item{font-size:.75rem;color:var(--muted);}
 .job-meta-item strong{color:#bbb;font-weight:500;}
 .job-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
-.job-pay{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.job-pay{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow-text);letter-spacing:1px;line-height:1;}
 .job-pay-label{font-size:.65rem;color:var(--muted);text-align:right;}
 .badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:var(--r-chip);letter-spacing:.5px;text-transform:uppercase;}
 .badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
-.badge-pending{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow-text);border:1px solid rgba(245,196,0,.2);}
 .badge-completed{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
 .badge-applied{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
 .job-actions{display:flex;gap:.4rem;margin-top:.25rem;}
@@ -1139,8 +1139,15 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div>
         <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.55rem .85rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-input);font-size:.85rem;color:var(--text);user-select:none;">
           <input type="checkbox" id="logOvernight" style="width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
-          <span>🌙 I stayed overnight</span>
+          <span>Stayed overnight</span>
           <span style="margin-left:auto;font-size:.7rem;color:var(--text-3);">pre-fills on invoice</span>
+        </label>
+      </div>
+      <div>
+        <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.55rem .85rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-input);font-size:.85rem;color:var(--text);user-select:none;">
+          <input type="checkbox" id="logNoGo" style="width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
+          <span>No-go day — weather / permit delay</span>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--text-3);">counted on invoice</span>
         </label>
       </div>
       <div>
@@ -1869,7 +1876,8 @@ function buildLoadLog(a) {
     '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:34px;font-size:.65rem;flex-shrink:0;">D' + e.day + '</span>' +
     '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.stop || '—') + '</span>' +
     (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;font-size:.65rem;">' + e.miles + 'mi</span>' : '') +
-    (e.overnight ? '<span title="Stayed overnight" style="flex-shrink:0;font-size:.7rem;">🌙</span>' : '') +
+    (e.overnight ? '<span style="flex-shrink:0;font-size:.62rem;font-weight:700;padding:.1rem .4rem;background:var(--info-bg);border:1px solid var(--info-border);border-radius:4px;color:var(--info);letter-spacing:.3px;">NIGHT</span>' : '') +
+    (e.noGo ? '<span style="flex-shrink:0;font-size:.62rem;font-weight:700;padding:.1rem .4rem;background:var(--bad-bg);border:1px solid var(--bad-border);border-radius:4px;color:var(--bad);letter-spacing:.3px;">NO-GO</span>' : '') +
     '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-2);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Edit</button>' +
     '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--bad);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Delete</button>' +
     '</div>'
@@ -2060,6 +2068,8 @@ window.openLogDay = (appId, currentDayCount) => {
   document.getElementById('logNotes').value = '';
   const overnightEl = document.getElementById('logOvernight');
   if (overnightEl) overnightEl.checked = false;
+  const noGoEl = document.getElementById('logNoGo');
+  if (noGoEl) noGoEl.checked = false;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = '';
   const msg = document.getElementById('logDayMsg');
@@ -2080,6 +2090,8 @@ window.openEditLogDay = (appId, index) => {
   document.getElementById('logNotes').value = entry.notes || '';
   const overnightEl = document.getElementById('logOvernight');
   if (overnightEl) overnightEl.checked = !!entry.overnight;
+  const noGoEditEl = document.getElementById('logNoGo');
+  if (noGoEditEl) noGoEditEl.checked = !!entry.noGo;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = String(index);
   const msg = document.getElementById('logDayMsg');
@@ -2133,6 +2145,7 @@ window.submitLogDay = async () => {
   const miles    = parseInt(document.getElementById('logMiles').value) || 0;
   const notes    = document.getElementById('logNotes').value.trim();
   const overnight = document.getElementById('logOvernight')?.checked || false;
+  const noGo      = document.getElementById('logNoGo')?.checked || false;
   const dayNum   = parseInt(document.getElementById('logDayNum').textContent) || 1;
   const editIdx  = document.getElementById('logEditIndex').value;
   const isEdit   = editIdx !== '' && editIdx !== null;
@@ -2153,11 +2166,11 @@ window.submitLogDay = async () => {
       const idx = parseInt(editIdx);
       const app = (window._allJobs || []).find(a => a.id === appId);
       const oldLog = app?.loadLog || [];
-      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, overnight, editedAt: new Date().toISOString() } : e);
+      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, overnight, noGo, editedAt: new Date().toISOString() } : e);
       await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
       updatedApps = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
     } else {
-      const newEntry = { day: dayNum, date, stop, miles, notes, overnight, loggedAt: new Date().toISOString() };
+      const newEntry = { day: dayNum, date, stop, miles, notes, overnight, noGo, loggedAt: new Date().toISOString() };
       await updateDoc(doc(db, 'applications', appId), { loadLog: arrayUnion(newEntry) });
       updatedApps = (window._allJobs || []).map(a => {
         if (a.id !== appId) return a;
@@ -3697,6 +3710,8 @@ window.submitDelivery = async (forceManual) => {
     const loadLog = appData.loadLog || [];
     const overnightRate = parseFloat(appData.loadOvernightRate) || 0;
     const overnights = loadLog.filter(d => !!d.overnight).length;
+    const noGoRate = parseFloat(appData.loadNoGoRate) || 0;
+    const noGoDays = loadLog.filter(d => !!d.noGo).length;
 
     // Calculate pay per day: mileage rate only applies on days that hit the threshold
     let totalPay = 0;
@@ -3709,8 +3724,9 @@ window.submitDelivery = async (forceManual) => {
     } else {
       totalPay = pay || 0;
     }
-    // Add overnight pay (count from day logs × per-night rate set by carrier on the load)
+    // Add overnight and no-go pay (counts from day logs × rates set by carrier on the load)
     totalPay += overnights * overnightRate;
+    totalPay += noGoDays * noGoRate;
 
     // Build invoice data
     const invoiceData = {
@@ -3730,6 +3746,8 @@ window.submitDelivery = async (forceManual) => {
       days: loadLog,
       overnights,
       overnightRate,
+      nogo: noGoDays,
+      nogoRate: noGoRate,
       totalPay,
       truckNum: truckNum || '—',
       trailerNum: trailerNum || '—',

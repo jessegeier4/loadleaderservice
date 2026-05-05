@@ -24,6 +24,7 @@
   --accent:        #FFCD11;
   --accent-hot:    #FFE066;
   --accent-dim:    #C99E00;
+  --accent-text:   #8A6800; /* amber text on light surfaces — meets WCAG AA (5:1 on white) */
   --accent-bg:     rgba(255,205,17,0.16);
   --accent-border: rgba(255,205,17,0.45);
 
@@ -93,6 +94,7 @@
   --info-bg:   rgba(96,165,250,0.08);
   --info-border:rgba(96,165,250,0.24);
 
+  --accent-text:   var(--accent); /* yellow is readable on dark surfaces */
   --shadow-sm:  0 2px 8px rgba(0,0,0,0.35);
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.50);
 
