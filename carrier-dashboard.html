@@ -377,7 +377,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         </div>
       </div>
     </div>
-    <a href="#" class="user-chip" id="userChip">
+    <a href="#" class="user-chip" id="userChip" onclick="event.preventDefault();document.querySelector('[data-testid=nav-profile]').click()">
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
     </a>

@@ -439,7 +439,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         </div>
       </div>
     </div>
-    <div class="user-chip">
+    <div class="user-chip" onclick="document.querySelector('[data-testid=nav-profile]').click()">
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
     </div>
