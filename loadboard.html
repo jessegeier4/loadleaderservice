@@ -453,9 +453,11 @@ async function fetchLoads() {
           carrierId: data.carrierId || '',
           equipment: data.equipment || '',
           notes: data.notes || '',
-          permitsUploaded: data.permitsUploaded || false
+          permitsUploaded: data.permitsUploaded || false,
+          postedAt: data.postedAt?.toMillis?.() || 0
         };
       });
+      LOADS.sort((a, b) => b.postedAt - a.postedAt);
       document.getElementById('statLoads').textContent = LOADS.length;
       const today = new Date();
       const todayLoads = snap.docs.filter(d => {
