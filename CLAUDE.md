@@ -66,13 +66,17 @@ For multi-step tasks, state a brief plan:
 Strong success criteria let you loop independently.
 Weak criteria ("make it work") require constant clarification.
 
-## 5. Verify Before Claiming Done
+## 5. Verify Before Claiming Done — Never Assume, Always Test
 
-Never say "this is working" or "I fixed it" without proof.
-- Run the code if possible
-- Show the output or test result
+Never say "this is working" or "I fixed it" without proof. Do not assume CSS/layout
+bugs are fixed based on reading the code or doing arithmetic — use Puppeteer to
+measure the actual rendered DOM and confirm with a screenshot.
+
+- Use Puppeteer (getBoundingClientRect, getComputedStyle) to measure real rendered positions before and after layout fixes
+- Take a screenshot to visually confirm the result
+- Show the measurement output or screenshot as proof
 - If you cannot test it, say "I have not tested this — please verify"
-- Never assume a fix worked because it compiled or looked right
+- Never assume a fix worked because it compiled, the math looked right, or the code looks correct
 
 ## 6. Read Before Writing
 
@@ -176,29 +180,43 @@ If I correct you:
 
 ---
 
-## Audience: Pilot Car & Truck Drivers
+## Audience: Drivers 25-45 — Modern SaaS Feel
 
-Every UI decision must serve drivers aged 35-70 who are:
-- Often using phones in trucks or job sites
-- Not necessarily tech-savvy
-- Need information fast with zero confusion
+Every UI decision must serve drivers aged 25-45 who are:
+- Comfortable with modern apps (Linear, Stripe, Vercel-tier polish)
+- On phones in trucks or job sites — touch first
+- Want speed and confidence, not hand-holding
+- References: Linear, Vercel, Stripe, Cursor (clean, restrained, fast)
 
-### Design Rules (non-negotiable)
-- Base font size 18px minimum, never smaller
-- Headings: 32-48px on mobile, 48-72px on desktop
-- High contrast only — no gray-on-gray, no light text on light bg
-- Minimum tap target 48x48px everywhere
-- Phone number visible in header AND tappable on every page
-- One primary CTA per section, never two competing CTAs
-- Generous whitespace — padding/margin never less than 16px
-- Plain English — no app jargon, no tech-speak
+### Design Rules
+- Base font size 16px minimum for body, 14px floor for micro-labels (eyebrow, hint text)
+- Headings — H1 36px desktop / 30px mobile, H2 24px, H3 18px, weight 600, line-height 1.2
+- High contrast text in both dark and light modes (light mode auto-applies via prefers-color-scheme)
+- Minimum tap target 48x48px on touch
+- One primary CTA per section
+- Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128 px — pick from this set
+- Border-radius: 6px buttons + cards + inputs (set in tokens.css), 4px chips
+- AVOID: glassmorphism, gradient text, decorative emoji, animated continuous gradient borders, custom dot+ring cursors, mouse trails, click ripples, particle effects, all-caps body text, font-weight or letter-spacing changes on hover (causes reflow)
+- Yellow #FFCD11 lives alone — never gradient yellow → orange/green; only `--accent-hot` (lighter) and `--accent-dim` (darker)
 
-### Animation Rules
-- Scroll animations: fade-in + 20px slide up only
-- No rotation, no scale, no parallax, no 3D transforms
-- Animation duration 0.4s-0.6s, ease-out
-- Never animate more than 3 elements simultaneously
-- Always respect prefers-reduced-motion
+### Motion Rules
+- Interactive feedback (hover, click, focus): ≤300ms, default 120-200ms ease-out
+- Scroll reveals: 400-600ms ease-out is fine — they're a separate motion class from interactive feedback
+- Animate `transform` and `opacity` only — never `width`, `height`, `top`, `left`, `margin` (triggers layout)
+- Subtle scale OK (≤1.02) on small interactive elements; never on text-heavy elements (sub-pixel blur)
+- Mouse-parallax / mouse-tracking spotlight allowed at small amplitude (≤12px) — guard with `@media (hover: hover)` so touch users get a static surface
+- Always respect `prefers-reduced-motion: reduce` — wrap meaningful keyframes/transitions
+- Stagger reveals via `--i` custom prop on children, 60ms increment — no JS arrays needed
+
+### Interaction Patterns We Use (the playbook)
+- Primary CTAs: brighten + 1px lift + soft shadow on hover, inset top highlight always-on, 80ms press
+- Cards: border-tint to `--line-hover` + 1px lift + low-opacity shadow on hover; mouse-tracking radial spotlight on feature cards (pricing, hero feature grids)
+- Nav links: color fade + left-origin underline grows on hover (pseudo-element, no layout shift)
+- Tabs: sliding pill or underline indicator behind active tab — tabs themselves don't move
+- Inputs: border to `--accent` on focus + 3px low-alpha accent ring; floating label that lifts on focus or filled state
+- Section reveals: IntersectionObserver, `opacity:0 + translateY(16px)` → in-view, once only, stagger via `--i`
+- Selection color: yellow at 35% alpha + black text
+- Focus ring: two-color (white inner halo + accent ring) so it shows on yellow buttons AND dark surfaces
 
 ---
 
@@ -225,6 +243,7 @@ Format: `YYYY-MM-DD — what went wrong → what to do instead`
 - 2026-04-28 — split `allow write` + `allow update` in `match /users/{userId}` denied owner self-updates (cross-user `update` expression errored on missing rating field; Firestore treats erroring rules as deny even with OR semantics) → collapse into single `allow update: if isOwner(userId) || (cross-user bounds)` so owner short-circuits before any potentially-erroring access
 - 2026-04-28 — declared Firestore + Storage rule changes "shipped" without simulating in Rules Playground; user found the rule-deny bug after deploy → ALWAYS simulate owner-update, cross-user-deny, and unauthenticated cases in Rules Playground before declaring rule changes done
 - 2026-04-28 — initial CSP `_headers` missed `https://*.firebasestorage.app` and `https://www.gstatic.com` from `connect-src`, blocking SDK source maps and risking Storage upload failure → when adding CSP for a Firebase project include the full set listed in `feedback_loadleader_security.md` entry #12
+- 2026-05-04 — assumed CSS height calc fixes were correct based on arithmetic alone; spent multiple rounds adjusting numbers without testing. Root cause (stray </div> kicking panel-messages outside dash-wrap entirely) was only found by using Puppeteer to measure actual DOM positions → NEVER assume layout fixes work; always use Puppeteer getBoundingClientRect to verify before pushing
 
 
 ---

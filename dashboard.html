@@ -8,32 +8,23 @@
 <title>LoadLeader – Pilot Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
+<script src="/tokens-theme.js"></script>
+<script>(function(){try{if(!localStorage.getItem('ll-theme'))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})()</script>
 <style>
 :root {
-  --bg:#0A0A0A; --surface:#141414; --surface-2:#1C1C1C; --surface-3:#242424;
-  --line:rgba(255,255,255,0.06); --line-strong:rgba(255,255,255,0.10);
-  --line-hover:rgba(255,205,17,0.40);
-  --text:#F5F5F5; --text-2:#A3A3A3; --text-3:#737373;
-  --accent:#FFCD11; --accent-hot:#FFE066; --accent-dim:#C99E00;
-  --accent-bg:rgba(255,205,17,0.08); --accent-border:rgba(255,205,17,0.32);
-  --ok:#4ADE80; --ok-bg:rgba(74,222,128,0.10); --ok-border:rgba(74,222,128,0.28);
-  --warn:#FF8A00; --warn-bg:rgba(255,138,0,0.10);
-  --bad:#FF4444; --bad-bg:rgba(255,68,68,0.10); --bad-border:rgba(255,68,68,0.30);
-  --info:#60A5FA; --info-bg:rgba(96,165,250,0.08); --info-border:rgba(96,165,250,0.24);
-  --font-display:'Syne','Impact',sans-serif;
-  --font-body:'Inter',-apple-system,system-ui,sans-serif;
-  --r-card:4px; --r-btn:2px; --r-chip:0px; --r-input:2px;
-  --ease:cubic-bezier(0.4,0,0.2,1); --dur-hover:120ms;
-  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim);
+  /* Local aliases mapping legacy dashboard CSS names to the global theme-aware tokens
+     defined in tokens.css. The page therefore inherits whatever theme is active
+     ([data-theme="light"] or [data-theme="dark"]) instead of forcing dark. */
+  --black:var(--bg); --yellow:var(--accent); --yellow-dim:var(--accent-dim); --yellow-text:var(--accent-text);
   --yellow-bg:var(--accent-bg); --white:var(--text); --gray:var(--surface);
   --mid:var(--surface-2); --card:var(--surface); --border:var(--line-strong);
   --muted:var(--text-2); --green:var(--ok); --green-bg:var(--ok-bg);
   --red:var(--bad); --red-bg:var(--bad-bg); --blue:var(--info);
-  --blue-bg:var(--info-bg); --orange:#FF8A00;
+  --blue-bg:var(--info-bg); --orange:var(--warn);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--black);color:var(--white);font-family:var(--font-body);min-height:100vh;text-transform:uppercase;}
-input,textarea,select{text-transform:none;font-size:16px;}
+body{background:var(--black);color:var(--white);font-family:var(--font-body);min-height:100vh;}
+input,textarea,select{font-size:16px;}
 
 /* LOADING SCREEN */
 #loadingScreen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
@@ -44,40 +35,43 @@ input,textarea,select{text-transform:none;font-size:16px;}
 @keyframes loadBar{from{width:0}to{width:100%}}
 
 /* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
 .logo{font-family:var(--font-display);font-size:1.7rem;letter-spacing:2px;color:var(--yellow);text-decoration:none;}
 .logo span{color:var(--white);}
 .nav-center{display:flex;gap:.25rem;background:var(--mid);padding:.3rem;border-radius:var(--r-card);}
 .nav-tab{padding:.38rem .9rem;border-radius:var(--r-btn);font-size:.8rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:var(--font-body);white-space:nowrap;}
-.nav-tab.active{background:var(--yellow);color:var(--black);font-weight:700;}
+.nav-tab.active{background:var(--yellow);color:#0A0A0A;font-weight:700;}
 .nav-tab:hover:not(.active){color:var(--white);}
 .nav-right{display:flex;align-items:center;gap:.75rem;}
 .user-chip{display:flex;align-items:center;gap:.6rem;background:var(--mid);padding:.35rem .85rem .35rem .4rem;border-radius:var(--r-chip);cursor:pointer;transition:background .2s;}
-.user-chip:hover{background:#2a2a2a;}
-.user-av{width:32px;height:32px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--black);}
+.user-chip:hover{background:var(--surface-3);}
+.user-av{width:32px;height:32px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#0A0A0A;}
 .user-name{font-size:.85rem;font-weight:500;}
 .notif-btn{width:44px;height:44px;border-radius:50%;background:var(--mid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:1rem;transition:background .2s;}
-.notif-btn:hover{background:#2a2a2a;}
+.notif-btn:hover{background:var(--surface-3);}
 /* notif-dot removed */
-.logout-btn{background:transparent;border:1px solid #2a2a2a;color:var(--muted);padding:.38rem .85rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.8rem;cursor:pointer;transition:all .2s;}
+.logout-btn{background:transparent;border:1px solid var(--line-strong);color:var(--muted);padding:.38rem .85rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.8rem;cursor:pointer;transition:all .2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
+[data-theme="dark"] nav{background:rgba(10,10,10,.97);}
 
 /* MAIN */
 .dash-wrap{max-width:1300px;margin:0 auto;padding:2rem;}
 
 /* WELCOME BANNER */
-.welcome-banner{background:linear-gradient(135deg,#111100 0%,#0a0a0a 60%,#001100 100%);border:1px solid rgba(245,196,0,0.15);border-radius:var(--r-card);padding:1.75rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
+.welcome-banner{background:var(--surface-2);border:1px solid var(--accent-border);border-radius:var(--r-card);padding:1.75rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;overflow:hidden;}
 .welcome-banner::after{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(245,196,0,0.06),transparent 70%);pointer-events:none;}
 .welcome-text{}
-.welcome-sup{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:rgba(245,196,0,.6);margin-bottom:.3rem;}
+.welcome-sup{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-2);margin-bottom:.3rem;}
 .welcome-name{font-family:var(--font-display);font-size:2rem;letter-spacing:1px;line-height:1;}
 .welcome-name span{color:var(--yellow);}
 .welcome-sub{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
 .welcome-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+[data-theme="dark"] .welcome-banner{background:linear-gradient(135deg,#111100 0%,#0a0a0a 60%,#001100 100%);border-color:rgba(245,196,0,0.15);}
+[data-theme="dark"] .welcome-sup{color:rgba(245,196,0,.6);}
 .btn{border:none;padding:.55rem 1.1rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
-.btn-y{background:var(--yellow);color:var(--black);}
+.btn-y{background:var(--yellow);color:#0A0A0A;}
 .btn-y:hover{background:var(--yellow-dim);}
-.btn-o{background:transparent;border:1px solid #2a2a2a;color:var(--white);}
+.btn-o{background:transparent;border:1px solid var(--line-strong);color:var(--text);}
 .btn-o:hover{border-color:var(--yellow);color:var(--yellow);}
 
 /* PANELS */
@@ -98,7 +92,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .stat-card.orange::before{background:var(--orange);}
 .sc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;}
 .sc-val{font-family:var(--font-display);font-size:2rem;letter-spacing:1px;line-height:1;margin-bottom:.2rem;}
-.stat-card.yellow .sc-val{color:var(--yellow);}
+.stat-card.yellow .sc-val{color:var(--yellow-text);}
 .stat-card.green .sc-val{color:var(--green);}
 .stat-card.blue .sc-val{color:var(--blue);}
 .stat-card.orange .sc-val{color:var(--orange);}
@@ -106,9 +100,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 
 /* SECTION HEADERS */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem;}
-.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;}
-.sec-title span{color:var(--yellow);}
-.sec-link{color:var(--yellow);font-size:.8rem;text-decoration:none;font-weight:500;}
+.sec-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px;line-height:1.35;padding-bottom:.3rem;}
+.sec-title span{color:var(--yellow-text);}
+.sec-link{color:var(--yellow-text);font-size:.8rem;text-decoration:none;font-weight:500;}
 .sec-link:hover{text-decoration:underline;}
 
 /* JOB CARDS */
@@ -123,16 +117,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .job-route{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;}
 .job-city{font-weight:600;font-size:.95rem;}
 .job-st{color:var(--muted);font-size:.8rem;margin-left:.15rem;}
-.job-arr{color:var(--yellow);}
+.job-arr{color:var(--yellow-text);}
 .job-meta{display:flex;gap:1rem;flex-wrap:wrap;}
 .job-meta-item{font-size:.75rem;color:var(--muted);}
 .job-meta-item strong{color:#bbb;font-weight:500;}
 .job-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
-.job-pay{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);letter-spacing:1px;line-height:1;}
+.job-pay{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow-text);letter-spacing:1px;line-height:1;}
 .job-pay-label{font-size:.65rem;color:var(--muted);text-align:right;}
 .badge{font-size:.65rem;font-weight:700;padding:.18rem .6rem;border-radius:var(--r-chip);letter-spacing:.5px;text-transform:uppercase;}
 .badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.2);}
-.badge-pending{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,196,0,.2);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow-text);border:1px solid rgba(245,196,0,.2);}
 .badge-completed{background:#1a1a1a;color:var(--muted);border:1px solid #2a2a2a;}
 .badge-applied{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
 .job-actions{display:flex;gap:.4rem;margin-top:.25rem;}
@@ -165,11 +159,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:.4rem;vertical-align:middle;}
 
 /* SAVED LOADS */
-.saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
-.saved-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.25rem;transition:border-color .2s,transform .2s;position:relative;}
-.saved-card:hover{border-color:#2e2e2e;transform:translateY(-2px);}
-.saved-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);opacity:0;transition:opacity .2s;border-radius:0 0 0 10px;}
-.saved-card:hover::before{opacity:1;}
 .sc-top{display:flex;justify-content:space-between;margin-bottom:.8rem;}
 .sc-id{font-size:.65rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
 .unsave-btn{background:none;border:none;color:#333;cursor:pointer;font-size:.85rem;transition:color .2s;}
@@ -223,7 +212,8 @@ select option{background:var(--mid);}
 .cert-item{display:flex;flex-direction:column;padding:.9rem 1rem;background:var(--mid);border-radius:var(--r-card);border:1px solid #2a2a2a;transition:border-color .2s;}
 .cert-item:hover{border-color:#333;}
 .cert-item-top{display:flex;align-items:flex-start;gap:.6rem;width:100%;flex-wrap:wrap;}
-.cert-icon{font-size:1.1rem;flex-shrink:0;line-height:1.5;}
+.cert-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border-radius:var(--r-card);background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--yellow);}
+.cert-icon svg{width:18px;height:18px;display:block;}
 .cert-name{font-size:.82rem;font-weight:500;flex:1 1 100px;min-width:0;line-height:1.35;word-break:break-word;}
 .cert-actions{display:flex;align-items:center;gap:.4rem;flex-shrink:0;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;}
 .cert-status{font-size:.62rem;font-weight:700;padding:.15rem .5rem;border-radius:var(--r-chip);white-space:nowrap;flex-shrink:0;letter-spacing:.05em;}
@@ -239,13 +229,17 @@ select option{background:var(--mid);}
 .cert-item.expanded .cert-upload-area{display:block;}
 .cert-drop{position:relative;display:inline-flex;align-items:center;margin-bottom:.65rem;}
 .cert-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.cert-drop-label{background:var(--card);border:1px solid #2a2a2a;color:#aaa;padding:.4rem .85rem;border-radius:5px;font-size:.78rem;cursor:pointer;white-space:nowrap;}
+.cert-drop-label{display:inline-flex;align-items:center;gap:.45rem;background:var(--card);border:1px solid #2a2a2a;color:#aaa;padding:.45rem .9rem;border-radius:var(--r-btn);font-size:.82rem;cursor:pointer;white-space:nowrap;transition:border-color .15s ease,color .15s ease;}
+.cert-drop-label:hover{border-color:var(--yellow);color:var(--yellow);}
+.cert-drop-label svg{width:14px;height:14px;display:block;}
 .cert-expiry-row{display:flex;align-items:center;gap:.5rem;}
 .cert-expiry-row input[type=date]{flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.45rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:.78rem;outline:none;}
 .cert-save-btn{background:var(--yellow);color:var(--black);border:none;padding:.45rem .95rem;border-radius:5px;font-family:var(--font-body);font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;}
 .cert-preview{display:none;margin:.5rem 0;position:relative;width:fit-content;}
 .cert-preview img{max-width:100%;max-height:100px;border-radius:5px;display:block;}
-.cert-preview-remove{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#333;border:1px solid #444;color:#aaa;font-size:.55rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;}
+.cert-preview-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#1a1a1a;border:1px solid #444;color:#aaa;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s ease,color .15s ease,border-color .15s ease;}
+.cert-preview-remove:hover{background:var(--bad);border-color:var(--bad);color:#fff;}
+.cert-preview-remove svg{width:11px;height:11px;display:block;}
 
 /* REVIEWS */
 .review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.1rem 1.25rem;margin-bottom:.75rem;}
@@ -258,20 +252,84 @@ select option{background:var(--mid);}
 .star-pick.active{color:var(--yellow);}
 .review-submit-btn{background:var(--yellow);color:var(--black);border:none;padding:.65rem 1.5rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.875rem;font-weight:700;cursor:pointer;margin-top:.5rem;}
 
-/* MESSAGES */
-.conv-list{display:flex;flex-direction:column;}
-.conv-item{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;cursor:pointer;transition:background .2s;border-bottom:1px solid #1a1a1a;}
-.conv-item:hover,.conv-item.active{background:var(--mid);}
-.conv-av{width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;color:var(--black);flex-shrink:0;}
-.conv-name{font-size:.85rem;font-weight:500;margin-bottom:.1rem;}
-.conv-preview{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
-.conv-time{font-size:.7rem;color:var(--text-3);margin-left:auto;white-space:nowrap;flex-shrink:0;}
-.conv-unread-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;}
-.msg-bubble{max-width:75%;padding:.55rem .85rem;border-radius:var(--r-card);font-size:.82rem;line-height:1.5;word-break:break-word;text-transform:none;}
-.msg-bubble.sent{background:var(--yellow);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
-.msg-bubble.recv{background:var(--mid);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px;}
-.msg-time{font-size:.6rem;color:#555;margin-top:.2rem;}
-.msg-time.sent{text-align:right;}
+/* MESSAGES — modern two-pane chat */
+#panel-messages.active{padding-top:0;}
+.msg-shell{display:grid;grid-template-columns:340px 1fr;gap:1rem;height:calc(100dvh - 172px);min-height:480px;}
+/* Hide thread header until a conversation is opened (avoids the duplicate "Select a conversation" placeholder) */
+.msg-shell .msg-thread-head{display:none;}
+.msg-shell.thread-active .msg-thread-head{display:flex;}
+.msg-list-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;}
+.msg-list-head{padding:.85rem 1.1rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.msg-list-title{font-family:var(--font-body);font-size:1.05rem;font-weight:700;letter-spacing:.2px;color:var(--white);}
+.msg-search-wrap{padding:.65rem 1rem;border-bottom:1px solid var(--border);}
+.msg-search{position:relative;}
+.msg-search input{width:100%;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.55rem .85rem .55rem 2.1rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .15s ease,box-shadow .15s ease;}
+.msg-search input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,0.12);}
+.msg-search svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-3);pointer-events:none;}
+.conv-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.conv-item{display:flex;align-items:center;gap:.85rem;padding:.85rem 1.1rem;cursor:pointer;transition:background .15s ease;border-bottom:1px solid rgba(255,255,255,0.04);position:relative;}
+.conv-item:hover{background:rgba(255,255,255,0.025);}
+.conv-item.active{background:var(--mid);}
+.conv-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;background:var(--yellow);border-radius:0 2px 2px 0;}
+.conv-av{width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--black);flex-shrink:0;}
+.conv-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.conv-row{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;}
+.conv-name{font-size:.92rem;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.conv-item.unread .conv-name{font-weight:700;}
+.conv-time{font-size:.72rem;color:var(--text-3);font-weight:500;white-space:nowrap;flex-shrink:0;}
+.conv-preview{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;}
+.conv-item.unread .conv-preview{color:var(--white);font-weight:500;}
+.conv-unread-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;box-shadow:0 0 8px rgba(245,196,0,0.5);}
+.msg-thread-pane{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);display:flex;flex-direction:column;overflow:hidden;}
+.msg-thread-head{padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.85rem;flex-shrink:0;}
+.msg-back-btn{display:none;background:transparent;border:none;color:var(--yellow);cursor:pointer;padding:.4rem;border-radius:var(--r-btn);transition:background .15s ease;flex-shrink:0;}
+.msg-back-btn:hover{background:var(--mid);}
+.msg-back-btn svg{width:20px;height:20px;display:block;}
+.msg-thread-name{font-weight:600;font-size:.95rem;color:var(--white);line-height:1.2;}
+.msg-thread-sub{font-size:.75rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;}
+.msg-thread-sub::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--text-3);}
+.msg-thread-sub.online::before{background:#4ADE80;box-shadow:0 0 6px rgba(74,222,128,0.6);}
+.msg-area{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:.4rem;min-height:0;scroll-behavior:smooth;}
+.msg-date-divider{align-self:center;font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);padding:.5rem 1rem;margin:.5rem 0 .25rem;}
+.msg-row{display:flex;flex-direction:column;max-width:100%;}
+.msg-row.sent{align-items:flex-end;}
+.msg-row.recv{align-items:flex-start;}
+.msg-row + .msg-row{margin-top:0;}
+.msg-row.gap{margin-top:.6rem;}
+.msg-bubble{max-width:68%;padding:.65rem .95rem;border-radius:18px;font-size:.92rem;line-height:1.45;word-break:break-word;text-transform:none;}
+.msg-bubble.sent{background:var(--yellow);color:var(--black);font-weight:500;border-bottom-right-radius:6px;}
+.msg-bubble.recv{background:var(--mid);color:var(--white);border-bottom-left-radius:6px;}
+.msg-row.burst-mid .msg-bubble.sent{border-bottom-right-radius:18px;}
+.msg-row.burst-mid .msg-bubble.recv{border-bottom-left-radius:18px;}
+.msg-row.burst-end .msg-bubble.sent{border-bottom-right-radius:6px;}
+.msg-row.burst-end .msg-bubble.recv{border-bottom-left-radius:6px;}
+.msg-time{font-size:.68rem;color:var(--text-3);margin-top:.25rem;padding:0 .35rem;font-weight:500;}
+.msg-row.sent .msg-time{text-align:right;}
+.msg-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--muted);gap:.75rem;}
+.msg-empty-icon{width:72px;height:72px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;color:var(--text-3);}
+.msg-empty-icon svg{width:30px;height:30px;}
+.msg-empty-text{font-size:1rem;font-weight:700;color:var(--white);}
+.msg-empty-sub{font-size:.82rem;color:var(--muted);}
+.msg-composer{padding:.85rem 1rem;border-top:1px solid var(--border);display:flex;gap:.65rem;align-items:flex-end;flex-shrink:0;background:var(--card);}
+.msg-composer-field{flex:1;display:flex;align-items:center;background:var(--mid);border:1px solid #2a2a2a;border-radius:22px;padding:.4rem .9rem;transition:border-color .15s ease,box-shadow .15s ease;}
+.msg-composer-field:focus-within{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,0.10);}
+.msg-composer textarea{flex:1;background:transparent;border:none;color:var(--white);font-family:var(--font-body);font-size:15px;line-height:1.45;outline:none;resize:none;padding:.55rem 0;min-height:24px;max-height:120px;text-transform:none;}
+.msg-composer textarea::placeholder{color:var(--text-3);}
+.msg-send-btn{background:var(--yellow);color:var(--black);border:none;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 150ms ease,transform 150ms ease,box-shadow 150ms ease;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);}
+.msg-send-btn:hover{background:#FFE066;transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 6px 14px rgba(245,196,0,0.30);}
+.msg-send-btn:active{transform:translateY(0);transition-duration:80ms;}
+.msg-send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.msg-send-btn svg{width:18px;height:18px;display:block;}
+.new-msg-icon-btn{background:var(--mid);border:1px solid #2a2a2a;color:var(--white);width:34px;height:34px;border-radius:var(--r-btn);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s ease;margin-left:auto;flex-shrink:0;}
+.new-msg-icon-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+.new-msg-icon-btn svg{width:16px;height:16px;}
+@keyframes msgPaneSlide{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){.msg-shell.chat-open > .msg-thread-pane{animation:none;}}
+.msg-row.fresh{animation:msgBubbleIn 220ms var(--ease,cubic-bezier(0.4,0,0.2,1));}
+@keyframes msgBubbleIn{from{opacity:0;transform:translateY(6px) scale(0.97);}to{opacity:1;transform:none;}}
+.scroll-pill{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);background:var(--mid);color:var(--white);border:1px solid var(--border);border-radius:999px;padding:.45rem .9rem;font-size:.78rem;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.45);transition:opacity .15s ease,transform .15s ease;z-index:5;}
+.scroll-pill:hover{transform:translateX(-50%) translateY(-1px);}
+.scroll-pill.hidden{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(8px);}
 
 /* FOLLOW */
 .follow-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;transition:border-color .2s;}
@@ -294,8 +352,23 @@ select option{background:var(--mid);}
   .welcome-banner{padding:1.25rem;}
   .job-card{flex-direction:column;align-items:flex-start;}
   .job-right{align-items:flex-start;}
-  .saved-grid{grid-template-columns:1fr;}
 }
+
+/* STATE COVERAGE CHIPS */
+.state-chip{font-family:var(--font-display);font-size:.78rem;font-weight:700;letter-spacing:0.06em;padding:0;width:42px;height:32px;border-radius:var(--r-btn);background:var(--mid);color:var(--text-3);border:1px solid #2a2a2a;cursor:pointer;transition:all .15s ease;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;}
+.state-chip:hover{border-color:rgba(245,196,0,.35);color:var(--white);}
+.state-chip.on{background:rgba(245,196,0,0.12);border-color:rgba(245,196,0,.45);color:var(--yellow);}
+.state-chip.on:hover{background:rgba(245,196,0,0.18);}
+
+/* PROFILE SUB-TABS — Facebook-style */
+.ptab-nav{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.75rem;overflow-x:auto;}
+.ptab{position:relative;padding:.85rem 1.25rem;background:transparent;border:none;color:var(--muted);font-family:var(--font-body);font-size:.92rem;font-weight:600;cursor:pointer;transition:color .15s ease;white-space:nowrap;}
+.ptab:hover:not(.active){color:var(--white);}
+.ptab.active{color:var(--white);}
+.ptab.active::after{content:'';position:absolute;left:1rem;right:1rem;bottom:-1px;height:2px;background:var(--yellow);border-radius:2px 2px 0 0;}
+.ptab-pane{display:none;}
+.ptab-pane.active{display:block;}
+#ptab-pane-about.ptab-pane.active{display:grid;}
 
 /* SPINNER */
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(245,196,0,.2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem;}
@@ -306,31 +379,23 @@ select option{background:var(--mid);}
 .mobile-nav-items{display:flex;justify-content:space-around;}
 .mn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;cursor:pointer;padding:.3rem .75rem;border-radius:var(--r-btn);transition:all .2s;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);}
 .mn-item.active{color:var(--yellow);}
-.mn-icon{font-size:1.25rem;}
+.mn-icon{display:inline-flex;align-items:center;justify-content:center;height:22px;line-height:1;}
+.mn-icon svg{width:22px;height:22px;display:block;}
 .mn-label{font-size:.72rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
 @media(max-width:600px){
   .mobile-nav{display:block;}
   .mn-item{padding:.3rem .35rem!important;}
   .mn-label{font-size:.6rem!important;letter-spacing:0!important;}
   .dash-wrap{padding-bottom:6.5rem;}
-  #msgLayout{grid-template-columns:1fr!important;min-height:unset!important;}
-  #msgLayout > div:last-child{display:none!important;}
-  #msgLayout.chat-open > div:first-child{display:none!important;}
-  #panel-messages.chat-open > .sec-head{display:none!important;}
-  #msgLayout.chat-open > div:last-child{
-    display:flex!important;flex-direction:column;
-    height:calc(100vh - 165px);min-height:300px;
-    overflow:hidden;border-radius:12px;
-  }
-  #chatMessages{
-    overflow-x:hidden!important;
-    background:var(--surface)!important;
-    padding:1rem .75rem!important;
-  }
-  .msg-bubble{max-width:68%!important;}
-  .msg-bubble.sent{border-radius:18px 18px 4px 18px!important;}
-  .msg-bubble.recv{border-radius:18px 18px 18px 4px!important;}
-  #msgBackBtn{display:block!important;}
+  .msg-shell{grid-template-columns:1fr!important;height:calc(100dvh - 160px)!important;min-height:unset!important;gap:0!important;}
+  .msg-list-pane,.msg-thread-pane{border-radius:0!important;border-left:none;border-right:none;}
+  .msg-shell > .msg-thread-pane{display:none!important;}
+  .msg-shell.chat-open > .msg-list-pane{display:none!important;}
+  .msg-shell.chat-open > .msg-thread-pane{display:flex!important;animation:msgPaneSlide 220ms var(--ease,cubic-bezier(0.4,0,0.2,1));}
+  .msg-back-btn{display:flex!important;width:40px;height:40px;}
+  .msg-area{padding:1rem .9rem!important;}
+  .msg-bubble{max-width:78%!important;}
+  .msg-composer{padding-bottom:max(.85rem,env(safe-area-inset-bottom))!important;}
 }
 </style>
 <script>
@@ -359,9 +424,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
     <button class="nav-tab active" data-testid="nav-dashboard" onclick="showPanel('overview',this)">Overview</button>
     <button class="nav-tab" onclick="showPanel('jobs',this)">My Jobs</button>
     <button class="nav-tab" data-testid="nav-messages" onclick="showPanel('messages',this)" id="msgTab">Messages <span style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;" id="msgDot"></span></button>
-    <button class="nav-tab" onclick="showPanel('following',this)">Following</button>
     <button class="nav-tab" onclick="showPanel('earnings',this)" style="display:none;">Earnings</button>
-    <button class="nav-tab" onclick="showPanel('saved',this)">Saved Loads</button>
     <button class="nav-tab" data-testid="nav-profile" onclick="showPanel('profile',this)">Profile</button>
   </div>
   <div class="nav-right">
@@ -376,10 +439,14 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         </div>
       </div>
     </div>
-    <div class="user-chip">
+    <div class="user-chip" onclick="document.querySelector('[data-testid=nav-profile]').click()">
       <div class="user-av" id="navAvatar">--</div>
       <span class="user-name" id="navName">Loading...</span>
     </div>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" style="width:34px;height:34px;">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
     <button class="logout-btn" data-testid="logout-btn" onclick="handleLogout()">Log Out</button>
   </div>
 </nav>
@@ -541,27 +608,19 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
     </div>
   </div>
 
-  <!-- SAVED LOADS PANEL -->
-  <div class="panel" id="panel-saved">
-    <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">Saved <span>Loads</span></div>
-      <a href="loadboard.html" class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;">Browse Board</a>
-    </div>
-    <div class="saved-grid" id="savedGrid">
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div class="empty-icon">♡</div>
-        <div class="empty-text">No saved loads yet — tap the heart icon on any load to save it here</div>
-        <a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">Browse Loads →</a>
-      </div>
-    </div>
-  </div>
 
   <!-- PROFILE PANEL -->
   <div class="panel" id="panel-profile">
-    <div class="sec-head" style="margin-bottom:1.5rem;">
+    <div class="sec-head" style="margin-bottom:1rem;">
       <div class="sec-title">My <span>Profile</span></div>
     </div>
-    <div class="profile-grid">
+    <!-- Profile sub-tabs (Facebook-style) -->
+    <div class="ptab-nav" role="tablist">
+      <button class="ptab active" id="ptab-btn-about" onclick="switchProfileTab('about',this)" role="tab" aria-selected="true">About</button>
+      <button class="ptab" id="ptab-btn-following" onclick="switchProfileTab('following',this)" role="tab" aria-selected="false">Following</button>
+      <button class="ptab" id="ptab-btn-followers" onclick="switchProfileTab('followers',this)" role="tab" aria-selected="false">Followers</button>
+    </div>
+    <div class="profile-grid ptab-pane active" id="ptab-pane-about">
 
       <!-- LEFT: Profile card -->
       <div>
@@ -571,7 +630,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <div style="font-size:.65rem;color:var(--muted);margin-bottom:.5rem;">Click photo to change</div>
           <div class="profile-name" id="profileName">Your Name</div>
           <div class="profile-type">🚩 Pilot Car Driver</div>
-          <div id="verifiedBadge" style="display:none;background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,.3);color:var(--yellow);font-size:.72rem;font-weight:700;padding:.2rem .75rem;border-radius:100px;margin:.4rem auto;width:fit-content;">⭐ Verified Pilot</div>
+          <div id="verifiedBadge" style="display:none;background:rgba(245,196,0,0.1);border:1px solid rgba(245,196,0,.3);color:var(--yellow);font-size:.78rem;font-weight:700;padding:.25rem .85rem;border-radius:100px;margin:.4rem auto;width:fit-content;align-items:center;gap:.4rem;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Verified Pilot</div>
           <div id="availabilityStatus" style="display:none;font-size:.72rem;padding:.2rem .75rem;border-radius:100px;margin:.2rem auto;width:fit-content;"></div>
           <div class="rating-row" id="ratingRow">
             <span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span>
@@ -583,7 +642,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
             <div><div class="ps-val" id="profileOnTime">—</div><div class="ps-label">On Time</div></div>
           </div>
           <div id="avatarUploadArea">
-            <button class="edit-profile-btn" onclick="document.getElementById('avatarInput').click()">📷 Change Photo</button>
+            <button class="edit-profile-btn" onclick="document.getElementById('avatarInput').click()" style="display:inline-flex;align-items:center;gap:.4rem;justify-content:center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Change Photo</button>
             <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
             <div id="avatarMsg" style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.3rem;display:none;"></div>
           </div>
@@ -594,38 +653,39 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <div class="fs-title">Certifications</div>
           <div class="cert-list" id="certList">
 
-            <!-- Pilot Car Cert -->
-            <div class="cert-item" id="cert-pilot">
+            <!-- Driver License -->
+            <div class="cert-item" id="cert-license">
               <div class="cert-item-top">
-                <span class="cert-icon">📋</span>
-                <span class="cert-name">Pilot Car Certification</span>
+                <span class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><line x1="13" y1="11" x2="19" y2="11"/><line x1="13" y1="14" x2="17" y2="14"/></svg></span>
+                <span class="cert-name">Driver License</span>
                 <span class="cert-actions">
-                  <span class="cert-status cert-missing" id="status-pilot">Not uploaded</span>
-                  <button class="cert-expand-btn" onclick="toggleCert('pilot')">+ Add</button>
+                  <span class="cert-status cert-missing" id="status-license">Not uploaded</span>
+                  <button class="cert-expand-btn" onclick="toggleCert('license')">+ Add</button>
                 </span>
               </div>
-              <span class="cert-exp" id="exp-pilot" style="display:none">No expiry added</span>
-              <div class="cert-upload-area" id="upload-pilot">
-                <div class="cert-drop" id="drop-pilot">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('pilot',this)">
-                  <div class="cert-drop-label">📎 Upload File</div>
+              <span class="cert-exp" id="exp-license" style="display:none">No expiry added</span>
+              <div class="cert-upload-area" id="upload-license">
+                <div class="cert-drop" id="drop-license">
+                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('license',this)">
+                  <div class="cert-drop-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Upload File</div>
                 </div>
-                <div class="cert-preview" id="preview-pilot">
-                  <img id="preview-img-pilot" src="" alt="Certificate">
-                  <button class="cert-preview-remove" onclick="removeCert('pilot')">✕</button>
+                <div class="cert-preview" id="preview-license">
+                  <img id="preview-img-license" src="" alt="Driver License">
+                  <button class="cert-preview-remove" onclick="removeCert('license')" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                 </div>
                 <div class="cert-expiry-row">
-                  <input type="date" id="expiry-pilot" placeholder="Expiry date" style="color-scheme:dark">
-                  <button class="cert-save-btn" onclick="saveCert('pilot','Pilot Car Certification')">Save</button>
+                  <input type="date" id="expiry-license" placeholder="Expiry date" style="color-scheme:dark">
+                  <button class="cert-save-btn" onclick="saveCert('license','Driver License')">Save</button>
                 </div>
               </div>
             </div>
 
+            <!-- Pilot Car Cert -->
             <!-- Insurance -->
             <div class="cert-item" id="cert-insurance">
               <div class="cert-item-top">
-                <span class="cert-icon">🛡️</span>
-                <span class="cert-name">Liability Insurance</span>
+                <span class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                <span class="cert-name">Full Coverage Commercial Insurance</span>
                 <span class="cert-actions">
                   <span class="cert-status cert-missing" id="status-insurance">Not uploaded</span>
                   <button class="cert-expand-btn" onclick="toggleCert('insurance')">+ Add</button>
@@ -635,48 +695,20 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
               <div class="cert-upload-area" id="upload-insurance">
                 <div class="cert-drop" id="drop-insurance">
                   <input type="file" accept="image/*,.pdf" onchange="handleCertFile('insurance',this)">
-                  <div class="cert-drop-label">📎 Upload File</div>
+                  <div class="cert-drop-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Upload File</div>
                 </div>
                 <div class="cert-preview" id="preview-insurance">
                   <img id="preview-img-insurance" src="" alt="Certificate">
-                  <button class="cert-preview-remove" onclick="removeCert('insurance')">✕</button>
+                  <button class="cert-preview-remove" onclick="removeCert('insurance')" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                 </div>
                 <div class="cert-expiry-row">
                   <input type="date" id="expiry-insurance" placeholder="Expiry date" style="color-scheme:dark">
-                  <button class="cert-save-btn" onclick="saveCert('insurance','Liability Insurance')">Save</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- OSHA -->
-            <div class="cert-item" id="cert-osha">
-              <div class="cert-item-top">
-                <span class="cert-icon">🔰</span>
-                <span class="cert-name">OSHA Safety Training</span>
-                <span class="cert-actions">
-                  <span class="cert-status cert-missing" id="status-osha">Not uploaded</span>
-                  <button class="cert-expand-btn" onclick="toggleCert('osha')">+ Add</button>
-                </span>
-              </div>
-              <span class="cert-exp" id="exp-osha" style="display:none">No expiry added</span>
-              <div class="cert-upload-area" id="upload-osha">
-                <div class="cert-drop" id="drop-osha">
-                  <input type="file" accept="image/*,.pdf" onchange="handleCertFile('osha',this)">
-                  <div class="cert-drop-label">📎 Upload File</div>
-                </div>
-                <div class="cert-preview" id="preview-osha">
-                  <img id="preview-img-osha" src="" alt="Certificate">
-                  <button class="cert-preview-remove" onclick="removeCert('osha')">✕</button>
-                </div>
-                <div class="cert-expiry-row">
-                  <input type="date" id="expiry-osha" placeholder="Expiry date" style="color-scheme:dark">
-                  <button class="cert-save-btn" onclick="saveCert('osha','OSHA Safety Training')">Save</button>
+                  <button class="cert-save-btn" onclick="saveCert('insurance','Full Coverage Commercial Insurance')">Save</button>
                 </div>
               </div>
             </div>
 
           </div>
-          <button class="add-cert-btn" onclick="addCustomCert()">+ Add Another Certificate</button>
         </div>
       </div>
 
@@ -734,9 +766,19 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
         </div>
 
         <div class="form-section">
-          <div class="fs-title">🗺️ State Coverage Map</div>
-          <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Select all states you are certified and available to run loads in.</p>
-          <div id="stateCoverageMap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.4rem;margin-bottom:1rem;">
+          <div class="fs-title" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:.5rem;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--yellow);"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              State Coverage
+            </span>
+            <span id="coverageCount" style="font-family:var(--font-display);font-size:.7rem;font-weight:600;letter-spacing:0.10em;text-transform:uppercase;color:var(--muted);">0 / 50 states</span>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5;">Tap to select states you are certified and available to run loads in.</p>
+          <div style="display:flex;gap:.4rem;margin-bottom:.85rem;">
+            <button type="button" onclick="selectAllStates()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem .75rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.75rem;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s;">Select all 50</button>
+            <button type="button" onclick="clearAllStates()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem .75rem;border-radius:var(--r-btn);font-family:var(--font-body);font-size:.75rem;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s;">Clear</button>
+          </div>
+          <div id="stateCoverageMap" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem;">
           </div>
           <button class="save-btn" onclick="saveStateCoverage()">Save Coverage</button>
         </div>
@@ -847,27 +889,27 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <p style="font-size:.78rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5;">Get notified instantly when loads matching your preferences are posted.</p>
 
           <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1rem;">
-            <div style="padding:.85rem 1rem;background:var(--mid);border:1px solid #2a2a2a;border-radius:7px;">
+            <div style="padding:.85rem 1rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
                 <div style="font-size:.875rem;font-weight:500;">Enable Load Alerts</div>
                 <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
                   <input type="checkbox" id="alert_enabled" style="width:16px;height:16px;accent-color:var(--yellow);">
-                  <span style="font-size:.78rem;color:#aaa;">Email me</span>
+                  <span style="font-size:.78rem;color:var(--text-2);">Email me</span>
                 </label>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Min Pay ($)</label>
-                  <input type="text" inputmode="decimal" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="decimal" id="alert_minPay" placeholder="e.g. 400" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
                 <div>
                   <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">Max Miles</label>
-                  <input type="text" inputmode="numeric" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <input type="text" inputmode="numeric" id="alert_maxMiles" placeholder="e.g. 500" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
                 </div>
               </div>
               <div style="margin-top:.65rem;">
                 <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:.35rem;font-weight:600;">States to Watch (leave blank for all)</label>
-                <input type="text" id="alert_states" placeholder="e.g. OH, PA, WV, KY" style="width:100%;background:#111;border:1px solid #333;color:var(--white);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
+                <input type="text" id="alert_states" placeholder="e.g. OH, PA, WV, KY" style="width:100%;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);padding:.5rem .75rem;border-radius:5px;font-family:var(--font-body);font-size:14px;outline:none;">
               </div>
             </div>
           </div>
@@ -896,65 +938,93 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
           <button onclick="resetTestData()" id="resetTestBtn" style="background:var(--bad);color:#fff;border:none;padding:.65rem 1.25rem;border-radius:6px;font-family:sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;">Reset My Test Data</button>
         </div>
       </div>
+
+    <!-- FOLLOWING SUB-TAB -->
+    <div id="ptab-pane-following" class="ptab-pane">
+      <div id="followingList">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="empty-text">You're not following anyone yet</div>
+          <div style="font-size:.85rem;color:var(--muted);margin-top:.4rem;line-height:1.5;">Follow carriers to get notified when they post loads. Follow pilots to message them.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOLLOWERS SUB-TAB -->
+    <div id="ptab-pane-followers" class="ptab-pane">
+      <div id="followersList">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3-3-3 3"/><line x1="19" y1="8" x2="19" y2="14"/></svg></div>
+          <div class="empty-text">No followers yet</div>
+          <div style="font-size:.85rem;color:var(--muted);margin-top:.4rem;line-height:1.5;">When people follow you, they'll show up here.</div>
+        </div>
+      </div>
     </div>
   </div>
 
 
   <!-- MESSAGES PANEL -->
   <div class="panel" id="panel-messages">
-    <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">💬 <span>Messages</span></div>
-      <button class="btn btn-y" style="font-size:.8rem;padding:.45rem 1rem;" onclick="showNewMessageModal()">+ New Message</button>
-    </div>
-    <div style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:500px;" id="msgLayout">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-        <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;">Conversations</div>
-        <div class="conv-list" id="convList">
-          <div class="empty-state" style="padding:2rem 1rem;">
-            <div class="empty-icon">💬</div>
-            <div class="empty-text" style="font-size:.82rem;">No conversations yet</div>
+    <div class="msg-shell" id="msgLayout">
+
+      <!-- LEFT: conversation list pane -->
+      <aside class="msg-list-pane">
+        <div class="msg-list-head">
+          <div class="msg-list-title">Messages</div>
+          <button class="new-msg-icon-btn" onclick="showNewMessageModal()" title="New message" aria-label="New message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+        </div>
+        <div class="msg-search-wrap">
+          <div class="msg-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="convSearch" placeholder="Search messages..." oninput="filterConversations(this.value)">
           </div>
         </div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;">
-        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;">
-          <button id="msgBackBtn" onclick="closeMobileChat()" style="display:none;background:transparent;border:none;color:var(--yellow);font-size:1.3rem;cursor:pointer;padding:0 .25rem 0 0;line-height:1;flex-shrink:0;">←</button>
-          <div id="chatAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.9rem;color:var(--black);flex-shrink:0;">?</div>
-          <div>
-            <div id="chatName" style="font-weight:600;font-size:.875rem;">Select a conversation</div>
-            <div id="chatSub" style="font-size:.7rem;color:var(--muted);">or start a new one</div>
+        <div class="conv-list" id="convList" role="list">
+          <div class="msg-empty" style="padding:2rem 1rem;">
+            <div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="msg-empty-text">No conversations yet</div>
+            <div class="msg-empty-sub">Start one from a load or pilot profile</div>
           </div>
         </div>
-        <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem;min-height:300px;">
-          <div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Select a conversation to start chatting</div>
+      </aside>
+
+      <!-- RIGHT: thread pane -->
+      <section class="msg-thread-pane">
+        <header class="msg-thread-head">
+          <button class="msg-back-btn" id="msgBackBtn" onclick="closeMobileChat()" aria-label="Back to conversations">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <div id="chatAvatar" class="conv-av" style="width:42px;height:42px;">?</div>
+          <div style="flex:1;min-width:0;">
+            <div id="chatName" class="msg-thread-name">Select a conversation</div>
+            <div id="chatSub" class="msg-thread-sub"><span>or start a new one</span></div>
+          </div>
+        </header>
+        <div id="chatMessages" class="msg-area" role="log" aria-live="polite">
+          <div class="msg-empty" style="margin:auto 0;">
+            <div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="msg-empty-text">Select a conversation</div>
+            <div class="msg-empty-sub">Choose from your existing conversations or start a new one</div>
+            <button class="btn btn-o" style="margin-top:.75rem;font-size:.85rem;" onclick="showNewMessageModal()">New Message</button>
+          </div>
         </div>
-        <div style="padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;">
-          <input type="text" id="msgInput" placeholder="Type a message..." style="flex:1;background:var(--mid);border:1px solid #2a2a2a;color:var(--white);padding:.6rem .9rem;border-radius:6px;font-family:var(--font-body);font-size:15px;outline:none;" onkeydown="if(event.key==='Enter')sendMessage()">
-          <button onclick="sendMessage()" style="background:var(--yellow);color:var(--black);border:none;padding:.6rem 1.1rem;border-radius:6px;font-family:var(--font-body);font-size:.82rem;font-weight:700;cursor:pointer;">Send</button>
-        </div>
-      </div>
+        <form class="msg-composer" onsubmit="event.preventDefault();sendMessage();">
+          <div class="msg-composer-field">
+            <textarea id="msgInput" rows="1" placeholder="Type a message..." onkeydown="if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();sendMessage();}" oninput="onComposerInput(this)"></textarea>
+          </div>
+          <button type="submit" class="msg-send-btn" id="msgSendBtn" aria-label="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </section>
+
     </div>
   </div>
 
   <!-- ROUTE HISTORY (inside jobs) shown via tab filter -->
 
-  <!-- FOLLOWING PANEL -->
-  <div class="panel" id="panel-following">
-    <div class="sec-head" style="margin-bottom:1.5rem;">
-      <div class="sec-title">👥 <span>Following</span></div>
-    </div>
-    <div style="display:flex;gap:.5rem;background:var(--mid);padding:.3rem;border-radius:8px;width:fit-content;margin-bottom:1.5rem;">
-      <button class="nav-tab active" id="followingTab" onclick="switchFollowTab('following',this)" style="font-size:.78rem;padding:.35rem .85rem;">Following</button>
-      <button class="nav-tab" id="followersTab" onclick="switchFollowTab('followers',this)" style="font-size:.78rem;padding:.35rem .85rem;">Followers</button>
-    </div>
-    <div id="followingList">
-      <div class="empty-state">
-        <div class="empty-icon">👥</div>
-        <div class="empty-text">You're not following anyone yet</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem;">Follow carriers to get notified when they post loads. Follow pilots to message them.</div>
-      </div>
-    </div>
-  </div>
 
   <!-- REVIEWS PANEL — inside profile, shown separately -->
 
@@ -1068,8 +1138,15 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
       <div>
         <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.55rem .85rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-input);font-size:.85rem;color:var(--text);user-select:none;">
           <input type="checkbox" id="logOvernight" style="width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
-          <span>🌙 I stayed overnight</span>
+          <span>Stayed overnight</span>
           <span style="margin-left:auto;font-size:.7rem;color:var(--text-3);">pre-fills on invoice</span>
+        </label>
+      </div>
+      <div>
+        <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.55rem .85rem;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--r-input);font-size:.85rem;color:var(--text);user-select:none;">
+          <input type="checkbox" id="logNoGo" style="width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
+          <span>No-go day — weather / permit delay</span>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--text-3);">counted on invoice</span>
         </label>
       </div>
       <div>
@@ -1145,13 +1222,11 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 <!-- MOBILE BOTTOM NAV -->
 <div class="mobile-nav">
   <div class="mobile-nav-items">
-    <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon">🏠</span><span class="mn-label">Home</span></button>
-    <button class="mn-item" onclick="showPanel('jobs',this)"><span class="mn-icon">🚛</span><span class="mn-label">Jobs</span></button>
-    <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></button>
-    <button class="mn-item" onclick="showPanel('following',this)"><span class="mn-icon">👥</span><span class="mn-label">Follow</span></button>
-    <button class="mn-item" onclick="showPanel('earnings',this)" style="display:none;"><span class="mn-icon">💰</span><span class="mn-label">Earnings</span></button>
-    <button class="mn-item" onclick="showPanel('saved',this)"><span class="mn-icon">♡</span><span class="mn-label">Saved</span></button>
-    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon">👤</span><span class="mn-label">Profile</span></button>
+    <button class="mn-item active" onclick="showPanel('overview',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="mn-label">Home</span></button>
+    <button class="mn-item" onclick="showPanel('jobs',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span><span class="mn-label">Jobs</span></button>
+    <button class="mn-item" onclick="showPanel('messages',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="mn-label">Messages</span></button>
+    <button class="mn-item" onclick="showPanel('earnings',this)" style="display:none;"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span><span class="mn-label">Earnings</span></button>
+    <button class="mn-item" onclick="showPanel('profile',this)"><span class="mn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="mn-label">Profile</span></button>
   </div>
 </div>
 
@@ -1458,12 +1533,6 @@ onAuthStateChanged(auth, async (user) => {
       }
     } catch(loadsErr) { console.warn('Available loads preview:', loadsErr.message); }
 
-    // Show real saved loads
-    const savedSnap = await getDocs(query(collection(db, 'savedLoads'), where('pilotId', '==', user.uid)));
-    if (!savedSnap.empty) {
-      document.getElementById('savedGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">♥</div><div class="empty-text">You have ' + savedSnap.size + ' saved load' + (savedSnap.size !== 1 ? 's' : '') + '</div><a href="loadboard.html" class="btn btn-y" style="font-size:.82rem;padding:.5rem 1.1rem;margin-top:.5rem;">View on Board →</a></div>';
-    }
-
   } catch(e) {
     console.error('Error loading profile:', e);
   }
@@ -1522,36 +1591,55 @@ window.saveAvailability = async () => {
   } catch(e) { showToast('Could not save availability.'); }
 };
 
-// ── STATE COVERAGE MAP ──
-const ALL_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut',
-  'Florida','Georgia','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana',
-  'Michigan','Minnesota','Missouri','Montana','Nebraska','Nevada','New Mexico','New York',
-  'North Carolina','Ohio','Oklahoma','Oregon','Pennsylvania','Tennessee','Texas','Utah',
-  'Virginia','Washington','Wisconsin','Wyoming'];
+// ── STATE COVERAGE — all 50 US states (2-letter chips) ──
+const ALL_STATES = [
+  ['Alabama','AL'],['Alaska','AK'],['Arizona','AZ'],['Arkansas','AR'],['California','CA'],['Colorado','CO'],
+  ['Connecticut','CT'],['Delaware','DE'],['Florida','FL'],['Georgia','GA'],['Hawaii','HI'],['Idaho','ID'],
+  ['Illinois','IL'],['Indiana','IN'],['Iowa','IA'],['Kansas','KS'],['Kentucky','KY'],['Louisiana','LA'],
+  ['Maine','ME'],['Maryland','MD'],['Massachusetts','MA'],['Michigan','MI'],['Minnesota','MN'],['Mississippi','MS'],
+  ['Missouri','MO'],['Montana','MT'],['Nebraska','NE'],['Nevada','NV'],['New Hampshire','NH'],['New Jersey','NJ'],
+  ['New Mexico','NM'],['New York','NY'],['North Carolina','NC'],['North Dakota','ND'],['Ohio','OH'],['Oklahoma','OK'],
+  ['Oregon','OR'],['Pennsylvania','PA'],['Rhode Island','RI'],['South Carolina','SC'],['South Dakota','SD'],['Tennessee','TN'],
+  ['Texas','TX'],['Utah','UT'],['Vermont','VT'],['Virginia','VA'],['Washington','WA'],['West Virginia','WV'],
+  ['Wisconsin','WI'],['Wyoming','WY']
+];
+
+function _updateCoverageCount() {
+  const sel = document.querySelectorAll('#stateCoverageMap .state-chip.on').length;
+  const el = document.getElementById('coverageCount');
+  if (el) el.textContent = `${sel} / ${ALL_STATES.length} states`;
+}
 
 function renderStateCoverageMap(selectedStates = []) {
   const map = document.getElementById('stateCoverageMap');
   if (!map) return;
-  map.innerHTML = ALL_STATES.map(s => {
-    const code = s.slice(0,2).toUpperCase();
-    const isSelected = selectedStates.includes(s) || selectedStates.includes(code);
-    return `<div onclick="toggleState(this,'${s}')" data-state="${s}" style="padding:.4rem .6rem;border-radius:5px;font-size:.72rem;font-weight:500;cursor:pointer;text-align:center;border:1px solid ${isSelected ? 'rgba(245,196,0,.4)' : '#2a2a2a'};background:${isSelected ? 'rgba(245,196,0,0.1)' : 'var(--mid)'};color:${isSelected ? 'var(--yellow)' : '#888'};transition:all .15s;">${s}</div>`;
+  map.innerHTML = ALL_STATES.map(([name, code]) => {
+    const isSelected = selectedStates.includes(name) || selectedStates.includes(code);
+    return `<button type="button" onclick="toggleState(this)" data-state="${name}" data-code="${code}" class="state-chip ${isSelected ? 'on' : ''}" title="${name}" aria-pressed="${isSelected}">${code}</button>`;
   }).join('');
+  _updateCoverageCount();
 }
 
-window.toggleState = (el, state) => {
-  const isActive = el.style.background.includes('245');
-  el.style.background = isActive ? 'var(--mid)' : 'rgba(245,196,0,0.1)';
-  el.style.color = isActive ? '#888' : 'var(--yellow)';
-  el.style.borderColor = isActive ? '#2a2a2a' : 'rgba(245,196,0,.4)';
+window.toggleState = (el) => {
+  el.classList.toggle('on');
+  el.setAttribute('aria-pressed', el.classList.contains('on'));
+  _updateCoverageCount();
+};
+
+window.selectAllStates = () => {
+  document.querySelectorAll('#stateCoverageMap .state-chip').forEach(c => { c.classList.add('on'); c.setAttribute('aria-pressed','true'); });
+  _updateCoverageCount();
+};
+window.clearAllStates = () => {
+  document.querySelectorAll('#stateCoverageMap .state-chip').forEach(c => { c.classList.remove('on'); c.setAttribute('aria-pressed','false'); });
+  _updateCoverageCount();
 };
 
 window.saveStateCoverage = async () => {
   const user = auth.currentUser;
   if (!user) return;
-  const selected = Array.from(document.querySelectorAll('#stateCoverageMap div'))
-    .filter(el => el.style.background.includes('245'))
-    .map(el => el.dataset.state);
+  const selectedChips = Array.from(document.querySelectorAll('#stateCoverageMap .state-chip.on'));
+  const selected = selectedChips.map(el => el.dataset.state);
   const coverageText = selected.join(', ');
   try {
     const { doc: fd, updateDoc: ud } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -1787,7 +1875,8 @@ function buildLoadLog(a) {
     '<span style="font-family:var(--font-display);font-weight:700;color:var(--accent);min-width:34px;font-size:.65rem;flex-shrink:0;">D' + e.day + '</span>' +
     '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.stop || '—') + '</span>' +
     (e.miles ? '<span style="color:var(--text-2);flex-shrink:0;font-size:.65rem;">' + e.miles + 'mi</span>' : '') +
-    (e.overnight ? '<span title="Stayed overnight" style="flex-shrink:0;font-size:.7rem;">🌙</span>' : '') +
+    (e.overnight ? '<span style="flex-shrink:0;font-size:.62rem;font-weight:700;padding:.1rem .4rem;background:var(--info-bg);border:1px solid var(--info-border);border-radius:4px;color:var(--info);letter-spacing:.3px;">NIGHT</span>' : '') +
+    (e.noGo ? '<span style="flex-shrink:0;font-size:.62rem;font-weight:700;padding:.1rem .4rem;background:var(--bad-bg);border:1px solid var(--bad-border);border-radius:4px;color:var(--bad);letter-spacing:.3px;">NO-GO</span>' : '') +
     '<button onclick="event.stopPropagation();openEditLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--text-2);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Edit</button>' +
     '<button onclick="event.stopPropagation();deleteLogDay(\'' + a.id + '\',' + i + ')" style="background:none;border:none;color:var(--bad);font-size:.62rem;cursor:pointer;padding:.15rem .45rem;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;">Delete</button>' +
     '</div>'
@@ -1978,6 +2067,8 @@ window.openLogDay = (appId, currentDayCount) => {
   document.getElementById('logNotes').value = '';
   const overnightEl = document.getElementById('logOvernight');
   if (overnightEl) overnightEl.checked = false;
+  const noGoEl = document.getElementById('logNoGo');
+  if (noGoEl) noGoEl.checked = false;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = '';
   const msg = document.getElementById('logDayMsg');
@@ -1998,6 +2089,8 @@ window.openEditLogDay = (appId, index) => {
   document.getElementById('logNotes').value = entry.notes || '';
   const overnightEl = document.getElementById('logOvernight');
   if (overnightEl) overnightEl.checked = !!entry.overnight;
+  const noGoEditEl = document.getElementById('logNoGo');
+  if (noGoEditEl) noGoEditEl.checked = !!entry.noGo;
   document.getElementById('logAppId').value = appId;
   document.getElementById('logEditIndex').value = String(index);
   const msg = document.getElementById('logDayMsg');
@@ -2051,6 +2144,7 @@ window.submitLogDay = async () => {
   const miles    = parseInt(document.getElementById('logMiles').value) || 0;
   const notes    = document.getElementById('logNotes').value.trim();
   const overnight = document.getElementById('logOvernight')?.checked || false;
+  const noGo      = document.getElementById('logNoGo')?.checked || false;
   const dayNum   = parseInt(document.getElementById('logDayNum').textContent) || 1;
   const editIdx  = document.getElementById('logEditIndex').value;
   const isEdit   = editIdx !== '' && editIdx !== null;
@@ -2071,11 +2165,11 @@ window.submitLogDay = async () => {
       const idx = parseInt(editIdx);
       const app = (window._allJobs || []).find(a => a.id === appId);
       const oldLog = app?.loadLog || [];
-      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, overnight, editedAt: new Date().toISOString() } : e);
+      const newLog = oldLog.map((e, i) => i === idx ? { ...e, day: dayNum, date, stop, miles, notes, overnight, noGo, editedAt: new Date().toISOString() } : e);
       await updateDoc(doc(db, 'applications', appId), { loadLog: newLog });
       updatedApps = (window._allJobs || []).map(a => a.id === appId ? { ...a, loadLog: newLog } : a);
     } else {
-      const newEntry = { day: dayNum, date, stop, miles, notes, overnight, loggedAt: new Date().toISOString() };
+      const newEntry = { day: dayNum, date, stop, miles, notes, overnight, noGo, loggedAt: new Date().toISOString() };
       await updateDoc(doc(db, 'applications', appId), { loadLog: arrayUnion(newEntry) });
       updatedApps = (window._allJobs || []).map(a => {
         if (a.id !== appId) return a;
@@ -2736,7 +2830,7 @@ window.addCustomCert = () => {
   item.id = 'cert-' + id;
   item.innerHTML = `
     <div class="cert-item-top">
-      <span class="cert-icon">📄</span>
+      <span class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
       <span class="cert-name">${name}</span>
       <span class="cert-actions">
         <span class="cert-status cert-missing" id="status-${id}">Not uploaded</span>
@@ -2747,11 +2841,11 @@ window.addCustomCert = () => {
     <div class="cert-upload-area" id="upload-${id}">
       <div class="cert-drop" id="drop-${id}">
         <input type="file" accept="image/*,.pdf" onchange="handleCertFile('${id}',this)">
-        <div class="cert-drop-label">📎 Upload File</div>
+        <div class="cert-drop-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Upload File</div>
       </div>
       <div class="cert-preview" id="preview-${id}">
         <img id="preview-img-${id}" src="" alt="Certificate">
-        <button class="cert-preview-remove" onclick="removeCert('${id}')">✕</button>
+        <button class="cert-preview-remove" onclick="removeCert('${id}')" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="cert-expiry-row">
         <input type="date" id="expiry-${id}" style="color-scheme:dark">
@@ -2984,10 +3078,16 @@ window.navTab = (panelName) => document.querySelector(`.nav-tab[onclick*="showPa
 window.showPanel = (name, el) => {
   // Tear down chat listener when leaving Messages so onSnapshot stops billing reads on hidden panels.
   if (name !== 'messages' && convUnsubscribe) { convUnsubscribe(); convUnsubscribe = null; activeConvId = null; }
-  if (name === 'following') loadFollowing('following');
+  // Following/Followers now live as sub-tabs inside Profile (Facebook-style)
+  if (name === 'following' || name === 'followers') {
+    const subTab = name;
+    name = 'profile';
+    setTimeout(() => { const btn = document.getElementById('ptab-btn-' + subTab); if (btn) window.switchProfileTab(subTab, btn); }, 0);
+  }
   if (name === 'messages') loadConversations();
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.mn-item').forEach(t => t.classList.remove('active'));
   // If caller didn't pass a button, look it up by name so the highlight still updates
@@ -3005,6 +3105,24 @@ let activeConvId = null;
 let activeOtherId = null;
 let convUnsubscribe = null;
 
+function _formatConvTime(ts) {
+  if (!ts?.toMillis) return '';
+  const d = new Date(ts.toMillis());
+  const now = new Date();
+  const diffH = (now - d) / 36e5;
+  if (diffH < 24 && d.getDate() === now.getDate()) return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  if (diffH < 48) return 'Yesterday';
+  if (diffH < 168) return d.toLocaleDateString([], {weekday:'short'});
+  return d.toLocaleDateString([], {month:'short', day:'numeric'});
+}
+function _formatDateDivider(d) {
+  const now = new Date();
+  const today = now.toDateString();
+  const yest = new Date(now.getTime() - 86400000).toDateString();
+  if (d.toDateString() === today) return 'Today';
+  if (d.toDateString() === yest) return 'Yesterday';
+  return d.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric'});
+}
 async function loadConversations() {
   try {
     const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -3014,7 +3132,7 @@ async function loadConversations() {
     ));
     const convList = document.getElementById('convList');
     if (snap.empty) {
-      convList.innerHTML = '<div class="empty-state" style="padding:2rem 1rem;"><div class="empty-icon">💬</div><div class="empty-text" style="font-size:.82rem;">No conversations yet</div></div>';
+      convList.innerHTML = '<div class="msg-empty" style="padding:2.5rem 1rem;"><div class="msg-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="msg-empty-text">No conversations yet</div><div class="msg-empty-sub">Start one from a load or pilot profile</div></div>';
       return;
     }
     const convs = [];
@@ -3027,19 +3145,40 @@ async function loadConversations() {
       const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const hasUnread = c.unread?.[auth.currentUser.uid] > 0;
       if (hasUnread) totalUnread++;
-      return `<div class="conv-item ${activeConvId === c.id ? 'active' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" onclick="openConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
+      const time = _formatConvTime(c.lastMessageAt);
+      return `<div class="conv-item ${activeConvId === c.id ? 'active' : ''} ${hasUnread ? 'unread' : ''}" data-conv-id="${escapeHtml(c.id)}" data-other-id="${escapeHtml(otherId)}" data-other-name="${escapeHtml(otherName)}" data-search-name="${escapeHtml(otherName.toLowerCase())}" onclick="openConversation(this.dataset.convId, this.dataset.otherId, this.dataset.otherName)">
         <div class="conv-av">${escapeHtml(initials)}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="conv-name">${escapeHtml(otherName)}</div>
-          <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
+        <div class="conv-body">
+          <div class="conv-row">
+            <div class="conv-name">${escapeHtml(otherName)}</div>
+            <div class="conv-time">${escapeHtml(time)}</div>
+          </div>
+          <div class="conv-row">
+            <div class="conv-preview">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
+            ${hasUnread ? '<div class="conv-unread-dot"></div>' : ''}
+          </div>
         </div>
-        ${hasUnread ? '<div class="conv-unread-dot"></div>' : ''}
       </div>`;
     }).join('');
     const dot = document.getElementById('msgDot');
     if (dot) dot.style.display = totalUnread > 0 ? 'inline-block' : 'none';
   } catch(e) { console.error('Load conversations:', e); }
 }
+
+window.filterConversations = (q) => {
+  const term = (q || '').toLowerCase().trim();
+  document.querySelectorAll('#convList .conv-item').forEach(item => {
+    const name = item.dataset.searchName || '';
+    item.style.display = (!term || name.includes(term)) ? '' : 'none';
+  });
+};
+
+window.onComposerInput = (el) => {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  const btn = document.getElementById('msgSendBtn');
+  if (btn) btn.disabled = !el.value.trim();
+};
 
 window.closeMobileChat = () => {
   document.getElementById('msgLayout').classList.remove('chat-open');
@@ -3053,7 +3192,9 @@ window.openConversation = async (convId, otherId, otherName) => {
   const initials = otherName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   document.getElementById('chatAvatar').textContent = initials;
   document.getElementById('chatName').textContent = otherName;
-  document.getElementById('chatSub').textContent = 'Direct message';
+  document.getElementById('chatSub').innerHTML = '<span>Direct message</span>';
+  document.getElementById('msgLayout').classList.add('thread-active');
+  document.querySelectorAll('#convList .conv-item').forEach(it => it.classList.toggle('active', it.dataset.convId === convId));
   if (window.innerWidth <= 600) {
     document.getElementById('msgLayout').classList.add('chat-open');
     document.getElementById('panel-messages').classList.add('chat-open');
@@ -3065,6 +3206,7 @@ window.openConversation = async (convId, otherId, otherName) => {
   try {
     const { collection, query, where, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     if (convUnsubscribe) convUnsubscribe();
+    let lastCount = 0;
     convUnsubscribe = onSnapshot(
       query(collection(db, 'messages'), where('conversationId', '==', convId)),
       (snap) => {
@@ -3073,17 +3215,47 @@ window.openConversation = async (convId, otherId, otherName) => {
         msgs.sort((a, b) => (a.sentAt?.toMillis?.() || 0) - (b.sentAt?.toMillis?.() || 0));
         const container = document.getElementById('chatMessages');
         if (!msgs.length) {
-          container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:3rem;">Start the conversation!</div>';
+          container.innerHTML = '<div class="msg-empty" style="margin:auto 0;"><div class="msg-empty-text">Start the conversation</div><div class="msg-empty-sub">Say hi!</div></div>';
+          lastCount = 0;
           return;
         }
-        container.innerHTML = msgs.map(m => {
+        // Capture if user is near bottom BEFORE render so we can decide auto-scroll
+        const wasAtBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) < 80;
+        const isFirstRender = lastCount === 0;
+        const hasNew = msgs.length > lastCount;
+        const html = [];
+        let lastDay = '';
+        let lastSenderId = null;
+        let lastSentAt = 0;
+        msgs.forEach((m, idx) => {
           const isMine = m.senderId === auth.currentUser.uid;
-          return `<div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
+          const ts = m.sentAt?.toMillis?.() || 0;
+          const d = new Date(ts || Date.now());
+          const day = d.toDateString();
+          if (day !== lastDay) {
+            html.push(`<div class="msg-date-divider">${escapeHtml(_formatDateDivider(d))}</div>`);
+            lastDay = day;
+            lastSenderId = null;
+          }
+          const sameSender = m.senderId === lastSenderId && (ts - lastSentAt) < 120000;
+          const next = msgs[idx + 1];
+          const nextSame = next && next.senderId === m.senderId && ((next.sentAt?.toMillis?.() || 0) - ts) < 120000;
+          const burstClass = sameSender && nextSame ? 'burst-mid' : (nextSame ? '' : (sameSender ? 'burst-end' : 'burst-end'));
+          const gapClass = !sameSender && idx > 0 ? 'gap' : '';
+          const fresh = !isFirstRender && idx === msgs.length - 1 && hasNew ? 'fresh' : '';
+          const time = ts ? new Date(ts).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) : '';
+          html.push(`<div class="msg-row ${isMine ? 'sent' : 'recv'} ${burstClass} ${gapClass} ${fresh}" title="${escapeHtml(time)}">
             <div class="msg-bubble ${isMine ? 'sent' : 'recv'}">${escapeHtml(m.text)}</div>
-            <div class="msg-time ${isMine ? 'sent' : ''}">${m.sentAt ? new Date(m.sentAt.toMillis()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : ''}</div>
-          </div>`;
-        }).join('');
-        container.scrollTop = container.scrollHeight;
+            ${(!nextSame && time) ? `<div class="msg-time ${isMine ? 'sent' : ''}">${escapeHtml(time)}</div>` : ''}
+          </div>`);
+          lastSenderId = m.senderId;
+          lastSentAt = ts;
+        });
+        container.innerHTML = html.join('');
+        if (isFirstRender || wasAtBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+        lastCount = msgs.length;
       }
     );
   } catch(e) { console.error('Open conversation:', e); }
@@ -3210,6 +3382,15 @@ window.startNewConversation = async () => {
 };
 
 // ── FOLLOW SYSTEM ──
+window.switchProfileTab = (tab, btn) => {
+  document.querySelectorAll('#panel-profile .ptab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
+  document.querySelectorAll('#panel-profile .ptab-pane').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById('ptab-pane-' + tab);
+  if (pane) pane.classList.add('active');
+  if (tab === 'following' || tab === 'followers') loadFollowing(tab);
+};
+
 window.switchFollowTab = (tab, btn) => {
   document.querySelectorAll('#panel-following .nav-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -3226,9 +3407,12 @@ async function loadFollowing(tab = 'following') {
     } else {
       snap = await getDocs(query(collection(db, 'follows'), where('followingId', '==', user.uid)));
     }
-    const list = document.getElementById('followingList');
+    // Write to the correct sub-pane list (Profile sub-tabs)
+    const list = document.getElementById(tab === 'followers' ? 'followersList' : 'followingList');
+    if (!list) return;
     if (snap.empty) {
-      list.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">${tab === 'following' ? 'You are not following anyone yet' : 'Nobody is following you yet'}</div></div>`;
+      const emptyMsg = tab === 'following' ? 'You are not following anyone yet' : 'Nobody is following you yet';
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="empty-text">${escapeHtml(emptyMsg)}</div></div>`;
       return;
     }
     const items = await Promise.all(snap.docs.map(async d => {
@@ -3525,6 +3709,8 @@ window.submitDelivery = async (forceManual) => {
     const loadLog = appData.loadLog || [];
     const overnightRate = parseFloat(appData.loadOvernightRate) || 0;
     const overnights = loadLog.filter(d => !!d.overnight).length;
+    const noGoRate = parseFloat(appData.loadNoGoRate) || 0;
+    const noGoDays = loadLog.filter(d => !!d.noGo).length;
 
     // Calculate pay per day: mileage rate only applies on days that hit the threshold
     let totalPay = 0;
@@ -3537,8 +3723,9 @@ window.submitDelivery = async (forceManual) => {
     } else {
       totalPay = pay || 0;
     }
-    // Add overnight pay (count from day logs × per-night rate set by carrier on the load)
+    // Add overnight and no-go pay (counts from day logs × rates set by carrier on the load)
     totalPay += overnights * overnightRate;
+    totalPay += noGoDays * noGoRate;
 
     // Build invoice data
     const invoiceData = {
@@ -3558,6 +3745,8 @@ window.submitDelivery = async (forceManual) => {
       days: loadLog,
       overnights,
       overnightRate,
+      nogo: noGoDays,
+      nogoRate: noGoRate,
       totalPay,
       truckNum: truckNum || '—',
       trailerNum: trailerNum || '—',
